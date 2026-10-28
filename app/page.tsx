@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Navbar from "./components/Navbar";
+import SmoothScroll from "./components/SmoothScroll";
+import ScrollProgress from "./components/ScrollProgress";
 import Hero from "./components/Hero";
 import Triptych from "./components/Triptych";
 import Collections from "./components/Collections";
@@ -27,6 +29,10 @@ export default function Home() {
 
   return (
     <main className="landing-page-root">
+      {/* Smooth scrolling (Lenis) + scroll progress indicator */}
+      <SmoothScroll />
+      <ScrollProgress />
+
       {/* Top Fixed Navigation */}
       <Navbar onOpenQuote={() => handleOpenQuote("General Inquiry")} />
 

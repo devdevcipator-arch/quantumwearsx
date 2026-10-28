@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, useReducedMotion } from "motion/react";
 
 interface NavbarProps {
   onOpenQuote: () => void;
@@ -9,6 +10,7 @@ interface NavbarProps {
 export default function Navbar({ onOpenQuote }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const reduce = useReducedMotion();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,7 +21,12 @@ export default function Navbar({ onOpenQuote }: NavbarProps) {
   }, []);
 
   return (
-    <header className={`site-nav ${scrolled ? "scrolled" : ""}`}>
+    <motion.header
+      className={`site-nav ${scrolled ? "scrolled" : ""}`}
+      initial={reduce ? undefined : { y: -80, opacity: 0 }}
+      animate={reduce ? undefined : { y: 0, opacity: 1 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="nav-container">
         {/* Brand Logo */}
         <a href="#" className="nav-brand" aria-label="QuantumWearX Home">
@@ -118,6 +125,6 @@ export default function Navbar({ onOpenQuote }: NavbarProps) {
           REQUEST A QUOTE
         </button>
       </div>
-    </header>
+    </motion.header>
   );
 }
