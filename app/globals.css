@@ -235,6 +235,7 @@ button {
   object-fit: cover;
   object-position: center right;
   filter: brightness(0.9) contrast(1.08);
+  display: block;
 }
 
 .hero-overlay {

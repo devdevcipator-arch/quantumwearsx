@@ -8,12 +8,18 @@ export default function Hero({ onOpenQuote }: HeroProps) {
   return (
     <section id="home" className="hero-section">
       <div className="hero-bg-wrapper">
-        <img
-          src="/images/hero_factory_sewing.jpg"
-          alt="High-end apparel manufacturing factory floor with precision machinery"
+        <video
           className="hero-bg-image"
-          loading="eager"
-        />
+          poster="/images/hero_factory_sewing.jpg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-label="High-end apparel manufacturing factory floor with precision machinery"
+        >
+          <source src="/videos/hero-loop.mp4" type="video/mp4" />
+        </video>
         <div className="hero-overlay" />
       </div>
 
