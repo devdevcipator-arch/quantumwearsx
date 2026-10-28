@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Triptych from "./components/Triptych";
 import Collections from "./components/Collections";
+import Faq from "./components/Faq";
 import CallToAction from "./components/CallToAction";
 import Footer from "./components/Footer";
 import QuoteModal from "./components/QuoteModal";
@@ -37,6 +38,9 @@ export default function Home() {
 
       {/* Complete Product Range Bento Grid */}
       <Collections onSelectCategory={(cat) => handleOpenQuote(cat)} />
+
+      {/* Common Inquiries / FAQ */}
+      <Faq />
 
       {/* Ready to Build Your Brand Banner */}
       <CallToAction onOpenQuote={() => handleOpenQuote("Custom Production")} />
