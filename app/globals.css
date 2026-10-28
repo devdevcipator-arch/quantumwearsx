@@ -426,7 +426,7 @@ button {
 .collections-section {
   position: relative;
   background: #000;
-  padding: 80px 0 100px;
+  padding: 80px 0 0;
 }
 
 .collections-header {
