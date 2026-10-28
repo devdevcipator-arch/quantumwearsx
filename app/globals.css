@@ -342,26 +342,29 @@ button {
 .triptych-section {
   position: relative;
   background: #000;
-  padding: 24px 0 60px;
+  padding: 0 0 70px;
+  width: 100%;
   overflow: hidden;
 }
 
 .triptych-container {
-  max-width: 1360px;
-  margin: 0 auto;
-  padding: 0 24px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
   position: relative;
 }
 
 .triptych-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  height: clamp(380px, 52vw, 600px);
+  gap: 2px;
+  height: clamp(460px, 58vw, 720px);
+  width: 100%;
   position: relative;
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
-  background: #050507;
+  background: #000;
 }
 
 .triptych-panel {
@@ -428,6 +431,7 @@ button {
 .collections-header {
   text-align: center;
   margin-bottom: 48px;
+  padding: 0 24px;
 }
 
 .collections-eyebrow {
@@ -458,32 +462,35 @@ button {
 }
 
 .collections-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 24px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 /* Bento Grid Architecture */
 .bento-layout {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 2px;
+  width: 100%;
 }
 
 .bento-top-row {
   display: grid;
   grid-template-columns: 1fr 1.6fr;
-  gap: 20px;
+  gap: 2px;
+  width: 100%;
 }
 
 /* Left tall column */
 .bento-tall-card {
   height: 600px;
   position: relative;
-  border-radius: 18px;
+  border-radius: 0;
   overflow: hidden;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: none;
   transition: all 0.35s ease;
 }
 
@@ -491,33 +498,33 @@ button {
 .bento-cluster-column {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 2px;
 }
 
 .bento-cluster-top-subgrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 2px;
   height: 290px;
 }
 
 .bento-square-card {
   position: relative;
   height: 100%;
-  border-radius: 18px;
+  border-radius: 0;
   overflow: hidden;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: none;
   transition: all 0.35s ease;
 }
 
 .bento-wide-card {
   position: relative;
   height: 290px;
-  border-radius: 18px;
+  border-radius: 0;
   overflow: hidden;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: none;
   transition: all 0.35s ease;
 }
 
@@ -525,17 +532,18 @@ button {
 .bento-bottom-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 2px;
   height: 340px;
+  width: 100%;
 }
 
 .bento-medium-card {
   position: relative;
   height: 100%;
-  border-radius: 18px;
+  border-radius: 0;
   overflow: hidden;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: none;
   transition: all 0.35s ease;
 }
 
