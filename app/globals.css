@@ -213,7 +213,8 @@ button {
    ========================================================== */
 .hero-section {
   position: relative;
-  min-height: 94vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   padding-top: 100px;
@@ -1002,7 +1003,9 @@ button {
   }
   .hero-section {
     padding-top: 90px;
-    min-height: 85vh;
+    padding-bottom: 40px;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   .triptych-grid {
     height: 340px;
