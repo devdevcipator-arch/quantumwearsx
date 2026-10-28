@@ -1,23 +1,55 @@
+"use client";
+
+import { useState } from "react";
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+import Triptych from "./components/Triptych";
+import Collections from "./components/Collections";
+import CallToAction from "./components/CallToAction";
+import Footer from "./components/Footer";
+import QuoteModal from "./components/QuoteModal";
+
 export default function Home() {
+  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("Sportswear");
+
+  const handleOpenQuote = (category?: string) => {
+    if (category) {
+      setSelectedCategory(category);
+    }
+    setQuoteModalOpen(true);
+  };
+
+  const handleCloseQuote = () => {
+    setQuoteModalOpen(false);
+  };
+
   return (
-    <main className="soon">
-      <div className="soon-inner">
-        <p className="logo">
-          Q<span className="logo-dot">W</span>
-        </p>
-        <p className="eyebrow">✦ Something is arriving</p>
-        <h1>
-          Coming <em>Soon</em>
-        </h1>
-        <p className="soon-sub">
-          Quantam Wear is in the lab. Tech-wear essentials engineered for
-          motion, comfort and style — dropping here first.
-        </p>
-        <a href="mailto:quantumwearsx@gmail.com" className="btn-primary">
-          Notify Me
-        </a>
-        <p className="small">© {new Date().getFullYear()} Quantam Wear · quantumwearsx@gmail.com</p>
-      </div>
+    <main className="landing-page-root">
+      {/* Top Fixed Navigation */}
+      <Navbar onOpenQuote={() => handleOpenQuote("General Inquiry")} />
+
+      {/* Hero Section */}
+      <Hero onOpenQuote={() => handleOpenQuote("Full Collection")} />
+
+      {/* Made Around Your Brand 3-Panel Showcase */}
+      <Triptych />
+
+      {/* Complete Product Range Bento Grid */}
+      <Collections onSelectCategory={(cat) => handleOpenQuote(cat)} />
+
+      {/* Ready to Build Your Brand Banner */}
+      <CallToAction onOpenQuote={() => handleOpenQuote("Custom Production")} />
+
+      {/* Global Footer */}
+      <Footer />
+
+      {/* Interactive Quote Request Modal */}
+      <QuoteModal
+        isOpen={quoteModalOpen}
+        onClose={handleCloseQuote}
+        initialCategory={selectedCategory}
+      />
     </main>
   );
 }
