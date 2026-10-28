@@ -10,7 +10,7 @@ export default function Hero({ onOpenQuote }: HeroProps) {
       <div className="hero-bg-wrapper">
         <video
           className="hero-bg-image"
-          poster="/images/hero_factory_sewing.jpg"
+          poster="/images/hero-poster.jpg"
           autoPlay
           muted
           loop
