@@ -9,8 +9,8 @@ export default function CallToAction({ onOpenQuote }: CallToActionProps) {
     <section className="cta-banner-section" aria-label="Call to Action">
       <div className="cta-bg-wrapper">
         <img
-          src="/images/cta_red_bg.jpg"
-          alt="Rich crimson textured manufacturing pattern background"
+          src="/images/triptych_leather_stitch.jpg"
+          alt="Close-up of deep black leather with precise double stitching"
           className="cta-bg-image"
           loading="lazy"
         />
