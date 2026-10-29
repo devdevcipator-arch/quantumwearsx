@@ -15,34 +15,36 @@ const slideFromLeft = {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.85,
+      duration: 0.95,
+      delay: 0.08,
       ease: [0.22, 1, 0.36, 1] as const,
     },
   },
 };
 
-// Right-side cards slide in smoothly from the right screen border
+// Right-side cards slide in smoothly from the right screen border with a clean delay
 const slideFromRight = {
   hidden: { opacity: 0, x: 80 },
   show: {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.85,
+      duration: 0.95,
+      delay: 0.22,
       ease: [0.22, 1, 0.36, 1] as const,
     },
   },
 };
 
-// Workwear card in right cluster with subtle natural cascade
+// Workwear card in right cluster with natural cascade
 const slideFromRightSubtle = {
   hidden: { opacity: 0, x: 80 },
   show: {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.85,
-      delay: 0.06,
+      duration: 0.95,
+      delay: 0.36,
       ease: [0.22, 1, 0.36, 1] as const,
     },
   },
@@ -55,8 +57,8 @@ const slideFromLeftBottom = {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.85,
-      delay: 0.08,
+      duration: 0.95,
+      delay: 0.14,
       ease: [0.22, 1, 0.36, 1] as const,
     },
   },
@@ -69,8 +71,8 @@ const slideFromRightBottom = {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.85,
-      delay: 0.08,
+      duration: 0.95,
+      delay: 0.28,
       ease: [0.22, 1, 0.36, 1] as const,
     },
   },
