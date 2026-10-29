@@ -423,11 +423,13 @@ button {
 /* Floating Gothic title across all panels */
 .triptych-title-overlay {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 10;
   width: 100%;
+  padding: 0 16px;
   text-align: center;
   pointer-events: none;
 }
@@ -443,6 +445,10 @@ button {
     0 4px 18px rgba(0, 0, 0, 0.95),
     0 0 40px rgba(191, 21, 32, 0.3);
   letter-spacing: 1px;
+}
+
+.gothic-made-around span {
+  display: block;
 }
 
 /* ==========================================================

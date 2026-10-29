@@ -68,9 +68,8 @@ export default function Triptych() {
             transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
             <h2 className="gothic-made-around">
-              Made Around Your
-              <br />
-              Brand
+              <span>Made Around Your</span>
+              <span>Brand</span>
             </h2>
           </motion.div>
         </motion.div>
