@@ -3,10 +3,9 @@
 import { useRef } from "react";
 import {
   motion,
-  useScroll,
-  useTransform,
   useReducedMotion,
 } from "motion/react";
+import BubbleLights from "./BubbleLights";
 
 interface CallToActionProps {
   onOpenQuote: () => void;
@@ -15,46 +14,85 @@ interface CallToActionProps {
 export default function CallToAction({ onOpenQuote }: CallToActionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["-7%", "7%"]);
 
   return (
-    <section className="cta-banner-section" aria-label="Call to Action" ref={sectionRef}>
+    <section
+      className="cta-banner-section"
+      aria-label="Call to Action"
+      ref={sectionRef}
+    >
+      {/* Background with concentric circular pattern and deep atmospheric vignettes */}
       <div className="cta-bg-wrapper">
-        <motion.img
-          src="/images/triptych_leather_stitch.jpg"
-          alt="Close-up of deep black leather with precise double stitching"
-          className="cta-bg-image"
-          loading="lazy"
-          style={reduce ? undefined : { y: bgY, scale: 1.18 }}
-        />
+        <div className="cta-concentric-bg" />
+        <div className="cta-top-glow" />
         <div className="cta-gradient-overlay" />
       </div>
 
+      {/* Main Content */}
       <motion.div
         className="cta-content-container"
-        initial={reduce ? undefined : { opacity: 0, y: 30 }}
+        initial={reduce ? undefined : { opacity: 0, y: 28 }}
         whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.4 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        viewport={{ once: true, amount: 0.35 }}
+        transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
       >
-        <h2 className="cta-headline">READY TO BUILD YOUR BRAND?</h2>
+        {/* Eyebrow: START PRODUCTION */}
+        <div className="cta-eyebrow-container">
+          <span className="cta-eyebrow-dash" aria-hidden="true" />
+          <span className="cta-eyebrow-text">START PRODUCTION</span>
+        </div>
+
+        {/* Headline: READY TO BUILD YOUR BRAND? */}
+        <h2 className="cta-headline">
+          <span className="cta-headline-white">READY TO BUILD</span>
+          <span className="cta-headline-red">YOUR BRAND?</span>
+        </h2>
+
+        {/* Subtext description */}
         <p className="cta-subtext">
-          Tell us what you want to create. From first sample to final shipment,
-          we are your manufacturing backbone.
+          Tell us what you want to create. From the first tech pack to the final
+          carton, we are the manufacturing backbone behind your label.
         </p>
-        <button
-          type="button"
-          className="cta-black-button"
-          onClick={onOpenQuote}
-          id="cta-request-custom-quote-btn"
-        >
-          REQUEST A CUSTOM QUOTE
-        </button>
+
+        {/* CTA Button */}
+        <div className="cta-btn-wrapper">
+          <button
+            type="button"
+            className="cta-red-pill-button"
+            onClick={onOpenQuote}
+            id="cta-request-custom-quote-btn"
+          >
+            <span>REQUEST A CUSTOM QUOTE</span>
+            <svg
+              className="cta-btn-arrow"
+              viewBox="0 0 24 24"
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="7" y1="17" x2="17" y2="7" />
+              <polyline points="7 7 17 7 17 17" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Specifications microcopy */}
+        <div className="cta-micro-specs">
+          <span>REPLY WITHIN 24 HOURS</span>
+          <span className="cta-micro-dot" aria-hidden="true">·</span>
+          <span>MOQ FROM 75 PCS</span>
+          <span className="cta-micro-dot" aria-hidden="true">·</span>
+          <span>NDA ON REQUEST</span>
+        </div>
       </motion.div>
+
+      {/* Animated glowing bubble lights along the bottom */}
+      <BubbleLights />
     </section>
   );
 }

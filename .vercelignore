@@ -1,0 +1,6 @@
+# Local-only files that must never be published
+public/Antigravity IDE.lnk
+*.lnk
+.vercel
+.next
+node_modules
