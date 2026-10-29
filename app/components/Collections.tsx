@@ -6,25 +6,123 @@ interface CollectionsProps {
   onSelectCategory: (category: string) => void;
 }
 
-const list = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
-};
+const viewportConfig = { once: true, amount: 0.15 };
 
-const card = {
-  hidden: { opacity: 0, y: 26 },
+// Left-side cards slide in smoothly from the left screen border
+const slideFromLeft = {
+  hidden: { opacity: 0, x: -80 },
   show: {
     opacity: 1,
-    y: 0,
-    transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] as const },
+    x: 0,
+    transition: {
+      duration: 0.85,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
+  },
+};
+
+// Right-side cards slide in smoothly from the right screen border
+const slideFromRight = {
+  hidden: { opacity: 0, x: 80 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.85,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
+  },
+};
+
+// Workwear card in right cluster with subtle natural cascade
+const slideFromRightSubtle = {
+  hidden: { opacity: 0, x: 80 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.85,
+      delay: 0.06,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
+  },
+};
+
+// Bottom-left card slides in smoothly from the left screen border
+const slideFromLeftBottom = {
+  hidden: { opacity: 0, x: -80 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.85,
+      delay: 0.08,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
+  },
+};
+
+// Bottom-right card slides in smoothly from the right screen border
+const slideFromRightBottom = {
+  hidden: { opacity: 0, x: 80 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.85,
+      delay: 0.08,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
   },
 };
 
 export default function Collections({ onSelectCategory }: CollectionsProps) {
   const reduce = useReducedMotion();
-  const animate = reduce
+
+  const animLeft = reduce
     ? {}
-    : { variants: list, initial: "hidden", whileInView: "show", viewport: { once: true, amount: 0.1 } };
+    : {
+        initial: "hidden",
+        whileInView: "show",
+        viewport: viewportConfig,
+        variants: slideFromLeft,
+      };
+
+  const animRight = reduce
+    ? {}
+    : {
+        initial: "hidden",
+        whileInView: "show",
+        viewport: viewportConfig,
+        variants: slideFromRight,
+      };
+
+  const animRightSubtle = reduce
+    ? {}
+    : {
+        initial: "hidden",
+        whileInView: "show",
+        viewport: viewportConfig,
+        variants: slideFromRightSubtle,
+      };
+
+  const animLeftBottom = reduce
+    ? {}
+    : {
+        initial: "hidden",
+        whileInView: "show",
+        viewport: viewportConfig,
+        variants: slideFromLeftBottom,
+      };
+
+  const animRightBottom = reduce
+    ? {}
+    : {
+        initial: "hidden",
+        whileInView: "show",
+        viewport: viewportConfig,
+        variants: slideFromRightBottom,
+      };
 
   return (
     <section id="products" className="collections-section" aria-label="Our Complete Product Range">
@@ -35,12 +133,12 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
       </div>
 
       <div className="collections-container">
-        <motion.div className="bento-layout" {...animate}>
+        <div className="bento-layout">
           {/* Top Section: Left tall card + Right 2x2 cluster */}
           <div className="bento-top-row">
-            {/* Card 1: Sportswear (Tall Card) */}
+            {/* Card 1: Sportswear (Tall Card) - Appears from left screen border */}
             <motion.div
-              variants={card}
+              {...animLeft}
               className="bento-tall-card"
               role="button"
               tabIndex={0}
@@ -61,12 +159,12 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
               </div>
             </motion.div>
 
-            {/* Right Cluster: 2 top cards + 1 wide card below */}
+            {/* Right Cluster: Appears from right screen border */}
             <div className="bento-cluster-column">
               <div className="bento-cluster-top-subgrid">
                 {/* Card 2: Leather Goods */}
                 <motion.div
-                  variants={card}
+                  {...animRight}
                   className="bento-square-card"
                   role="button"
                   tabIndex={0}
@@ -89,7 +187,7 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
 
                 {/* Card 3: Activewear / Tracksuits */}
                 <motion.div
-                  variants={card}
+                  {...animRight}
                   className="bento-square-card"
                   role="button"
                   tabIndex={0}
@@ -113,7 +211,7 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
 
               {/* Card 4: Workwear & Uniforms (Wide Card) */}
               <motion.div
-                variants={card}
+                {...animRightSubtle}
                 className="bento-wide-card"
                 role="button"
                 tabIndex={0}
@@ -136,11 +234,11 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
             </div>
           </div>
 
-          {/* Bottom Section: 2 medium cards */}
+          {/* Bottom Section: Left card + Right card */}
           <div className="bento-bottom-row">
-            {/* Card 5: Leather Jackets */}
+            {/* Card 5: Leather Jackets - Appears from left screen border */}
             <motion.div
-              variants={card}
+              {...animLeftBottom}
               className="bento-medium-card"
               role="button"
               tabIndex={0}
@@ -161,9 +259,9 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
               </div>
             </motion.div>
 
-            {/* Card 6: Custom Bags */}
+            {/* Card 6: Custom Bags - Appears from right screen border */}
             <motion.div
-              variants={card}
+              {...animRightBottom}
               className="bento-medium-card"
               role="button"
               tabIndex={0}
@@ -184,7 +282,7 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
               </div>
             </motion.div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
