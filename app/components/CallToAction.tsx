@@ -1,10 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import {
-  motion,
-  useReducedMotion,
-} from "motion/react";
 import BubbleLights from "./BubbleLights";
 
 interface CallToActionProps {
@@ -13,7 +9,6 @@ interface CallToActionProps {
 
 export default function CallToAction({ onOpenQuote }: CallToActionProps) {
   const sectionRef = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion();
 
   return (
     <section
@@ -28,34 +23,28 @@ export default function CallToAction({ onOpenQuote }: CallToActionProps) {
         <div className="cta-gradient-overlay" />
       </div>
 
-      {/* Main Content */}
-      <motion.div
-        className="cta-content-container"
-        initial={reduce ? undefined : { opacity: 0, y: 28 }}
-        whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.35 }}
-        transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-      >
+      {/* Main Content with scroll-triggered reveal-up animation and 120ms stagger */}
+      <div className="cta-content-container">
         {/* Eyebrow: START PRODUCTION */}
-        <div className="cta-eyebrow-container">
+        <div className="cta-eyebrow-container" data-reveal="reveal-up">
           <span className="cta-eyebrow-dash" aria-hidden="true" />
           <span className="cta-eyebrow-text">START PRODUCTION</span>
         </div>
 
         {/* Headline: READY TO BUILD YOUR BRAND? */}
-        <h2 className="cta-headline">
+        <h2 className="cta-headline" data-reveal="reveal-up">
           <span className="cta-headline-white">READY TO BUILD</span>
           <span className="cta-headline-red">YOUR BRAND?</span>
         </h2>
 
         {/* Subtext description */}
-        <p className="cta-subtext">
+        <p className="cta-subtext" data-reveal="reveal-up">
           Tell us what you want to create. From the first tech pack to the final
           carton, we are the manufacturing backbone behind your label.
         </p>
 
         {/* CTA Button */}
-        <div className="cta-btn-wrapper">
+        <div className="cta-btn-wrapper" data-reveal="reveal-up">
           <button
             type="button"
             className="cta-red-pill-button"
@@ -82,14 +71,14 @@ export default function CallToAction({ onOpenQuote }: CallToActionProps) {
         </div>
 
         {/* Specifications microcopy */}
-        <div className="cta-micro-specs">
+        <div className="cta-micro-specs" data-reveal="reveal-up">
           <span>REPLY WITHIN 24 HOURS</span>
           <span className="cta-micro-dot" aria-hidden="true">·</span>
           <span>MOQ FROM 75 PCS</span>
           <span className="cta-micro-dot" aria-hidden="true">·</span>
           <span>NDA ON REQUEST</span>
         </div>
-      </motion.div>
+      </div>
 
       {/* Animated glowing bubble lights along the bottom */}
       <BubbleLights />

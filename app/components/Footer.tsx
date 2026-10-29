@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="footer-container">
         <div className="footer-columns">
           {/* Column 1: Brand info */}
-          <div className="footer-brand-col">
+          <div className="footer-brand-col" data-reveal="reveal-up">
             <div className="footer-logo">
               <div className="brand-icon-box">Q</div>
               <span>
@@ -49,7 +49,7 @@ export default function Footer() {
           </div>
 
           {/* Column 2: Company Links */}
-          <div className="footer-links-col">
+          <div className="footer-links-col" data-reveal="reveal-up">
             <h3 className="footer-heading">COMPANY</h3>
             <ul className="footer-links-list">
               <li>
@@ -81,7 +81,7 @@ export default function Footer() {
           </div>
 
           {/* Column 3: Headquarters & Contact */}
-          <div className="footer-contact-col" id="services">
+          <div className="footer-contact-col" id="services" data-reveal="reveal-up">
             <h3 className="footer-heading">HEADQUARTERS</h3>
             <div className="footer-contact-info">
               <p>

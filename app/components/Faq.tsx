@@ -1,7 +1,5 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
-
 const faqs = [
   {
     question: "What is your Minimum Order Quantity (MOQ)?",
@@ -25,52 +23,24 @@ const faqs = [
   },
 ];
 
-const list = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 22 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
-  },
-};
-
 export default function Faq() {
-  const reduce = useReducedMotion();
-
   return (
     <section id="faq" className="faq-section" aria-label="Frequently Asked Questions">
       <div className="faq-container">
-        <motion.div
-          className="faq-heading-block"
-          initial={reduce ? undefined : { opacity: 0, x: -28 }}
-          whileInView={reduce ? undefined : { opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        >
+        <div className="faq-heading-block" data-reveal="reveal-up">
           <span className="faq-eyebrow">Common Inquiries</span>
           <h2 className="faq-title">FAQ Section</h2>
           <div className="faq-title-bar" />
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="faq-list"
-          variants={list}
-          initial={reduce ? undefined : "hidden"}
-          whileInView={reduce ? undefined : "show"}
-          viewport={{ once: true, amount: 0.15 }}
-        >
+        <div className="faq-list">
           {faqs.map((faq) => (
-            <motion.div className="faq-item" key={faq.question} variants={item}>
+            <div className="faq-item" key={faq.question} data-reveal="reveal-up">
               <h3 className="faq-question">{faq.question}</h3>
               <p className="faq-answer">{faq.answer}</p>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -28,7 +28,7 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
 
   return (
     <section id="products" className="collections-section" aria-label="Our Complete Product Range">
-      <div className="collections-header">
+      <div className="collections-header" data-reveal="reveal-up">
         <span className="collections-eyebrow">Our Collections</span>
         <h2 className="collections-title">COMPLETE PRODUCT RANGE</h2>
         <div className="collections-title-bar" />
