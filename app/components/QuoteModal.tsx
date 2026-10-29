@@ -178,7 +178,22 @@ export default function QuoteModal({
               </div>
 
               <button type="submit" className="btn-submit-quote" id="modal-submit-quote-btn">
-                SUBMIT QUOTE REQUEST
+                <span>SUBMIT QUOTE REQUEST</span>
+                <svg
+                  className="cta-btn-arrow"
+                  viewBox="0 0 24 24"
+                  width="15"
+                  height="15"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <line x1="7" y1="17" x2="17" y2="7" />
+                  <polyline points="7 7 17 7 17 17" />
+                </svg>
               </button>
             </form>
           </>

@@ -70,7 +70,22 @@ export default function Navbar({ onOpenQuote }: NavbarProps) {
             onClick={onOpenQuote}
             id="nav-request-quote-btn"
           >
-            REQUEST A QUOTE
+            <span>REQUEST A QUOTE</span>
+            <svg
+              className="cta-btn-arrow"
+              viewBox="0 0 24 24"
+              width="13"
+              height="13"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="7" y1="17" x2="17" y2="7" />
+              <polyline points="7 7 17 7 17 17" />
+            </svg>
           </button>
           <button
             type="button"

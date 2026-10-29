@@ -123,6 +123,216 @@ button {
 }
 
 /* ==========================================================
+   UNIVERSAL BUTTON SYSTEM (Luminous Gradients, Specular Bevels, Shimmer & Glow)
+   ========================================================== */
+
+/* Universal Primary Gradient Button (Platform-wide) */
+.btn-primary,
+.btn-primary-red,
+.cta-red-pill-button,
+.nav-quote-btn,
+.btn-submit-quote {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #ff2d34 0%, #db0013 42%, #9e000c 88%, #800008 100%);
+  color: #ffffff !important;
+  font-family: inherit;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 9999px;
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 6px 0 rgba(0, 0, 0, 0.45),
+    0 4px 18px -2px rgba(216, 0, 18, 0.5),
+    0 0 25px -4px rgba(255, 45, 52, 0.28);
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: 
+    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.28s ease,
+    background 0.28s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  text-decoration: none;
+}
+
+/* Layering child text & icons cleanly above shimmer sweep */
+.btn-primary > *,
+.btn-primary-red > *,
+.cta-red-pill-button > *,
+.nav-quote-btn > *,
+.btn-submit-quote > * {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.25s ease;
+}
+
+/* Dynamic Silky Shimmer Reflection Sweep on Hover */
+.btn-primary::before,
+.btn-primary-red::before,
+.cta-red-pill-button::before,
+.nav-quote-btn::before,
+.btn-submit-quote::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -130%;
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 20%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0.1) 80%,
+    transparent 100%
+  );
+  transform: skewX(-22deg);
+  transition: left 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn-primary:hover::before,
+.btn-primary-red:hover::before,
+.cta-red-pill-button:hover::before,
+.nav-quote-btn:hover::before,
+.btn-submit-quote:hover::before {
+  left: 170%;
+}
+
+/* Radiant Glowing Hover State */
+.btn-primary:hover,
+.btn-primary-red:hover,
+.cta-red-pill-button:hover,
+.nav-quote-btn:hover,
+.btn-submit-quote:hover {
+  background: linear-gradient(135deg, #ff484e 0%, #ed0015 42%, #b5000e 85%, #8c0008 100%);
+  border-color: rgba(255, 255, 255, 0.55);
+  transform: translateY(-2.5px) scale(1.02);
+  box-shadow: 
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -2px 6px 0 rgba(0, 0, 0, 0.35),
+    0 12px 34px -2px rgba(216, 0, 18, 0.75),
+    0 0 45px rgba(255, 45, 55, 0.55);
+}
+
+/* Tactile Active Press State */
+.btn-primary:active,
+.btn-primary-red:active,
+.cta-red-pill-button:active,
+.nav-quote-btn:active,
+.btn-submit-quote:active {
+  transform: translateY(1px) scale(0.985);
+  box-shadow: 
+    inset 0 2px 6px rgba(0, 0, 0, 0.75),
+    0 2px 8px rgba(216, 0, 18, 0.4);
+}
+
+/* Secondary Universal Outline Glass Button */
+.btn-secondary,
+.btn-secondary-outline {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(18, 18, 25, 0.8) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9999px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #ffffff !important;
+  font-family: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.25),
+    0 6px 20px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: 
+    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.28s ease,
+    background 0.28s ease;
+  user-select: none;
+  text-decoration: none;
+}
+
+.btn-secondary > *,
+.btn-secondary-outline > * {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.25s ease;
+}
+
+.btn-secondary::before,
+.btn-secondary-outline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -130%;
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 20%,
+    rgba(255, 255, 255, 0.32) 50%,
+    rgba(255, 255, 255, 0.06) 80%,
+    transparent 100%
+  );
+  transform: skewX(-22deg);
+  transition: left 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn-secondary:hover::before,
+.btn-secondary-outline:hover::before {
+  left: 170%;
+}
+
+.btn-secondary:hover,
+.btn-secondary-outline:hover {
+  background: linear-gradient(135deg, rgba(216, 0, 18, 0.22) 0%, rgba(26, 14, 18, 0.9) 100%);
+  border-color: rgba(255, 75, 85, 0.65);
+  color: #ffffff;
+  transform: translateY(-2.5px) scale(1.02);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.45),
+    0 12px 30px rgba(0, 0, 0, 0.7),
+    0 0 32px rgba(216, 0, 18, 0.4);
+}
+
+.btn-secondary:active,
+.btn-secondary-outline:active {
+  transform: translateY(1px) scale(0.985);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.6),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Universal Arrow Icon Motion on Hover */
+.btn-primary:hover .cta-btn-arrow,
+.btn-primary:hover .arrow-icon,
+.btn-primary-red:hover .cta-btn-arrow,
+.btn-secondary-outline:hover .cta-btn-arrow,
+.cta-red-pill-button:hover .cta-btn-arrow,
+.nav-quote-btn:hover .cta-btn-arrow,
+.btn-submit-quote:hover .cta-btn-arrow {
+  transform: translate(3px, -3px);
+}
+
+/* ==========================================================
    NAVIGATION
    ========================================================== */
 .site-nav {
@@ -221,25 +431,10 @@ button {
 }
 
 .nav-quote-btn {
-  background: var(--accent-red);
-  color: #fff;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  padding: 10px 22px;
-  border-radius: 4px;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 16px rgba(209, 0, 20, 0.35);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-quote-btn:hover {
-  background: var(--accent-red-hover);
-  box-shadow: 0 6px 22px rgba(209, 0, 20, 0.6);
-  transform: translateY(-1px);
+  font-size: 11.5px;
+  letter-spacing: 0.9px;
+  padding: 10px 24px;
+  border-radius: 9999px;
 }
 
 .mobile-menu-btn {
@@ -350,48 +545,17 @@ button {
 }
 
 .btn-primary-red {
-  background: var(--accent-red);
-  color: #fff;
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 14px 28px;
-  border-radius: 4px;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 18px rgba(209, 0, 20, 0.4);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-primary-red:hover {
-  background: var(--accent-red-hover);
-  box-shadow: 0 8px 28px rgba(209, 0, 20, 0.65);
-  transform: translateY(-2px);
+  letter-spacing: 1.1px;
+  padding: 15px 34px;
+  border-radius: 9999px;
 }
 
 .btn-secondary-outline {
-  background: rgba(10, 10, 14, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(8px);
-  color: var(--text-white);
   font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 13px 28px;
-  border-radius: 4px;
-  transition: all 0.25s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-secondary-outline:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.7);
-  transform: translateY(-2px);
+  letter-spacing: 1.1px;
+  padding: 15px 34px;
+  border-radius: 9999px;
 }
 
 /* ==========================================================
@@ -641,42 +805,50 @@ button {
   bottom: 20px;
   left: 20px;
   z-index: 5;
-  background: rgba(14, 14, 18, 0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(135deg, rgba(28, 28, 38, 0.85) 0%, rgba(12, 12, 16, 0.92) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.4px;
-  padding: 8px 16px;
-  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 9px 18px;
+  border-radius: 9999px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.25s ease;
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.28),
+    0 6px 20px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
 }
 
 .bento-pill-badge .arrow-icon {
   font-size: 13px;
   transition: transform 0.25s ease;
-  color: var(--text-gray);
+  color: #ff4d52;
 }
 
 .bento-tall-card:hover .bento-pill-badge,
 .bento-square-card:hover .bento-pill-badge,
 .bento-wide-card:hover .bento-pill-badge,
 .bento-medium-card:hover .bento-pill-badge {
-  background: rgba(209, 0, 20, 0.88);
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 4px 16px rgba(209, 0, 20, 0.5);
+  background: linear-gradient(135deg, #ff2c32 0%, #d80012 45%, #9e000c 100%);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.6),
+    0 8px 24px rgba(216, 0, 18, 0.65),
+    0 0 25px rgba(255, 45, 50, 0.4);
 }
 
 .bento-tall-card:hover .arrow-icon,
 .bento-square-card:hover .arrow-icon,
 .bento-wide-card:hover .arrow-icon,
 .bento-medium-card:hover .arrow-icon {
-  transform: translate(2px, -2px);
+  transform: translate(2.5px, -2.5px);
   color: #fff;
 }
 
@@ -887,36 +1059,10 @@ button {
 }
 
 .cta-red-pill-button {
-  background: #e51d18;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 12.5px;
+  font-size: 13px;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 15px 36px;
+  padding: 16px 38px;
   border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  box-shadow: 0 8px 30px rgba(229, 29, 24, 0.45), 0 0 32px rgba(255, 40, 30, 0.22);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-}
-
-.cta-red-pill-button:hover {
-  background: #f82621;
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 14px 42px rgba(229, 29, 24, 0.68), 0 0 50px rgba(255, 50, 40, 0.45);
-  border-color: rgba(255, 255, 255, 0.28);
-}
-
-.cta-red-pill-button:hover .cta-btn-arrow {
-  transform: translate(2.5px, -2.5px);
-}
-
-.cta-btn-arrow {
-  transition: transform 0.22s ease;
 }
 
 /* Specifications microcopy */
@@ -1020,22 +1166,26 @@ button {
 }
 
 .social-icon-btn {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: #0f0f15;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(35, 35, 45, 0.8) 0%, rgba(14, 14, 20, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   display: grid;
   place-items: center;
   color: var(--text-gray);
-  transition: all 0.25s ease;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  position: relative;
 }
 
 .social-icon-btn:hover {
-  background: var(--accent-red);
+  background: linear-gradient(135deg, #ff333a 0%, #d80012 100%);
   color: #fff;
-  border-color: var(--accent-red);
-  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-2.5px) scale(1.08);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.55), 0 8px 22px rgba(216, 0, 18, 0.65), 0 0 20px rgba(255, 45, 50, 0.45);
 }
 
 .footer-heading {
@@ -1131,19 +1281,25 @@ button {
   position: absolute;
   top: 18px;
   right: 18px;
-  background: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(20, 20, 28, 0.85) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
   color: #fff;
   font-size: 18px;
-  transition: all 0.2s ease;
+  cursor: pointer;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modal-close-btn:hover {
-  background: var(--accent-red);
+  background: linear-gradient(135deg, #ff333a 0%, #d80012 100%);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: rotate(90deg) scale(1.08);
+  box-shadow: 0 6px 20px rgba(216, 0, 18, 0.65), 0 0 18px rgba(255, 40, 50, 0.4);
 }
 
 .modal-title {
@@ -1209,21 +1365,12 @@ button {
 }
 
 .btn-submit-quote {
-  background: var(--accent-red);
-  color: #fff;
-  font-weight: 800;
   font-size: 13px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 14px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  letter-spacing: 1.2px;
+  padding: 16px;
+  border-radius: 8px;
+  width: 100%;
   margin-top: 8px;
-}
-
-.btn-submit-quote:hover {
-  background: var(--accent-red-hover);
-  box-shadow: 0 4px 18px rgba(209, 0, 20, 0.5);
 }
 
 /* Animations */
