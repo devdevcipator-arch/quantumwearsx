@@ -65,7 +65,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href={href("#products")} className="footer-link">
+                <a href="/products" className="footer-link">
                   Products
                 </a>
               </li>

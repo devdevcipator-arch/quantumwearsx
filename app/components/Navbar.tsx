@@ -16,9 +16,11 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
   const pathname = usePathname();
   const onHome = pathname === "/";
 
-  // Prefix anchors with "/" on inner pages so they resolve to the home sections
+  // Anchor into the home page only when it resolves on it; Products always
+  // Prefix anchors with "/" on inner pages so they resolve to home sections
   const href = (anchor: string) => (onHome ? anchor : `/${anchor}`);
-  const productsHref = onHome ? "#products" : "#catalog";
+  // Products always routes to the dedicated catalog page
+  const productsHref = "/products";
 
   useEffect(() => {
     const handleScroll = () => {
