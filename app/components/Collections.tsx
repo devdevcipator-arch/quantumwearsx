@@ -1,9 +1,15 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
+import { useRouter } from "next/navigation";
 
 interface CollectionsProps {
-  onSelectCategory: (category: string) => void;
+  onSelectCategory?: (category: string) => void;
+  /**
+   * Optional: map a card's category to a navigation URL.
+   * When provided, cards navigate instead of calling onSelectCategory.
+   */
+  getHref?: (category: string) => string | undefined;
 }
 
 const viewportConfig = { once: true, amount: 0.15 };
@@ -78,8 +84,20 @@ const slideFromRightBottom = {
   },
 };
 
-export default function Collections({ onSelectCategory }: CollectionsProps) {
+export default function Collections({ onSelectCategory, getHref }: CollectionsProps) {
   const reduce = useReducedMotion();
+  const router = useRouter();
+
+  // If getHref returns a URL for this category, navigate to it;
+  // otherwise fall back to the quote modal handler.
+  const select = (category: string) => {
+    const href = getHref ? getHref(category) : undefined;
+    if (href) {
+      router.push(href);
+      return;
+    }
+    onSelectCategory?.(category);
+  };
 
   const animLeft = reduce
     ? {}
@@ -144,8 +162,8 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
               className="bento-tall-card"
               role="button"
               tabIndex={0}
-              onClick={() => onSelectCategory("Sportswear")}
-              onKeyDown={(e) => e.key === "Enter" && onSelectCategory("Sportswear")}
+              onClick={() => select("Sportswear")}
+              onKeyDown={(e) => e.key === "Enter" && select("Sportswear")}
               aria-label="View Sportswear Collection"
             >
               <img
@@ -170,8 +188,8 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
                   className="bento-square-card"
                   role="button"
                   tabIndex={0}
-                  onClick={() => onSelectCategory("Leather Goods")}
-                  onKeyDown={(e) => e.key === "Enter" && onSelectCategory("Leather Goods")}
+                  onClick={() => select("Leather Goods")}
+                  onKeyDown={(e) => e.key === "Enter" && select("Leather Goods")}
                   aria-label="View Leather Goods Collection"
                 >
                   <img
@@ -193,8 +211,8 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
                   className="bento-square-card"
                   role="button"
                   tabIndex={0}
-                  onClick={() => onSelectCategory("Activewear & Tracksuits")}
-                  onKeyDown={(e) => e.key === "Enter" && onSelectCategory("Activewear & Tracksuits")}
+                  onClick={() => select("Activewear & Tracksuits")}
+                  onKeyDown={(e) => e.key === "Enter" && select("Activewear & Tracksuits")}
                   aria-label="View Activewear Collection"
                 >
                   <img
@@ -217,8 +235,8 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
                 className="bento-wide-card"
                 role="button"
                 tabIndex={0}
-                onClick={() => onSelectCategory("Workwear & Uniforms")}
-                onKeyDown={(e) => e.key === "Enter" && onSelectCategory("Workwear & Uniforms")}
+                onClick={() => select("Workwear & Uniforms")}
+                onKeyDown={(e) => e.key === "Enter" && select("Workwear & Uniforms")}
                 aria-label="View Workwear & Uniforms Collection"
               >
                 <img
@@ -244,8 +262,8 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
               className="bento-medium-card"
               role="button"
               tabIndex={0}
-              onClick={() => onSelectCategory("Leather Jackets")}
-              onKeyDown={(e) => e.key === "Enter" && onSelectCategory("Leather Jackets")}
+              onClick={() => select("Leather Jackets")}
+              onKeyDown={(e) => e.key === "Enter" && select("Leather Jackets")}
               aria-label="View Leather Jackets Collection"
             >
               <img
@@ -267,8 +285,8 @@ export default function Collections({ onSelectCategory }: CollectionsProps) {
               className="bento-medium-card"
               role="button"
               tabIndex={0}
-              onClick={() => onSelectCategory("Custom Bags")}
-              onKeyDown={(e) => e.key === "Enter" && onSelectCategory("Custom Bags")}
+              onClick={() => select("Custom Bags")}
+              onKeyDown={(e) => e.key === "Enter" && select("Custom Bags")}
               aria-label="View Custom Bags Collection"
             >
               <img

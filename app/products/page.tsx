@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import type { CSSProperties } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 import Navbar from "../components/Navbar";
 import SmoothScroll from "../components/SmoothScroll";
@@ -10,6 +12,11 @@ import RevealObserver from "../components/RevealObserver";
 import Collections from "../components/Collections";
 import Footer from "../components/Footer";
 import QuoteModal from "../components/QuoteModal";
+import {
+  activewearEssentialFilters,
+  bentoCategorySlugs,
+  catalogListSlugs,
+} from "../data/categories";
 
 const viewportConfig = { once: true, amount: 0.15 };
 
@@ -145,10 +152,10 @@ const quoteCategoryMap: Record<string, string> = {
 --------------------------------------------------------------- */
 
 export default function ProductsPage() {
+  const router = useRouter();
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("General Inquiry");
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState("Activewear");
   const reduce = useReducedMotion();
 
   const handleOpenQuote = (category?: string) => {
@@ -283,12 +290,10 @@ export default function ProductsPage() {
                   <li key={category}>
                     <button
                       type="button"
-                      className={`catalog-link-item ${
-                        activeCategory === category ? "active" : ""
-                      }`}
+                      className="catalog-link-item"
                       onClick={() => {
-                        setActiveCategory(category);
-                        handleOpenQuote(category);
+                        const slug = catalogListSlugs[category];
+                        if (slug) router.push(`/products/${slug}`);
                       }}
                     >
                       <span>{category}</span>
@@ -321,7 +326,11 @@ export default function ProductsPage() {
                     <button
                       type="button"
                       className="catalog-link-item"
-                      onClick={() => handleOpenQuote(item)}
+                      onClick={() =>
+                        router.push(
+                          `/products/activewear?item=${encodeURIComponent(item)}`
+                        )
+                      }
                     >
                       <span>{item}</span>
                       <span className="catalog-item-arrow">↗</span>
@@ -335,7 +344,13 @@ export default function ProductsPage() {
       </section>
 
       {/* ================= COMPLETE PRODUCT RANGE (BENTO GRID) ================= */}
-      <Collections onSelectCategory={(cat) => handleOpenQuote(cat)} />
+      <Collections
+        onSelectCategory={(cat) => handleOpenQuote(cat)}
+        getHref={(cat) => {
+          const slug = bentoCategorySlugs[cat];
+          return slug ? `/products/${slug}` : undefined;
+        }}
+      />
 
       {/* ================= ENGINEERED PERFORMANCE SHOWCASE ================= */}
       <section
