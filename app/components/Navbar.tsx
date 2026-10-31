@@ -1,16 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 
 interface NavbarProps {
   onOpenQuote: () => void;
+  active?: "home" | "products";
 }
 
-export default function Navbar({ onOpenQuote }: NavbarProps) {
+export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const reduce = useReducedMotion();
+  const pathname = usePathname();
+  const onHome = pathname === "/";
+
+  // Prefix anchors with "/" on inner pages so they resolve to the home sections
+  const href = (anchor: string) => (onHome ? anchor : `/${anchor}`);
+  const productsHref = onHome ? "#products" : "#catalog";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,22 +48,22 @@ export default function Navbar({ onOpenQuote }: NavbarProps) {
         <nav aria-label="Main Navigation">
           <ul className="nav-links">
             <li>
-              <a href="#home" className="nav-link active">
+              <a href={href("#home")} className={`nav-link ${active === "home" ? "active" : ""}`}>
                 Home
               </a>
             </li>
             <li>
-              <a href="#products" className="nav-link">
+              <a href={productsHref} className={`nav-link ${active === "products" ? "active" : ""}`}>
                 Products
               </a>
             </li>
             <li>
-              <a href="#about" className="nav-link">
+              <a href={href("#about")} className="nav-link">
                 About us
               </a>
             </li>
             <li>
-              <a href="#services" className="nav-link">
+              <a href={href("#services")} className="nav-link">
                 Services
               </a>
             </li>
@@ -101,28 +109,28 @@ export default function Navbar({ onOpenQuote }: NavbarProps) {
       {/* Mobile Drawer */}
       <div className={`mobile-drawer ${mobileMenuOpen ? "open" : ""}`}>
         <a
-          href="#home"
-          className="nav-link active"
+          href={href("#home")}
+          className={`nav-link ${active === "home" ? "active" : ""}`}
           onClick={() => setMobileMenuOpen(false)}
         >
           Home
         </a>
         <a
-          href="#products"
-          className="nav-link"
+          href={productsHref}
+          className={`nav-link ${active === "products" ? "active" : ""}`}
           onClick={() => setMobileMenuOpen(false)}
         >
           Products
         </a>
         <a
-          href="#about"
+          href={href("#about")}
           className="nav-link"
           onClick={() => setMobileMenuOpen(false)}
         >
           About us
         </a>
         <a
-          href="#services"
+          href={href("#services")}
           className="nav-link"
           onClick={() => setMobileMenuOpen(false)}
         >

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface QuoteModalProps {
   isOpen: boolean;
@@ -19,6 +19,11 @@ export default function QuoteModal({
   const [quantity, setQuantity] = useState("100-300 pcs");
   const [details, setDetails] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  // Re-sync the selected category each time the modal opens
+  useEffect(() => {
+    if (isOpen) setCategory(initialCategory);
+  }, [isOpen, initialCategory]);
 
   if (!isOpen) return null;
 
@@ -135,6 +140,7 @@ export default function QuoteModal({
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                   >
+                    <option value="General Inquiry">General Inquiry</option>
                     <option value="Sportswear">Sportswear & Technical Jerseys</option>
                     <option value="Leather Goods">Leather Goods & Swatches</option>
                     <option value="Activewear & Tracksuits">Activewear & Tracksuits</option>
