@@ -32,3 +32,6 @@ next-env.d.ts
 .env*
 
 *.lnk
+
+# Video downloads in root
+/*.mp4

@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from "motion/react";
 
 interface NavbarProps {
   onOpenQuote: () => void;
-  active?: "home" | "products";
+  active?: "home" | "products" | "about";
 }
 
 export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
@@ -16,11 +16,10 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
   const pathname = usePathname();
   const onHome = pathname === "/";
 
-  // Anchor into the home page only when it resolves on it; Products always
-  // Prefix anchors with "/" on inner pages so they resolve to home sections
+  // Anchor into the home page only when it resolves on it; dedicated pages route directly
   const href = (anchor: string) => (onHome ? anchor : `/${anchor}`);
-  // Products always routes to the dedicated catalog page
   const productsHref = "/products";
+  const aboutHref = "/about";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,7 +38,7 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
     >
       <div className="nav-container">
         {/* Brand Logo */}
-        <a href="#" className="nav-brand" aria-label="QuantumWearX Home">
+        <a href="/" className="nav-brand" aria-label="QuantumWearX Home">
           <div className="brand-icon-box">Q</div>
           <span>
             QUANTUMWEAR<span className="logo-x">X</span>
@@ -60,7 +59,7 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
               </a>
             </li>
             <li>
-              <a href={href("#about")} className="nav-link">
+              <a href={aboutHref} className={`nav-link ${active === "about" ? "active" : ""}`}>
                 About us
               </a>
             </li>
@@ -125,8 +124,8 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
           Products
         </a>
         <a
-          href={href("#about")}
-          className="nav-link"
+          href={aboutHref}
+          className={`nav-link ${active === "about" ? "active" : ""}`}
           onClick={() => setMobileMenuOpen(false)}
         >
           About us

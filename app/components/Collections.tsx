@@ -10,6 +10,9 @@ interface CollectionsProps {
    * When provided, cards navigate instead of calling onSelectCategory.
    */
   getHref?: (category: string) => string | undefined;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
 }
 
 const viewportConfig = { once: true, amount: 0.15 };
@@ -84,7 +87,13 @@ const slideFromRightBottom = {
   },
 };
 
-export default function Collections({ onSelectCategory, getHref }: CollectionsProps) {
+export default function Collections({
+  onSelectCategory,
+  getHref,
+  eyebrow = "Our Collections",
+  title = "COMPLETE PRODUCT RANGE",
+  description,
+}: CollectionsProps) {
   const reduce = useReducedMotion();
   const router = useRouter();
 
@@ -145,10 +154,24 @@ export default function Collections({ onSelectCategory, getHref }: CollectionsPr
       };
 
   return (
-    <section id="products" className="collections-section" aria-label="Our Complete Product Range">
+    <section id="products" className="collections-section" aria-label={title}>
       <div className="collections-header" data-reveal="reveal-up">
-        <span className="collections-eyebrow">Our Collections</span>
-        <h2 className="collections-title">COMPLETE PRODUCT RANGE</h2>
+        <span className="collections-eyebrow">{eyebrow}</span>
+        <h2 className="collections-title">{title}</h2>
+        {description && (
+          <p
+            className="collections-desc"
+            style={{
+              maxWidth: "720px",
+              margin: "14px auto 0",
+              color: "var(--text-gray)",
+              fontSize: "15px",
+              lineHeight: "1.65",
+            }}
+          >
+            {description}
+          </p>
+        )}
         <div className="collections-title-bar" />
       </div>
 

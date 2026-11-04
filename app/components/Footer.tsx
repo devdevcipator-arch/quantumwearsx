@@ -9,7 +9,7 @@ export default function Footer() {
   const href = (anchor: string) => (onHome ? anchor : `/${anchor}`);
 
   return (
-    <footer className="site-footer" id="about">
+    <footer className="site-footer" id="site-footer">
       <div className="footer-container">
         <div className="footer-columns">
           {/* Column 1: Brand info */}
@@ -70,7 +70,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href={href("#about")} className="footer-link">
+                <a href="/about" className="footer-link">
                   About us
                 </a>
               </li>
