@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Navbar from "../components/Navbar";
@@ -648,84 +647,6 @@ export default function ProductsPage() {
                       <span className="showcase-metric-val">100%</span>
                       <span className="showcase-metric-lbl">Export Grade</span>
                     </div>
-                  </div>
-                </div>
-
-                {/* 3 Capability Highlight Cards */}
-                <div className="showcase-capabilities-grid">
-                  {/* Highlight 1: Tech Pack to Production */}
-                  <div className="showcase-capability-card">
-                    <div className="showcase-card-header">
-                      <span className="showcase-card-badge">01 · PATTERN & CAD</span>
-                      <div className="showcase-card-icon" aria-hidden="true">📐</div>
-                    </div>
-                    <h3 className="showcase-card-title">Tech Pack to Production</h3>
-                    <p className="showcase-card-desc">
-                      Custom pattern drafting from rough sketches, reference samples, or CAD specs. Precise grading across full size curves (XS–5XL) with pre-production strike-offs and fit approval before cutting bulk fabric.
-                    </p>
-                    <ul className="showcase-card-features">
-                      <li>✓ Custom Pattern Drafting & Grading</li>
-                      <li>✓ 3D Virtual Prototype Verification</li>
-                      <li>✓ Physical Counter-Sample in 7 Days</li>
-                    </ul>
-                  </div>
-
-                  {/* Highlight 2: Custom Fabrics & GSM */}
-                  <div className="showcase-capability-card">
-                    <div className="showcase-card-header">
-                      <span className="showcase-card-badge">02 · TEXTILE ENGINEERING</span>
-                      <div className="showcase-card-icon" aria-hidden="true">🧵</div>
-                    </div>
-                    <h3 className="showcase-card-title">Custom Fabrics & GSM</h3>
-                    <p className="showcase-card-desc">
-                      Direct mill yarn sourcing for performance polyesters, French terry, organic cottons, and high-compression knits. Custom fabric weights from 180 to 500+ GSM with exact Pantone lab dips and functional treatments.
-                    </p>
-                    <ul className="showcase-card-features">
-                      <li>✓ 180–500+ GSM Technical & Heavyweight Knits</li>
-                      <li>✓ Exact Pantone PMS Matching & Lab Dips</li>
-                      <li>✓ Moisture-Wicking, Anti-Pilling & UPF50+</li>
-                    </ul>
-                  </div>
-
-                  {/* Highlight 3: Private Label Trims */}
-                  <div className="showcase-capability-card">
-                    <div className="showcase-card-header">
-                      <span className="showcase-card-badge">03 · BRANDING & TRIMS</span>
-                      <div className="showcase-card-icon" aria-hidden="true">🏷️</div>
-                    </div>
-                    <h3 className="showcase-card-title">Private Label Trims</h3>
-                    <p className="showcase-card-desc">
-                      Turnkey brand identity integration including high-definition damask woven neck labels, embossed rubber badges, debossed leather patches, custom engraved hardware, and retail-ready packaging.
-                    </p>
-                    <ul className="showcase-card-features">
-                      <li>✓ High-Definition Woven Damask Labels</li>
-                      <li>✓ Custom Rubber, Leather & Silicone Badges</li>
-                      <li>✓ Branded Frosted Polybags & Barcoded Hangtags</li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Primary Call to Action Banner */}
-                <div className="showcase-cta-banner">
-                  <div className="showcase-cta-content">
-                    <span className="showcase-cta-kicker">Manufacturing Partner</span>
-                    <h3 className="showcase-cta-heading">Scale Your Next Apparel Drop With Us</h3>
-                    <p className="showcase-cta-sub">
-                      Submit your tech pack or style brief. Our production team reviews fabric allocations, minimums, and pricing within 4 hours.
-                    </p>
-                  </div>
-                  <div className="showcase-cta-actions">
-                    <Link href="/contact" className="showcase-cta-btn">
-                      <span>Request a Custom Quote</span>
-                      <span className="showcase-btn-arrow" aria-hidden="true">→</span>
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => handleOpenQuote("General Inquiry")}
-                      className="showcase-secondary-btn"
-                    >
-                      <span>Instant Quote Modal</span>
-                    </button>
                   </div>
                 </div>
               </motion.div>
