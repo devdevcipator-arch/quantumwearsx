@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from "motion/react";
 
 interface NavbarProps {
   onOpenQuote: () => void;
-  active?: "home" | "products" | "about";
+  active?: "home" | "products" | "about" | "contact";
 }
 
 export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
@@ -20,6 +20,7 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
   const href = (anchor: string) => (onHome ? anchor : `/${anchor}`);
   const productsHref = "/products";
   const aboutHref = "/about";
+  const contactHref = "/contact";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,7 +65,7 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
               </a>
             </li>
             <li>
-              <a href={href("#contact")} className="nav-link">
+              <a href={contactHref} className={`nav-link ${active === "contact" ? "active" : ""}`}>
                 Contact us
               </a>
             </li>
@@ -131,8 +132,8 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
           About us
         </a>
         <a
-          href={href("#contact")}
-          className="nav-link"
+          href={contactHref}
+          className={`nav-link ${active === "contact" ? "active" : ""}`}
           onClick={() => setMobileMenuOpen(false)}
         >
           Contact us
