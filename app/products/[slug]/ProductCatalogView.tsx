@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, useReducedMotion } from "motion/react";
 import Navbar from "../../components/Navbar";
 import SmoothScroll from "../../components/SmoothScroll";
 import ScrollProgress from "../../components/ScrollProgress";
@@ -18,26 +17,6 @@ import {
 } from "../../data/categories";
 import { fetchProductsFromDb } from "@/lib/products-service";
 
-const viewportConfig = { once: true, amount: 0.15 };
-
-const slideFromLeft = {
-  hidden: { opacity: 0, x: -80 },
-  show: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.95, delay: 0.08, ease: [0.22, 1, 0.36, 1] as const },
-  },
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.85, ease: [0.22, 1, 0.36, 1] as const },
-  },
-};
-
 interface ProductCatalogViewProps {
   category: CategoryCatalog;
   itemQuery?: string;
@@ -47,7 +26,6 @@ export default function ProductCatalogView({
   category,
   itemQuery,
 }: ProductCatalogViewProps) {
-  const reduce = useReducedMotion();
   const pathname = usePathname();
 
   // Derive active category directly from route parameters / URL pathname
@@ -179,28 +157,18 @@ export default function ProductCatalogView({
       >
         <div className="catalog-view-container">
           {/* Breadcrumb */}
-          <motion.nav
-            aria-label="Breadcrumb"
-            {...(reduce
-              ? {}
-              : { initial: "hidden" as const, animate: "show" as const, variants: fadeUp })}
-            className="catalog-breadcrumb"
-          >
+          <nav aria-label="Breadcrumb" className="catalog-breadcrumb">
             <Link href="/products">Products</Link>
             <span className="crumb-sep">›</span>
             <span className="crumb-current">{category.name}</span>
-          </motion.nav>
+          </nav>
 
           {/* Eyebrow + Title (left) — Search bar (right) */}
           <div className="catalog-view-header">
-            <motion.div
-              {...(reduce
-                ? {}
-                : { initial: "hidden" as const, animate: "show" as const, variants: fadeUp })}
-            >
+            <div>
               <p className="catalog-view-eyebrow">{category.eyebrow}</p>
               <h1 className="catalog-view-title">{category.headingTitle}</h1>
-            </motion.div>
+            </div>
 
             {/* Persistent, resilient search bar with dynamic category placeholder */}
             <div className="catalog-search-bar catalog-search-bar--header">
@@ -250,18 +218,7 @@ export default function ProductCatalogView({
 
           <div className="catalog-view-layout">
             {/* ---------- Sidebar: Categories accordion ---------- */}
-            <motion.aside
-              {...(reduce
-                ? {}
-                : {
-                    initial: "hidden" as const,
-                    whileInView: "show" as const,
-                    viewport: viewportConfig,
-                    variants: slideFromLeft,
-                  })}
-              className="catalog-sidebar"
-              aria-label="Categories"
-            >
+            <aside className="catalog-sidebar" aria-label="Categories">
               <h2 className="catalog-sidebar-heading">Categories</h2>
               <ul className="catalog-accordion">
                 {categoryCatalogs.map((cat) => {
@@ -332,26 +289,18 @@ export default function ProductCatalogView({
                   );
                 })}
               </ul>
-            </motion.aside>
+            </aside>
 
             {/* ---------- Main content ---------- */}
             <div className="catalog-view-content">
               {/* Engineering intro */}
-              <motion.div
-                {...(reduce
-                  ? {}
-                  : {
-                      initial: "hidden" as const,
-                      animate: "show" as const,
-                      variants: fadeUp,
-                    })}
-              >
+              <div>
                 <h2 className="catalog-engineering-title">
                   {category.engineeringTitle}
                 </h2>
                 <h3 className="catalog-engineering-sub">{category.introTitle}</h3>
                 <p className="catalog-engineering-text">{category.intro}</p>
-              </motion.div>
+              </div>
 
               {/* Active filters */}
               <div className="catalog-filters-row">
@@ -378,18 +327,9 @@ export default function ProductCatalogView({
                       : "No products under this filter yet — try “All " + category.name + "”."}
                   </p>
                 )}
-                {filteredProducts.map((product, index) => (
-                  <motion.div
+                {filteredProducts.map((product) => (
+                  <div
                     key={product.name}
-                    {...(reduce
-                      ? {}
-                      : {
-                          initial: "hidden" as const,
-                          whileInView: "show" as const,
-                          viewport: viewportConfig,
-                          variants: fadeUp,
-                        })}
-                    transition={{ delay: index * 0.12 }}
                     className="product-card catalog-view-card"
                   >
                     <div className="product-card-media">
@@ -419,7 +359,7 @@ export default function ProductCatalogView({
                         REQUEST QUOTE
                       </button>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </div>

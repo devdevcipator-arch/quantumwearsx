@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, useReducedMotion } from "motion/react";
 
 interface NavbarProps {
   onOpenQuote?: () => void;
@@ -13,7 +12,6 @@ interface NavbarProps {
 export default function Navbar({ onOpenQuote, active }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const reduce = useReducedMotion();
   const pathname = usePathname();
 
   // Dynamic route matching using usePathname()
@@ -37,12 +35,7 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
   };
 
   return (
-    <motion.header
-      className={`site-nav ${scrolled ? "scrolled" : ""}`}
-      initial={reduce ? undefined : { y: -80, opacity: 0 }}
-      animate={reduce ? undefined : { y: 0, opacity: 1 }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <header className={`site-nav ${scrolled ? "scrolled" : ""}`}>
       <div className="nav-container">
         {/* Brand Logo */}
         <Link href="/" className="nav-brand" aria-label="QuantumWearX Home">
@@ -202,6 +195,6 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
           </Link>
         )}
       </div>
-    </motion.header>
+    </header>
   );
 }
