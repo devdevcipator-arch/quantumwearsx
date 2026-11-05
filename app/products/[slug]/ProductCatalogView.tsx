@@ -162,19 +162,13 @@ export default function ProductCatalogView({
         aria-label={`${category.name} catalog`}
       >
         <div className="catalog-view-container">
-          {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="catalog-breadcrumb">
-            <Link href="/products">Products</Link>
-            <span className="crumb-sep">›</span>
-            <span className="crumb-current">{category.name}</span>
-          </nav>
-
-          {/* Eyebrow + Title (left) — Search bar (right) */}
-          <div className="catalog-view-header">
-            <div>
-              <p className="catalog-view-eyebrow">{category.eyebrow}</p>
-              <h1 className="catalog-view-title">{category.headingTitle}</h1>
-            </div>
+          {/* Breadcrumb (left) directly across from Search bar (right) */}
+          <div className="catalog-breadcrumb-bar">
+            <nav aria-label="Breadcrumb" className="catalog-breadcrumb">
+              <Link href="/products">Products</Link>
+              <span className="crumb-sep">›</span>
+              <span className="crumb-current">{category.name}</span>
+            </nav>
 
             {/* Persistent, resilient search bar with dynamic category placeholder */}
             <div className="catalog-search-bar catalog-search-bar--header">
@@ -219,6 +213,14 @@ export default function ProductCatalogView({
                   ×
                 </button>
               )}
+            </div>
+          </div>
+
+          {/* Eyebrow + Title */}
+          <div className="catalog-view-header">
+            <div>
+              <p className="catalog-view-eyebrow">{category.eyebrow}</p>
+              <h1 className="catalog-view-title">{category.headingTitle}</h1>
             </div>
           </div>
 

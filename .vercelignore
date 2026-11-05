@@ -4,3 +4,5 @@ public/Antigravity IDE.lnk
 .vercel
 .next
 node_modules
+*.mp4
+/*.mp4
