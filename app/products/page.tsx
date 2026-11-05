@@ -12,6 +12,9 @@ import RevealObserver from "../components/RevealObserver";
 import Collections from "../components/Collections";
 import Footer from "../components/Footer";
 import QuoteModal from "../components/QuoteModal";
+import ProductDetailModal, {
+  type ProductDetailInfo,
+} from "../components/ProductDetailModal";
 import {
   fetchProductsFromDb,
   fetchCategoriesFromDb,
@@ -112,6 +115,9 @@ export default function ProductsPage() {
   const router = useRouter();
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("General Inquiry");
+  const [detailProduct, setDetailProduct] = useState<ProductDetailInfo | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const reduce = useReducedMotion();
 
@@ -391,9 +397,18 @@ export default function ProductsPage() {
                           <button
                             type="button"
                             className="product-quote-btn"
-                            onClick={() => handleOpenQuote(prod.quoteCategory || prod.category)}
+                            onClick={() =>
+                              setDetailProduct({
+                                title: prod.title,
+                                category: prod.category,
+                                description: prod.description,
+                                image: prod.image,
+                                tag: prod.tag,
+                                quoteCategory: prod.quoteCategory || prod.category,
+                              })
+                            }
                           >
-                            REQUEST QUOTE
+                            DETAIL
                           </button>
                         </div>
                       </div>
@@ -582,9 +597,17 @@ export default function ProductsPage() {
                   <button
                     type="button"
                     className="product-quote-btn"
-                    onClick={() => handleOpenQuote(card.category)}
+                    onClick={() =>
+                      setDetailProduct({
+                        title: card.title,
+                        category: card.category,
+                        description: card.description,
+                        image: card.image,
+                        quoteCategory: card.category,
+                      })
+                    }
                   >
-                    REQUEST QUOTE
+                    DETAIL
                   </button>
                 </div>
               </div>
@@ -601,6 +624,16 @@ export default function ProductsPage() {
         isOpen={quoteModalOpen}
         onClose={handleCloseQuote}
         initialCategory={selectedCategory}
+      />
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={detailProduct}
+        onClose={() => setDetailProduct(null)}
+        onRequestQuote={(category) => {
+          setDetailProduct(null);
+          handleOpenQuote(category);
+        }}
       />
     </main>
   );

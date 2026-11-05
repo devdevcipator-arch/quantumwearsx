@@ -8,6 +8,9 @@ import {
   DEFAULT_PRODUCTS,
   ProductItem,
 } from "@/lib/products-service";
+import ProductDetailModal, {
+  type ProductDetailInfo,
+} from "./ProductDetailModal";
 
 interface FeaturedProductsProps {
   onOpenQuote?: (category: string) => void;
@@ -16,6 +19,7 @@ interface FeaturedProductsProps {
 export default function FeaturedProducts({ onOpenQuote }: FeaturedProductsProps) {
   const [products, setProducts] = useState<ProductItem[]>(DEFAULT_PRODUCTS);
   const [loading, setLoading] = useState(true);
+  const [detailProduct, setDetailProduct] = useState<ProductDetailInfo | null>(null);
 
   useEffect(() => {
     try {
@@ -112,14 +116,32 @@ export default function FeaturedProducts({ onOpenQuote }: FeaturedProductsProps)
                 <button
                   type="button"
                   className="product-quote-btn"
-                  onClick={() => onOpenQuote?.(item.category)}
+                  onClick={() =>
+                    setDetailProduct({
+                      title: item.title,
+                      category: item.category,
+                      description: item.description,
+                      image: item.image,
+                      quoteCategory: item.category,
+                    })
+                  }
                 >
-                  REQUEST QUOTE
+                  DETAIL
                 </button>
               </div>
             </div>
           ))}
         </div>
+
+        {/* Product Detail Modal */}
+        <ProductDetailModal
+          product={detailProduct}
+          onClose={() => setDetailProduct(null)}
+          onRequestQuote={(category) => {
+            setDetailProduct(null);
+            onOpenQuote?.(category);
+          }}
+        />
 
         {/* View Full Catalog Link Button */}
         <div
