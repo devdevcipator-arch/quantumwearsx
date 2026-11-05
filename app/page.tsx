@@ -8,6 +8,7 @@ import RevealObserver from "./components/RevealObserver";
 import Hero from "./components/Hero";
 import Triptych from "./components/Triptych";
 import Collections from "./components/Collections";
+import FeaturedProducts from "./components/FeaturedProducts";
 import Faq from "./components/Faq";
 import CallToAction from "./components/CallToAction";
 import Footer from "./components/Footer";
@@ -46,6 +47,9 @@ export default function Home() {
 
       {/* Complete Product Range Bento Grid */}
       <Collections onSelectCategory={(cat) => handleOpenQuote(cat)} />
+
+      {/* Live Featured Manufactured Products from Supabase DB */}
+      <FeaturedProducts onOpenQuote={(cat) => handleOpenQuote(cat)} />
 
       {/* Common Inquiries / FAQ */}
       <Faq />

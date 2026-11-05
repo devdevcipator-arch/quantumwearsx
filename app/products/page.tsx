@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,12 @@ import RevealObserver from "../components/RevealObserver";
 import Collections from "../components/Collections";
 import Footer from "../components/Footer";
 import QuoteModal from "../components/QuoteModal";
+import {
+  fetchProductsFromDb,
+  fetchCategoriesFromDb,
+  DEFAULT_PRODUCTS,
+  ProductItem,
+} from "@/lib/products-service";
 import {
   activewearEssentialFilters,
   bentoCategorySlugs,
@@ -81,56 +87,6 @@ const activewearEssentials = [
   "Athletic Outerwear",
 ];
 
-interface ProductCardData {
-  title: string;
-  tag?: string;
-  image: string;
-  alt: string;
-  category: string;
-}
-
-const productCards: ProductCardData[] = [
-  {
-    title: "Gym T-Shirts & Tanks",
-    tag: "PRIVATE LABEL",
-    image: "/images/grid_sportswear.jpg",
-    alt: "Engineered compression gym t-shirt with contrast panel design",
-    category: "Activewear & Tracksuits",
-  },
-  {
-    title: "Leggings & Sports Bras",
-    tag: "SEAMLESS",
-    image: "/images/hero_factory_sewing.jpg",
-    alt: "Seamless performance leggings and sports bra manufacturing",
-    category: "Activewear & Tracksuits",
-  },
-  {
-    title: "Compression Wear",
-    tag: "MOISTURE-WICK",
-    image: "/images/triptych_brand_tag.jpg",
-    alt: "Moisture-wicking compression base layers with woven brand tags",
-    category: "Activewear & Tracksuits",
-  },
-  {
-    title: "Workout Shorts & Joggers",
-    image: "/images/grid_tracksuit.jpg",
-    alt: "Custom workout shorts and joggers hanging in production studio",
-    category: "Activewear & Tracksuits",
-  },
-  {
-    title: "Custom Fitness Sets",
-    image: "/images/triptych_embroidery.jpg",
-    alt: "Matching custom fitness sets with precision embroidery detail",
-    category: "Sportswear",
-  },
-  {
-    title: "Athletic Outerwear",
-    image: "/images/grid_leather_jacket.jpg",
-    alt: "Premium athletic outerwear jacket with snap button hardware",
-    category: "Leather Jackets",
-  },
-];
-
 // Map browsed categories onto the quote modal's select options
 const quoteCategoryMap: Record<string, string> = {
   activewear: "Activewear & Tracksuits",
@@ -158,6 +114,30 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const reduce = useReducedMotion();
 
+  // Dynamic products & categories from Supabase Live DB
+  const [dbProducts, setDbProducts] = useState<ProductItem[]>(DEFAULT_PRODUCTS);
+  const [dbCategories, setDbCategories] = useState<string[]>(collectionCategories);
+
+  useEffect(() => {
+    async function loadLiveData() {
+      try {
+        const [liveProds, liveCats] = await Promise.all([
+          fetchProductsFromDb(),
+          fetchCategoriesFromDb(),
+        ]);
+        if (liveProds && liveProds.length > 0) {
+          setDbProducts(liveProds);
+        }
+        if (liveCats && liveCats.length > 0) {
+          setDbCategories(liveCats);
+        }
+      } catch (err) {
+        console.warn("ProductsPage live DB fetch fallback:", err);
+      }
+    }
+    loadLiveData();
+  }, []);
+
   const handleOpenQuote = (category?: string) => {
     if (category) {
       const mapped =
@@ -175,14 +155,24 @@ export default function ProductsPage() {
   const query = searchQuery.trim().toLowerCase();
 
   const filteredCollections = useMemo(
-    () => collectionCategories.filter((c) => c.toLowerCase().includes(query)),
-    [query]
+    () => dbCategories.filter((c) => c.toLowerCase().includes(query)),
+    [dbCategories, query]
   );
 
   const filteredEssentials = useMemo(
     () => activewearEssentials.filter((c) => c.toLowerCase().includes(query)),
     [query]
   );
+
+  const filteredProducts = useMemo(() => {
+    if (!query) return dbProducts;
+    return dbProducts.filter(
+      (p) =>
+        p.title.toLowerCase().includes(query) ||
+        p.category.toLowerCase().includes(query) ||
+        (p.description && p.description.toLowerCase().includes(query))
+    );
+  }, [dbProducts, query]);
 
   const revealAnim = reduce
     ? {}
@@ -383,9 +373,9 @@ export default function ProductsPage() {
 
           {/* Product grid */}
           <div className="products-grid">
-            {productCards.map((card, index) => (
+            {filteredProducts.map((card, index) => (
               <div
-                key={card.title}
+                key={card.id || card.title}
                 className="product-card"
                 data-reveal="reveal-up"
                 style={{ "--reveal-delay": `${(index % 3) * 110}ms` } as CSSProperties}
@@ -393,14 +383,30 @@ export default function ProductsPage() {
                 <div className="product-card-media">
                   <img
                     src={card.image}
-                    alt={card.alt}
+                    alt={`${card.title} - custom manufacturing`}
                     className="product-card-image"
                     loading="lazy"
                   />
-                  {card.tag && <span className="product-tag">{card.tag}</span>}
+                  <span className="product-tag">{card.category.toUpperCase()}</span>
                 </div>
                 <div className="product-card-body">
                   <h3 className="product-card-title">{card.title}</h3>
+                  {card.description && (
+                    <p
+                      style={{
+                        color: "#a6a6b5",
+                        fontSize: "13.5px",
+                        lineHeight: "1.55",
+                        margin: "8px 0 16px",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {card.description}
+                    </p>
+                  )}
                   <button
                     type="button"
                     className="product-quote-btn"

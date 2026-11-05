@@ -10,6 +10,72 @@ export interface ProductItem {
   created_at?: string;
 }
 
+export const DEFAULT_CATEGORIES: string[] = [
+  "Activewear",
+  "Sportswear",
+  "Streetwear",
+  "Leather Products",
+  "Safety Wear",
+  "Custom Bags",
+  "Denim & Casual",
+  "Jackets & Outerwear",
+  "Accessories",
+  "Tactical Wear",
+  "Gym Clothing",
+  "Compression Wear",
+  "Footwear",
+  "Handbags",
+  "Duffle Bags",
+  "Tech Packs",
+  "Tracksuits",
+  "Workwear",
+];
+
+export const DEFAULT_PRODUCTS: ProductItem[] = [
+  {
+    id: "prod-1",
+    title: "Hand-Stitched Leather Sets",
+    description: "Premium Italian calfskin with reinforced edges",
+    category: "Leather Products",
+    image: "/images/triptych_leather_stitch.jpg",
+  },
+  {
+    id: "prod-2",
+    title: "Executive Briefcase",
+    description: "Full-grain leather with dedicated laptop sleeve",
+    category: "Custom Bags",
+    image: "/images/grid_backpack.jpg",
+  },
+  {
+    id: "prod-3",
+    title: "Noir Watch Strap",
+    description: "Hand-crafted exotic leather pattern",
+    category: "Leather Products",
+    image: "/images/grid_leather_hide.jpg",
+  },
+  {
+    id: "prod-4",
+    title: "Signature Desk Mat",
+    description: "Spacious minimalist workspace essential",
+    category: "Accessories",
+    image: "/images/grid_leather_jacket.jpg",
+  },
+  {
+    id: "prod-5",
+    title: "Tactical Combat Vest",
+    description: "Ballistic nylon with modular MOLLE webbing",
+    category: "Safety Wear",
+    image: "/images/grid_tactical_vest.jpg",
+  },
+  {
+    id: "prod-6",
+    title: "Pro Performance Athletic Tracksuit",
+    description: "Custom breathable poly-spandex blend built for high-intensity training",
+    category: "Sportswear",
+    image: "/images/grid_tracksuit.jpg",
+  },
+];
+
 export async function fetchProductsFromDb(): Promise<ProductItem[]> {
   const { data, error } = await supabase
     .from("products")
