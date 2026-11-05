@@ -83,12 +83,11 @@ const collectionCategories = [
 ];
 
 const activewearEssentials = [
-  "Gym T-shirts & Tank Tops",
-  "Leggings & Sports Bras",
-  "Compression Wear",
-  "Workout Shorts & Joggers",
-  "Custom Fitness Sets",
-  "Athletic Outerwear",
+  "Gym T-shirts and tank tops",
+  "Leggings and sports bras",
+  "Compression wear",
+  "Workout shorts and joggers",
+  "Custom fitness sets",
 ];
 
 // Map browsed categories onto the quote modal's select options
@@ -99,12 +98,11 @@ const quoteCategoryMap: Record<string, string> = {
   "safety wear": "Workwear & Uniforms",
   "leather products": "Leather Goods",
   "custom bags": "Custom Bags",
-  "gym t-shirts & tank tops": "Activewear & Tracksuits",
-  "leggings & sports bras": "Activewear & Tracksuits",
+  "gym t-shirts and tank tops": "Activewear & Tracksuits",
+  "leggings and sports bras": "Activewear & Tracksuits",
   "compression wear": "Activewear & Tracksuits",
-  "workout shorts & joggers": "Activewear & Tracksuits",
-  "custom fitness sets": "Sportswear",
-  "athletic outerwear": "Leather Jackets",
+  "workout shorts and joggers": "Activewear & Tracksuits",
+  "custom fitness sets": "Activewear & Tracksuits",
 };
 
 /* ---------------------------------------------------------------
