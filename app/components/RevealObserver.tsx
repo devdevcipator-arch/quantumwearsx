@@ -13,6 +13,32 @@ export default function RevealObserver() {
     ).matches;
     const hasIO = "IntersectionObserver" in window;
 
+    /** Elements that have started (or finished) revealing — no double-fire. */
+    const revealed = new WeakSet<HTMLElement>();
+
+    const reveal = (target: HTMLElement) => {
+      if (revealed.has(target)) return;
+      revealed.add(target);
+
+      const delayStr =
+        target.style.getPropertyValue("--reveal-delay") || "0ms";
+      const delayMs = parseInt(delayStr, 10) || 0;
+
+      // After the animation ends, the data-reveal attribute is removed
+      // so the element's own hover transitions work normally again.
+      const cleanup = () => {
+        target.removeAttribute("data-reveal");
+        target.classList.remove("is-revealed");
+        target.style.removeProperty("--reveal-delay");
+        target.style.removeProperty("will-change");
+      };
+
+      // Fallback safety timer: 800ms duration + stagger delay + buffer.
+      // transitionend can be missed (e.g. element scrolled out mid-animation),
+      // so the timer is the guaranteed cleanup path.
+      setTimeout(cleanup, 800 + delayMs + 150);
+    };
+
     const observer =
       hasIO && !prefersReducedMotion
         ? new IntersectionObserver(
@@ -21,44 +47,29 @@ export default function RevealObserver() {
                 if (entry.isIntersecting) {
                   const target = entry.target as HTMLElement;
                   obs.unobserve(target);
+                  reveal(target);
                   target.classList.add("is-revealed");
-
-                  const delayStr =
-                    target.style.getPropertyValue("--reveal-delay") || "0ms";
-                  const delayMs = parseInt(delayStr, 10) || 0;
-
-                  // After the animation ends, the data-reveal attribute is removed
-                  // so the element's own hover transitions work normally again.
-                  const cleanup = () => {
-                    target.removeAttribute("data-reveal");
-                    target.classList.remove("is-revealed");
-                    target.style.removeProperty("--reveal-delay");
-                    target.style.removeProperty("will-change");
-                    target.removeEventListener("transitionend", onTransitionEnd);
-                  };
-
-                  const onTransitionEnd = (e: TransitionEvent) => {
-                    if (
-                      e.target === target &&
-                      e.propertyName === "transform"
-                    ) {
-                      cleanup();
-                    }
-                  };
-
-                  target.addEventListener("transitionend", onTransitionEnd);
-
-                  // Fallback safety timer: 800ms duration + stagger delay + buffer
-                  setTimeout(cleanup, 800 + delayMs + 120);
                 }
               });
             },
             {
-              threshold: 0.15,
+              // threshold 0: reveal as soon as any pixel enters the viewport.
+              // A higher threshold (e.g. 0.15) permanently hides tall sections
+              // whose 15% height never fits inside the viewport.
+              threshold: 0,
               rootMargin: "0px 0px -40px 0px",
             }
           )
         : null;
+
+    /**
+     * Dedupe within THIS effect run only (WeakSet, not a data attribute).
+     * Previously a persistent `dataset.revealBound` flag was used, which
+     * survived route changes: after client-side navigation a fresh observer
+     * was created, but React-reused DOM nodes still carried the old flag and
+     * were skipped — leaving them hidden (opacity: 0) until a full reload.
+     */
+    const bound = new WeakSet<HTMLElement>();
 
     const showImmediately = (el: HTMLElement) => {
       el.removeAttribute("data-reveal");
@@ -66,26 +77,28 @@ export default function RevealObserver() {
     };
 
     /**
-     * Bind an element to the reveal system. Safe to call multiple times
-     * for the same element (deduplicated via a data attribute).
-     *
-     * This runs both on initial mount AND whenever new [data-reveal]
-     * elements are inserted into the DOM later (e.g. products loaded
-     * from the database after the page has already rendered), which
-     * keeps dynamically loaded content from being stuck invisible.
+     * Bind an element to the reveal system. Safe to call multiple times.
+     * Runs on initial mount AND whenever new [data-reveal] elements are
+     * inserted into the DOM later (e.g. products loaded from the database
+     * after the page has already rendered), which keeps dynamically loaded
+     * content from being stuck invisible.
      */
     const register = (el: HTMLElement) => {
       if (!(el instanceof HTMLElement)) return;
-      if (el.dataset.revealBound === "1") return;
-      el.dataset.revealBound = "1";
+      if (bound.has(el)) return;
+      bound.add(el);
+      if (revealed.has(el)) {
+        showImmediately(el);
+        return;
+      }
 
       if (!observer) {
         showImmediately(el);
         return;
       }
 
-      // Stagger: elements with data-reveal that sit side by side (same parent,
-      // like a row of cards) come in one after another, 120ms apart.
+      // Stagger: sibling [data-reveal] elements come in one after another,
+      // 120ms apart (applied via the CSS --reveal-delay variable).
       const parent = el.parentElement;
       if (parent) {
         const siblings = Array.from(
@@ -100,6 +113,28 @@ export default function RevealObserver() {
 
       observer.observe(el);
     };
+
+    /**
+     * Safety net: shortly after mount, force-reveal any element that is
+     * already inside the viewport but has not been revealed yet. This closes
+     * any remaining race (e.g. observer callbacks delayed on slow devices, or
+     * elements observed while `display: none`) so content can never get stuck
+     * invisible until refresh.
+     */
+    const safetySweep = () => {
+      const viewportLimit = window.innerHeight - 40;
+      document
+        .querySelectorAll<HTMLElement>("[data-reveal]")
+        .forEach((el) => {
+          if (revealed.has(el)) return;
+          const rect = el.getBoundingClientRect();
+          if (rect.top < viewportLimit && rect.bottom > 0) {
+            reveal(el);
+            el.classList.add("is-revealed");
+          }
+        });
+    };
+    const safetyTimer = window.setTimeout(safetySweep, 1800);
 
     // Initial scan: bind everything already in the DOM
     document
@@ -128,6 +163,7 @@ export default function RevealObserver() {
     return () => {
       observer?.disconnect();
       mutation.disconnect();
+      clearTimeout(safetyTimer);
     };
   }, [pathname]);
 
