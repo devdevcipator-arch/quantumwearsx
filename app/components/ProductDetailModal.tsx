@@ -77,9 +77,10 @@ export default function ProductDetailModal({
             </span>
           )}
           <h3 className="product-detail-title">{product.title}</h3>
-          {product.description && (
-            <p className="product-detail-desc">{product.description}</p>
-          )}
+          <p className="product-detail-desc">
+            {product.description ||
+              "Custom-manufactured to your exact specifications at our production facility. Choose your preferred materials, weight, colors, sizing, and private label branding. Sampling and full tech pack support available before bulk production — contact us for detailed specifications, pricing, and lead times."}
+          </p>
           <button
             type="button"
             className="product-detail-quote-btn"
