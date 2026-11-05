@@ -64,8 +64,8 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
               </a>
             </li>
             <li>
-              <a href={href("#services")} className="nav-link">
-                Services
+              <a href={href("#contact")} className="nav-link">
+                Contact us
               </a>
             </li>
           </ul>
@@ -131,11 +131,11 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
           About us
         </a>
         <a
-          href={href("#services")}
+          href={href("#contact")}
           className="nav-link"
           onClick={() => setMobileMenuOpen(false)}
         >
-          Services
+          Contact us
         </a>
         <button
           type="button"

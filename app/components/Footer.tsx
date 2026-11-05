@@ -75,8 +75,8 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href={href("#services")} className="footer-link">
-                  Services
+                <a href={href("#contact")} className="footer-link">
+                  Contact us
                 </a>
               </li>
               <li>
@@ -88,7 +88,7 @@ export default function Footer() {
           </div>
 
           {/* Column 3: Headquarters & Contact */}
-          <div className="footer-contact-col" id="services" data-reveal="reveal-up">
+          <div className="footer-contact-col" id="contact" data-reveal="reveal-up">
             <h3 className="footer-heading">HEADQUARTERS</h3>
             <div className="footer-contact-info">
               <p>
