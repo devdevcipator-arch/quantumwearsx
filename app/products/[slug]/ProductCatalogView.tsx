@@ -51,6 +51,7 @@ export default function ProductCatalogView({
   const [itemFilter, setItemFilter] = useState(
     () => matchSubItem(itemQuery, category.subItems) || category.subItems[0]
   );
+  const [searchQuery, setSearchQuery] = useState("");
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(category.products[0]?.quoteCategory ?? "General Inquiry");
 
@@ -123,11 +124,21 @@ export default function ProductCatalogView({
       ),
     ];
 
-    if (itemFilter === category.subItems[0]) return combined;
+    const q = searchQuery.toLowerCase().trim();
+    const matchesSearch = (p: CatalogProduct) =>
+      !q ||
+      p.name.toLowerCase().includes(q) ||
+      (p.filter || "").toLowerCase().includes(q);
+
+    if (itemFilter === category.subItems[0]) {
+      return combined.filter(matchesSearch);
+    }
     return combined.filter(
-      (p) => p.filter === itemFilter || liveNames.has(p.name.toLowerCase().trim())
+      (p) =>
+        (p.filter === itemFilter || liveNames.has(p.name.toLowerCase().trim())) &&
+        matchesSearch(p)
     );
-  }, [itemFilter, category, liveDbProducts]);
+  }, [itemFilter, category, liveDbProducts, searchQuery]);
 
   return (
     <main className="landing-page-root" id="top">
@@ -159,15 +170,49 @@ export default function ProductCatalogView({
             <span className="crumb-current">{category.name}</span>
           </motion.nav>
 
-          {/* Eyebrow + Title */}
-          <motion.div
-            {...(reduce
-              ? {}
-              : { initial: "hidden" as const, animate: "show" as const, variants: fadeUp })}
-          >
-            <p className="catalog-view-eyebrow">{category.eyebrow}</p>
-            <h1 className="catalog-view-title">{category.headingTitle}</h1>
-          </motion.div>
+          {/* Eyebrow + Title (left) — Search bar (right) */}
+          <div className="catalog-view-header">
+            <motion.div
+              {...(reduce
+                ? {}
+                : { initial: "hidden" as const, animate: "show" as const, variants: fadeUp })}
+            >
+              <p className="catalog-view-eyebrow">{category.eyebrow}</p>
+              <h1 className="catalog-view-title">{category.headingTitle}</h1>
+            </motion.div>
+
+            <motion.div
+              {...(reduce
+                ? {}
+                : { initial: "hidden" as const, animate: "show" as const, variants: fadeUp })}
+              className="catalog-search-bar catalog-search-bar--header"
+              data-reveal="reveal-up"
+            >
+              <svg
+                className="catalog-search-icon"
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <line x1="21" y1="21" x2="16.5" y2="16.5" />
+              </svg>
+              <input
+                type="search"
+                className="catalog-search-input"
+                placeholder={`Search in ${category.name}...`}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label={`Search in ${category.name}`}
+              />
+            </motion.div>
+          </div>
 
           <div className="catalog-view-layout">
             {/* ---------- Sidebar: Categories accordion ---------- */}
@@ -284,7 +329,9 @@ export default function ProductCatalogView({
               <div className="catalog-view-grid" key={itemFilter}>
                 {filteredProducts.length === 0 && (
                   <p className="catalog-grid-empty">
-                    No products under this filter yet — try “All {category.name}”.
+                    {searchQuery.trim()
+                      ? `No results for “${searchQuery.trim()}” in this category.`
+                      : "No products under this filter yet — try “All " + category.name + "”."}
                   </p>
                 )}
                 {filteredProducts.map((product, index) => (
