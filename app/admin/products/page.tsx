@@ -2,6 +2,17 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import {
+  fetchProductsFromDb,
+  fetchCategoriesFromDb,
+  addProductToDb,
+  updateProductInDb,
+  removeProductFromDb,
+  addCategoryToDb,
+  renameCategoryInDb,
+  deleteCategoryFromDb,
+  uploadProductImage,
+} from "@/lib/products-service";
 
 export interface ProductItem {
   id: string;
@@ -84,6 +95,12 @@ export default function AdminProductsPage() {
   const [selectedTab, setSelectedTab] = useState("All Products");
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
 
+  // Supabase & Cloud status
+  const [dbConnected, setDbConnected] = useState(false);
+  const [isDbLoading, setIsDbLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -109,52 +126,70 @@ export default function AdminProductsPage() {
     image: "/images/triptych_leather_stitch.jpg",
   });
 
-  // Load from localStorage on mount
+  // Load from Supabase on mount (with localStorage cache fallback)
   useEffect(() => {
-    try {
-      const savedProducts = localStorage.getItem("qw_admin_products");
-      if (savedProducts) {
-        setProducts(JSON.parse(savedProducts));
+    async function loadData() {
+      setIsDbLoading(true);
+      try {
+        const [dbProds, dbCats] = await Promise.all([
+          fetchProductsFromDb(),
+          fetchCategoriesFromDb(),
+        ]);
+
+        if (dbProds && dbProds.length > 0) {
+          setProducts(dbProds);
+          try {
+            localStorage.setItem("qw_admin_products", JSON.stringify(dbProds));
+          } catch {}
+        }
+        if (dbCats && dbCats.length > 0) {
+          setCategories(dbCats);
+          setDraftCategories(dbCats);
+          try {
+            localStorage.setItem("qw_admin_categories", JSON.stringify(dbCats));
+          } catch {}
+        }
+        setDbConnected(true);
+      } catch (err) {
+        console.warn("Supabase fetch fallback to local cache", err);
+        try {
+          const savedProducts = localStorage.getItem("qw_admin_products");
+          if (savedProducts) setProducts(JSON.parse(savedProducts));
+          const savedCats = localStorage.getItem("qw_admin_categories");
+          if (savedCats) {
+            setCategories(JSON.parse(savedCats));
+            setDraftCategories(JSON.parse(savedCats));
+          }
+        } catch {}
+      } finally {
+        setIsDbLoading(false);
       }
-      const savedCats = localStorage.getItem("qw_admin_categories");
-      if (savedCats) {
-        setCategories(JSON.parse(savedCats));
-        setDraftCategories(JSON.parse(savedCats));
-      }
-    } catch {
-      // Fallback to initial
     }
+
+    loadData();
   }, []);
 
   const saveProducts = (updated: ProductItem[]) => {
     setProducts(updated);
     try {
       localStorage.setItem("qw_admin_products", JSON.stringify(updated));
-    } catch {
-      // Ignore storage errors
-    }
+    } catch {}
   };
 
   const saveCategories = (updated: string[]) => {
     setCategories(updated);
     try {
       localStorage.setItem("qw_admin_categories", JSON.stringify(updated));
-    } catch {
-      // Ignore storage errors
-    }
+    } catch {}
   };
 
-  // Image upload handler via FileReader
+  // Image upload handler
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          setFormData((prev) => ({ ...prev, image: reader.result as string }));
-        }
-      };
-      reader.readAsDataURL(file);
+      setSelectedFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setFormData((prev) => ({ ...prev, image: previewUrl }));
     }
   };
 
@@ -176,35 +211,67 @@ export default function AdminProductsPage() {
 
   // Handlers for Add
   const handleOpenAdd = () => {
+    setSelectedFile(null);
     setFormData({
       title: "",
       description: "",
-      category: "",
+      category: categories[0] || "Leather Products",
       image: "/images/triptych_leather_stitch.jpg",
     });
     setIsAddModalOpen(true);
   };
 
-  const handleSaveAdd = (e: React.FormEvent) => {
+  const handleSaveAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim()) return;
+    if (!formData.title.trim() || isSaving) return;
 
-    const newProd: ProductItem = {
-      id: `prod-${Date.now()}`,
-      title: formData.title.trim(),
-      description:
+    setIsSaving(true);
+    let finalImageUrl = formData.image || "/images/triptych_leather_stitch.jpg";
+
+    try {
+      if (selectedFile) {
+        try {
+          finalImageUrl = await uploadProductImage(selectedFile);
+        } catch (uploadErr) {
+          console.warn("Storage upload failed, falling back to local image:", uploadErr);
+        }
+      }
+
+      const category = formData.category || (categories[0] || "Leather Products");
+      const description =
         formData.description.trim() ||
-        `${formData.category || "Custom"} · Premium handcrafted specification`,
-      category: formData.category || "Leather Products",
-      image: formData.image || "/images/triptych_leather_stitch.jpg",
-    };
+        `${category} · Premium handcrafted specification`;
 
-    saveProducts([newProd, ...products]);
-    setIsAddModalOpen(false);
+      let savedProd: ProductItem;
+      try {
+        savedProd = await addProductToDb({
+          title: formData.title.trim(),
+          description,
+          category,
+          image: finalImageUrl,
+        });
+      } catch (dbErr) {
+        console.warn("DB insert fallback to local:", dbErr);
+        savedProd = {
+          id: `prod-${Date.now()}`,
+          title: formData.title.trim(),
+          description,
+          category,
+          image: finalImageUrl,
+        };
+      }
+
+      saveProducts([savedProd, ...products]);
+      setIsAddModalOpen(false);
+      setSelectedFile(null);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handlers for Edit
   const handleOpenEdit = (prod: ProductItem) => {
+    setSelectedFile(null);
     setActiveProduct(prod);
     setFormData({
       title: prod.title,
@@ -215,27 +282,57 @@ export default function AdminProductsPage() {
     setIsEditModalOpen(true);
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!activeProduct || !formData.title.trim()) return;
+    if (!activeProduct || !formData.title.trim() || isSaving) return;
 
-    const updated = products.map((p) =>
-      p.id === activeProduct.id
-        ? {
-            ...p,
-            title: formData.title.trim(),
-            description:
-              formData.description.trim() ||
-              `${formData.category} · Premium handcrafted specification`,
-            category: formData.category || p.category,
-            image: formData.image || p.image,
-          }
-        : p
-    );
+    setIsSaving(true);
+    let finalImageUrl = formData.image || activeProduct.image;
 
-    saveProducts(updated);
-    setIsEditModalOpen(false);
-    setActiveProduct(null);
+    try {
+      if (selectedFile) {
+        try {
+          finalImageUrl = await uploadProductImage(selectedFile);
+        } catch (uploadErr) {
+          console.warn("Storage upload failed, falling back:", uploadErr);
+        }
+      }
+
+      const category = formData.category || activeProduct.category;
+      const description =
+        formData.description.trim() ||
+        `${category} · Premium handcrafted specification`;
+
+      try {
+        await updateProductInDb(activeProduct.id, {
+          title: formData.title.trim(),
+          description,
+          category,
+          image: finalImageUrl,
+        });
+      } catch (dbErr) {
+        console.warn("DB update fallback to local:", dbErr);
+      }
+
+      const updated = products.map((p) =>
+        p.id === activeProduct.id
+          ? {
+              ...p,
+              title: formData.title.trim(),
+              description,
+              category,
+              image: finalImageUrl,
+            }
+          : p
+      );
+
+      saveProducts(updated);
+      setIsEditModalOpen(false);
+      setActiveProduct(null);
+      setSelectedFile(null);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handlers for Remove
@@ -244,12 +341,22 @@ export default function AdminProductsPage() {
     setIsRemoveModalOpen(true);
   };
 
-  const handleConfirmRemove = () => {
-    if (!activeProduct) return;
-    const updated = products.filter((p) => p.id !== activeProduct.id);
-    saveProducts(updated);
-    setIsRemoveModalOpen(false);
-    setActiveProduct(null);
+  const handleConfirmRemove = async () => {
+    if (!activeProduct || isSaving) return;
+    setIsSaving(true);
+    try {
+      try {
+        await removeProductFromDb(activeProduct.id);
+      } catch (dbErr) {
+        console.warn("DB delete fallback to local:", dbErr);
+      }
+      const updated = products.filter((p) => p.id !== activeProduct.id);
+      saveProducts(updated);
+      setIsRemoveModalOpen(false);
+      setActiveProduct(null);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handlers for Manage Categories
@@ -277,7 +384,7 @@ export default function AdminProductsPage() {
     setEditingCatValue(currentName);
   };
 
-  const handleSaveEditCategory = (index: number) => {
+  const handleSaveEditCategory = async (index: number) => {
     const trimmed = editingCatValue.trim();
     if (
       trimmed &&
@@ -290,8 +397,13 @@ export default function AdminProductsPage() {
       updated[index] = trimmed;
       setDraftCategories(updated);
 
-      // Also update any products using the old name
       if (oldName !== trimmed) {
+        try {
+          await renameCategoryInDb(oldName, trimmed);
+        } catch (e) {
+          console.warn("Error renaming in DB:", e);
+        }
+
         const updatedProducts = products.map((p) =>
           p.category === oldName ? { ...p, category: trimmed } : p
         );
@@ -311,12 +423,40 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleSaveManageCats = () => {
-    saveCategories(draftCategories);
-    if (!draftCategories.includes(selectedTab) && selectedTab !== "All Products") {
-      setSelectedTab("All Products");
+  const handleSaveManageCats = async () => {
+    setIsSaving(true);
+    try {
+      // Find additions
+      for (let i = 0; i < draftCategories.length; i++) {
+        const cat = draftCategories[i];
+        if (!categories.includes(cat)) {
+          try {
+            await addCategoryToDb(cat, i);
+          } catch (e) {
+            console.warn("DB add category error:", e);
+          }
+        }
+      }
+
+      // Find deletions
+      for (const oldCat of categories) {
+        if (!draftCategories.includes(oldCat)) {
+          try {
+            await deleteCategoryFromDb(oldCat);
+          } catch (e) {
+            console.warn("DB delete category error:", e);
+          }
+        }
+      }
+
+      saveCategories(draftCategories);
+      if (!draftCategories.includes(selectedTab) && selectedTab !== "All Products") {
+        setSelectedTab("All Products");
+      }
+      setIsManageCatsModalOpen(false);
+    } finally {
+      setIsSaving(false);
     }
-    setIsManageCatsModalOpen(false);
   };
 
   const handleCancelManageCats = () => {
@@ -372,6 +512,24 @@ export default function AdminProductsPage() {
         {/* Top Header */}
         <div className="admin-top-bar">
           <h1 className="admin-page-title">Product Management</h1>
+          <div>
+            {isSaving ? (
+              <div className="admin-db-status syncing">
+                <span className="admin-db-dot" />
+                <span>Saving to Supabase...</span>
+              </div>
+            ) : dbConnected ? (
+              <div className="admin-db-status">
+                <span className="admin-db-dot" />
+                <span>Supabase Live DB</span>
+              </div>
+            ) : isDbLoading ? (
+              <div className="admin-db-status syncing">
+                <span className="admin-db-dot" />
+                <span>Connecting to Supabase...</span>
+              </div>
+            ) : null}
+          </div>
         </div>
 
         {/* Stats Row */}
@@ -700,11 +858,17 @@ export default function AdminProductsPage() {
                   type="button"
                   className="add-product-btn-cancel"
                   onClick={() => setIsAddModalOpen(false)}
+                  disabled={isSaving}
                 >
                   CANCEL
                 </button>
-                <button type="submit" className="add-product-btn-submit">
-                  ADD PRODUCT
+                <button
+                  type="submit"
+                  className="add-product-btn-submit"
+                  disabled={isSaving}
+                  style={isSaving ? { opacity: 0.7, cursor: "not-allowed" } : undefined}
+                >
+                  {isSaving ? "SAVING..." : "ADD PRODUCT"}
                 </button>
               </div>
             </form>
@@ -824,11 +988,17 @@ export default function AdminProductsPage() {
                   type="button"
                   className="add-product-btn-cancel"
                   onClick={() => setIsEditModalOpen(false)}
+                  disabled={isSaving}
                 >
                   CANCEL
                 </button>
-                <button type="submit" className="add-product-btn-submit">
-                  UPDATE PRODUCT
+                <button
+                  type="submit"
+                  className="add-product-btn-submit"
+                  disabled={isSaving}
+                  style={isSaving ? { opacity: 0.7, cursor: "not-allowed" } : undefined}
+                >
+                  {isSaving ? "SAVING..." : "UPDATE PRODUCT"}
                 </button>
               </div>
             </form>
@@ -866,16 +1036,18 @@ export default function AdminProductsPage() {
                 type="button"
                 className="add-product-btn-cancel"
                 onClick={() => setIsRemoveModalOpen(false)}
+                disabled={isSaving}
               >
                 CANCEL
               </button>
               <button
                 type="button"
                 className="admin-btn-remove"
-                style={{ padding: "12px 28px", borderRadius: "12px" }}
+                style={{ padding: "12px 28px", borderRadius: "12px", ...(isSaving ? { opacity: 0.7, cursor: "not-allowed" } : {}) }}
                 onClick={handleConfirmRemove}
+                disabled={isSaving}
               >
-                CONFIRM REMOVE
+                {isSaving ? "REMOVING..." : "CONFIRM REMOVE"}
               </button>
             </div>
           </div>
@@ -1052,13 +1224,16 @@ export default function AdminProductsPage() {
                 type="button"
                 className="manage-cats-btn-save"
                 onClick={handleSaveManageCats}
+                disabled={isSaving}
+                style={isSaving ? { opacity: 0.7, cursor: "not-allowed" } : undefined}
               >
-                SAVE CHANGES
+                {isSaving ? "SAVING CHANGES..." : "SAVE CHANGES"}
               </button>
               <button
                 type="button"
                 className="manage-cats-btn-cancel"
                 onClick={handleCancelManageCats}
+                disabled={isSaving}
               >
                 CANCEL
               </button>
