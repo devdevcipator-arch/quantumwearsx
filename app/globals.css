@@ -1507,12 +1507,12 @@ button {
 }
 
 .products-heading {
-  font-family: 'Archivo', var(--font-sans);
+  font-family: var(--font-sans);
   font-size: clamp(40px, 5vw, 64px);
   font-weight: 900;
-  font-style: italic;
-  font-stretch: 75%;
-  line-height: 0.98;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.05;
   letter-spacing: -0.015em;
   text-transform: uppercase;
   color: var(--text-white);
