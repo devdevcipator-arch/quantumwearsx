@@ -17,6 +17,8 @@ export interface CatalogProduct {
   alt: string;
   /** Pre-selected option inside the quote modal (must be a QuoteModal option) */
   quoteCategory: string;
+  /** Optional custom product description */
+  description?: string;
 }
 
 export interface CategoryCatalog {

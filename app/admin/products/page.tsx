@@ -814,7 +814,21 @@ export default function AdminProductsPage() {
                 />
               </div>
 
-              {/* Field 3: CATEGORY */}
+              {/* Field 3: DESCRIPTION */}
+              <div className="add-product-form-group">
+                <label className="add-product-label">DESCRIPTION</label>
+                <textarea
+                  rows={3}
+                  placeholder="Enter product description or specifications"
+                  className="add-product-textarea"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Field 4: CATEGORY */}
               <div className="add-product-form-group">
                 <label className="add-product-label">CATEGORY</label>
                 <div className="add-product-select-wrapper">
@@ -944,7 +958,21 @@ export default function AdminProductsPage() {
                 />
               </div>
 
-              {/* Field 3: CATEGORY */}
+              {/* Field 3: DESCRIPTION */}
+              <div className="add-product-form-group">
+                <label className="add-product-label">DESCRIPTION</label>
+                <textarea
+                  rows={3}
+                  placeholder="Enter product description or specifications"
+                  className="add-product-textarea"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Field 4: CATEGORY */}
               <div className="add-product-form-group">
                 <label className="add-product-label">CATEGORY</label>
                 <div className="add-product-select-wrapper">

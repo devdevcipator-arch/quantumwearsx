@@ -27,6 +27,9 @@ CREATE TABLE IF NOT EXISTS public.products (
     updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- Ensure description column exists on products
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS description TEXT;
+
 -- 3. Enable RLS
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;

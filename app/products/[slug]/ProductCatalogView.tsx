@@ -80,6 +80,7 @@ export default function ProductCatalogView({
 
       return matched.map((p: any) => ({
         name: p.title,
+        description: p.description,
         filter: category.subItems[0],
         tag: "CUSTOM PRODUCTION",
         image: p.image,
@@ -366,6 +367,7 @@ export default function ProductCatalogView({
                           setDetailProduct({
                             title: product.name,
                             category: category.name,
+                            description: product.description,
                             image: product.image,
                             tag: product.tag,
                             quoteCategory: product.quoteCategory,
