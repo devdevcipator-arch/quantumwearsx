@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Navbar from "../components/Navbar";
 import SmoothScroll from "../components/SmoothScroll";
 import ScrollProgress from "../components/ScrollProgress";
@@ -117,6 +117,7 @@ export default function ProductsPage() {
     null
   );
   const [searchQuery, setSearchQuery] = useState("");
+  const [showCategories, setShowCategories] = useState(true);
   const reduce = useReducedMotion();
 
   // Dynamic products & categories from Supabase Live DB
@@ -303,51 +304,71 @@ export default function ProductsPage() {
             <div className="catalog-title-bar" />
           </motion.div>
 
-          {/* Search bar */}
-          <motion.div
-            {...(reduce
-              ? {}
-              : {
-                  initial: "hidden" as const,
-                  animate: "show" as const,
-                  variants: fadeUp,
-                })}
-            className="catalog-search-bar"
-          >
-            <svg
-              className="catalog-search-icon"
-              viewBox="0 0 24 24"
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
+          {/* Search bar & Small categories toggle button */}
+          <div className="catalog-search-row">
+            <motion.div
+              {...(reduce
+                ? {}
+                : {
+                    initial: "hidden" as const,
+                    animate: "show" as const,
+                    variants: fadeUp,
+                  })}
+              className="catalog-search-bar"
             >
-              <circle cx="11" cy="11" r="7" />
-              <line x1="21" y1="21" x2="16.5" y2="16.5" />
-            </svg>
-            <input
-              type="search"
-              className="catalog-search-input"
-              placeholder="Search products and categories..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label="Search products and categories"
-            />
-            {searchQuery && (
+              <svg
+                className="catalog-search-icon"
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <line x1="21" y1="21" x2="16.5" y2="16.5" />
+              </svg>
+              <input
+                type="search"
+                className="catalog-search-input"
+                placeholder="Search products and categories..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search products and categories"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="catalog-search-clear"
+                  onClick={() => setSearchQuery("")}
+                  aria-label="Clear search"
+                >
+                  ×
+                </button>
+              )}
+            </motion.div>
+
+            {/* Small toggle button to hide / show categories */}
+            {!query && (
               <button
                 type="button"
-                className="catalog-search-clear"
-                onClick={() => setSearchQuery("")}
-                aria-label="Clear search"
+                className={`catalog-categories-toggle-btn ${!showCategories ? "is-hidden" : ""}`}
+                onClick={() => setShowCategories((prev) => !prev)}
+                aria-expanded={showCategories}
               >
-                ×
+                <span className="toggle-btn-icon" aria-hidden="true">
+                  {showCategories ? "👁" : "👁‍🗨"}
+                </span>
+                <span>{showCategories ? "Hide Categories" : "Show Categories"}</span>
+                <span className={`toggle-btn-arrow ${showCategories ? "open" : ""}`} aria-hidden="true">
+                  ▾
+                </span>
               </button>
             )}
-          </motion.div>
+          </div>
 
           {/* Instant Search Results Section (Shown when user searches) */}
           {query ? (
@@ -442,7 +463,16 @@ export default function ProductsPage() {
             </div>
           ) : (
             /* Two-column category browser when not searching */
-            <div className="catalog-columns">
+            <AnimatePresence mode="wait">
+              {showCategories ? (
+                <motion.div
+                  key="catalog-columns-open"
+                  initial={reduce ? {} : { opacity: 0, y: 10 }}
+                  animate={reduce ? {} : { opacity: 1, y: 0 }}
+                  exit={reduce ? {} : { opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
+                  className="catalog-columns"
+                >
               {/* Left column: Collections / Categories */}
               <motion.div
                 {...(reduce
@@ -513,7 +543,31 @@ export default function ProductsPage() {
                   ))}
                 </ul>
               </motion.div>
-            </div>
+
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="catalog-columns-hidden"
+                  initial={reduce ? {} : { opacity: 0, y: 8 }}
+                  animate={reduce ? {} : { opacity: 1, y: 0 }}
+                  exit={reduce ? {} : { opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2 }}
+                  className="catalog-categories-collapsed-notice"
+                >
+                  <div className="collapsed-notice-content">
+                    <span className="collapsed-notice-icon" aria-hidden="true">📁</span>
+                    <span>Categories directory is currently hidden.</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="collapsed-notice-btn"
+                    onClick={() => setShowCategories(true)}
+                  >
+                    Show Categories
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           )}
         </div>
       </section>
