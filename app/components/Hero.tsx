@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 
 interface HeroProps {
@@ -94,8 +95,8 @@ export default function Hero({ onOpenQuote }: HeroProps) {
                 <polyline points="7 7 17 7 17 17" />
               </svg>
             </button>
-            <a
-              href="#products"
+            <Link
+              href="/products"
               className="btn-secondary-outline"
               id="hero-explore-products-btn"
             >
@@ -115,7 +116,7 @@ export default function Hero({ onOpenQuote }: HeroProps) {
                 <line x1="7" y1="17" x2="17" y2="7" />
                 <polyline points="7 7 17 7 17 17" />
               </svg>
-            </a>
+            </Link>
           </motion.div>
         </motion.div>
       </div>

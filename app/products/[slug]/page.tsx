@@ -135,12 +135,11 @@ export default async function CategoryCatalogPage({
       {
         "@type": "ItemList",
         "@id": `${siteUrl}/products/${category.slug}#itemlist`,
-        name: `${category.name} Manufacturing Products`,
-        description: category.intro,
+        itemListOrder: "https://schema.org/ItemListOrderAscending",
         numberOfItems: category.products.length,
-        itemListElement: category.products.map((prod, index) => ({
+        itemListElement: category.products.map((prod, idx) => ({
           "@type": "ListItem",
-          position: index + 1,
+          position: idx + 1,
           item: {
             "@type": "Product",
             name: prod.name,
@@ -173,7 +172,7 @@ export default async function CategoryCatalogPage({
           __html: JSON.stringify(categoryStructuredData),
         }}
       />
-      <ProductCatalogView category={category} itemQuery={item} />
+      <ProductCatalogView key={slug} category={category} itemQuery={item} />
     </>
   );
 }

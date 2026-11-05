@@ -1,26 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 
 interface NavbarProps {
-  onOpenQuote: () => void;
+  onOpenQuote?: () => void;
   active?: "home" | "products" | "about" | "contact";
 }
 
-export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
+export default function Navbar({ onOpenQuote, active }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const reduce = useReducedMotion();
   const pathname = usePathname();
-  const onHome = pathname === "/";
 
-  // Anchor into the home page only when it resolves on it; dedicated pages route directly
-  const href = (anchor: string) => (onHome ? anchor : `/${anchor}`);
-  const productsHref = "/products";
-  const aboutHref = "/about";
-  const contactHref = "/contact";
+  // Dynamic route matching using usePathname()
+  const isHome = pathname === "/" || active === "home";
+  const isProducts = pathname.startsWith("/products") || active === "products";
+  const isAbout = pathname.startsWith("/about") || active === "about";
+  const isContact = pathname.startsWith("/contact") || active === "contact";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,6 +29,12 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleQuoteClick = () => {
+    if (onOpenQuote) {
+      onOpenQuote();
+    }
+  };
 
   return (
     <motion.header
@@ -39,64 +45,99 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
     >
       <div className="nav-container">
         {/* Brand Logo */}
-        <a href="/" className="nav-brand" aria-label="QuantumWearX Home">
+        <Link href="/" className="nav-brand" aria-label="QuantumWearX Home">
           <div className="brand-icon-box">Q</div>
           <span>
             QUANTUMWEAR<span className="logo-x">X</span>
           </span>
-        </a>
+        </Link>
 
         {/* Desktop Links */}
         <nav aria-label="Main Navigation">
           <ul className="nav-links">
             <li>
-              <a href={href("#home")} className={`nav-link ${active === "home" ? "active" : ""}`}>
+              <Link href="/" className={`nav-link ${isHome ? "active" : ""}`}>
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href={productsHref} className={`nav-link ${active === "products" ? "active" : ""}`}>
+              <Link
+                href="/products"
+                className={`nav-link ${isProducts ? "active" : ""}`}
+              >
                 Products
-              </a>
+              </Link>
             </li>
             <li>
-              <a href={aboutHref} className={`nav-link ${active === "about" ? "active" : ""}`}>
+              <Link
+                href="/about"
+                className={`nav-link ${isAbout ? "active" : ""}`}
+              >
                 About us
-              </a>
+              </Link>
             </li>
             <li>
-              <a href={contactHref} className={`nav-link ${active === "contact" ? "active" : ""}`}>
+              <Link
+                href="/contact"
+                className={`nav-link ${isContact ? "active" : ""}`}
+              >
                 Contact us
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
 
         {/* CTA Button */}
         <div className="nav-actions">
-          <button
-            type="button"
-            className="nav-quote-btn"
-            onClick={onOpenQuote}
-            id="nav-request-quote-btn"
-          >
-            <span>REQUEST A QUOTE</span>
-            <svg
-              className="cta-btn-arrow"
-              viewBox="0 0 24 24"
-              width="13"
-              height="13"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
+          {onOpenQuote ? (
+            <button
+              type="button"
+              className="nav-quote-btn"
+              onClick={handleQuoteClick}
+              id="nav-request-quote-btn"
             >
-              <line x1="7" y1="17" x2="17" y2="7" />
-              <polyline points="7 7 17 7 17 17" />
-            </svg>
-          </button>
+              <span>REQUEST A QUOTE</span>
+              <svg
+                className="cta-btn-arrow"
+                viewBox="0 0 24 24"
+                width="13"
+                height="13"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="7" y1="17" x2="17" y2="7" />
+                <polyline points="7 7 17 7 17 17" />
+              </svg>
+            </button>
+          ) : (
+            <Link
+              href="/contact"
+              className="nav-quote-btn"
+              id="nav-request-quote-btn"
+            >
+              <span>REQUEST A QUOTE</span>
+              <svg
+                className="cta-btn-arrow"
+                viewBox="0 0 24 24"
+                width="13"
+                height="13"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="7" y1="17" x2="17" y2="7" />
+                <polyline points="7 7 17 7 17 17" />
+              </svg>
+            </Link>
+          )}
+
           <button
             type="button"
             className="mobile-menu-btn"
@@ -110,45 +151,56 @@ export default function Navbar({ onOpenQuote, active = "home" }: NavbarProps) {
 
       {/* Mobile Drawer */}
       <div className={`mobile-drawer ${mobileMenuOpen ? "open" : ""}`}>
-        <a
-          href={href("#home")}
-          className={`nav-link ${active === "home" ? "active" : ""}`}
+        <Link
+          href="/"
+          className={`nav-link ${isHome ? "active" : ""}`}
           onClick={() => setMobileMenuOpen(false)}
         >
           Home
-        </a>
-        <a
-          href={productsHref}
-          className={`nav-link ${active === "products" ? "active" : ""}`}
+        </Link>
+        <Link
+          href="/products"
+          className={`nav-link ${isProducts ? "active" : ""}`}
           onClick={() => setMobileMenuOpen(false)}
         >
           Products
-        </a>
-        <a
-          href={aboutHref}
-          className={`nav-link ${active === "about" ? "active" : ""}`}
+        </Link>
+        <Link
+          href="/about"
+          className={`nav-link ${isAbout ? "active" : ""}`}
           onClick={() => setMobileMenuOpen(false)}
         >
           About us
-        </a>
-        <a
-          href={contactHref}
-          className={`nav-link ${active === "contact" ? "active" : ""}`}
+        </Link>
+        <Link
+          href="/contact"
+          className={`nav-link ${isContact ? "active" : ""}`}
           onClick={() => setMobileMenuOpen(false)}
         >
           Contact us
-        </a>
-        <button
-          type="button"
-          className="nav-quote-btn"
-          style={{ width: "100%", marginTop: "10px" }}
-          onClick={() => {
-            setMobileMenuOpen(false);
-            onOpenQuote();
-          }}
-        >
-          REQUEST A QUOTE
-        </button>
+        </Link>
+        {onOpenQuote ? (
+          <button
+            type="button"
+            className="nav-quote-btn"
+            style={{ width: "100%", marginTop: "10px" }}
+            onClick={() => {
+              setMobileMenuOpen(false);
+              onOpenQuote();
+            }}
+          >
+            REQUEST A QUOTE
+          </button>
+        ) : (
+          <Link
+            href="/contact"
+            className="nav-quote-btn"
+            style={{ width: "100%", marginTop: "10px", textAlign: "center", display: "block" }}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            REQUEST A QUOTE
+          </Link>
+        )}
       </div>
     </motion.header>
   );

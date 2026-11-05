@@ -1,12 +1,9 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const onHome = usePathname() === "/";
-  // Prefix anchors with "/" on inner pages so they resolve to home sections
-  const href = (anchor: string) => (onHome ? anchor : `/${anchor}`);
 
   return (
     <footer className="site-footer" id="site-footer">
@@ -60,29 +57,29 @@ export default function Footer() {
             <h3 className="footer-heading">COMPANY</h3>
             <ul className="footer-links-list">
               <li>
-                <a href={href("#home")} className="footer-link">
+                <Link href="/" className="footer-link">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/products" className="footer-link">
+                <Link href="/products" className="footer-link">
                   Products
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/about" className="footer-link">
+                <Link href="/about" className="footer-link">
                   About us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/contact" className="footer-link">
+                <Link href="/contact" className="footer-link">
                   Contact us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#craftsmanship" className="footer-link">
+                <Link href="/#craftsmanship" className="footer-link">
                   Craftsmanship
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

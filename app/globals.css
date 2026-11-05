@@ -3959,3 +3959,14 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* Persistent header search bar & active route styling */
+.catalog-search-bar--header {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.catalog-accordion-item.active-route .catalog-accordion-toggle {
+  border-left: 3px solid var(--accent-red);
+}

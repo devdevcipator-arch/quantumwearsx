@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 import Navbar from "../../components/Navbar";
 import SmoothScroll from "../../components/SmoothScroll";
@@ -47,13 +48,33 @@ export default function ProductCatalogView({
   itemQuery,
 }: ProductCatalogViewProps) {
   const reduce = useReducedMotion();
-  const [expanded, setExpanded] = useState(category.slug);
+  const pathname = usePathname();
+
+  // Derive active category directly from route parameters / URL pathname
+  const currentCategorySlug = useMemo(() => {
+    const parts = (pathname || "").split("/");
+    return parts[2] || category.slug;
+  }, [pathname, category.slug]);
+
+  // Synchronize expanded accordion state with the active category slug
+  const [expanded, setExpanded] = useState<string>(currentCategorySlug);
   const [itemFilter, setItemFilter] = useState(
     () => matchSubItem(itemQuery, category.subItems) || category.subItems[0]
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(category.products[0]?.quoteCategory ?? "General Inquiry");
+  const [selectedCategory, setSelectedCategory] = useState(
+    category.products[0]?.quoteCategory ?? "General Inquiry"
+  );
+
+  // Keep state synchronized whenever category route changes
+  useEffect(() => {
+    if (currentCategorySlug) {
+      setExpanded(currentCategorySlug);
+    }
+    setItemFilter(matchSubItem(itemQuery, category.subItems) || category.subItems[0]);
+    setSearchQuery("");
+  }, [currentCategorySlug, category.subItems, itemQuery]);
 
   // Dynamic products from Supabase Live DB matching this category
   const [liveDbProducts, setLiveDbProducts] = useState<CatalogProduct[]>([]);
@@ -181,13 +202,8 @@ export default function ProductCatalogView({
               <h1 className="catalog-view-title">{category.headingTitle}</h1>
             </motion.div>
 
-            <motion.div
-              {...(reduce
-                ? {}
-                : { initial: "hidden" as const, animate: "show" as const, variants: fadeUp })}
-              className="catalog-search-bar catalog-search-bar--header"
-              data-reveal="reveal-up"
-            >
+            {/* Persistent, resilient search bar with dynamic category placeholder */}
+            <div className="catalog-search-bar catalog-search-bar--header">
               <svg
                 className="catalog-search-icon"
                 viewBox="0 0 24 24"
@@ -211,7 +227,25 @@ export default function ProductCatalogView({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 aria-label={`Search in ${category.name}`}
               />
-            </motion.div>
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="catalog-search-clear"
+                  onClick={() => setSearchQuery("")}
+                  aria-label="Clear search"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#8e8e9f",
+                    fontSize: "18px",
+                    cursor: "pointer",
+                    padding: "0 4px",
+                  }}
+                >
+                  ×
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="catalog-view-layout">
@@ -231,30 +265,40 @@ export default function ProductCatalogView({
               <h2 className="catalog-sidebar-heading">Categories</h2>
               <ul className="catalog-accordion">
                 {categoryCatalogs.map((cat) => {
+                  const isCurrent = cat.slug === currentCategorySlug;
                   const isOpen = expanded === cat.slug;
-                  const isCurrent = cat.slug === category.slug;
                   return (
                     <li
                       key={cat.slug}
-                      className={`catalog-accordion-item ${isOpen ? "open" : ""}`}
+                      className={`catalog-accordion-item ${isOpen ? "open" : ""} ${
+                        isCurrent ? "active-route" : ""
+                      }`}
                     >
-                      <button
-                        type="button"
-                        className="catalog-accordion-toggle"
-                        aria-expanded={isOpen}
-                        onClick={() => {
-                          if (isCurrent) {
-                            setExpanded(isOpen ? "" : cat.slug);
-                          } else {
-                            setExpanded(cat.slug);
-                          }
-                        }}
-                      >
-                        <span>{cat.name}</span>
-                        <span className="catalog-accordion-chevron" aria-hidden="true">
-                          {isOpen ? "⌄" : "›"}
-                        </span>
-                      </button>
+                      {isCurrent ? (
+                        <button
+                          type="button"
+                          className="catalog-accordion-toggle"
+                          aria-expanded={isOpen}
+                          onClick={() => setExpanded(isOpen ? "" : cat.slug)}
+                        >
+                          <span className="font-bold text-white">{cat.name}</span>
+                          <span className="catalog-accordion-chevron" aria-hidden="true">
+                            {isOpen ? "⌄" : "›"}
+                          </span>
+                        </button>
+                      ) : (
+                        <Link
+                          href={`/products/${cat.slug}`}
+                          className="catalog-accordion-toggle"
+                          aria-expanded={isOpen}
+                          onClick={() => setExpanded(cat.slug)}
+                        >
+                          <span>{cat.name}</span>
+                          <span className="catalog-accordion-chevron" aria-hidden="true">
+                            {isOpen ? "⌄" : "›"}
+                          </span>
+                        </Link>
+                      )}
 
                       {isOpen && (
                         <ul className="catalog-sublist">
@@ -274,7 +318,7 @@ export default function ProductCatalogView({
                               ) : (
                                 // Other categories: link to their catalog page
                                 <Link
-                                  href={`/products/${cat.slug}`}
+                                  href={`/products/${cat.slug}?item=${encodeURIComponent(sub)}`}
                                   className="catalog-subbtn"
                                 >
                                   {sub}
@@ -310,7 +354,7 @@ export default function ProductCatalogView({
               </motion.div>
 
               {/* Active filters */}
-              <div className="catalog-filters-row" data-reveal="reveal-up">
+              <div className="catalog-filters-row">
                 <span className="catalog-filters-label">ACTIVE FILTERS:</span>
                 <span className="catalog-filter-chip">
                   <span>{itemFilter}</span>
@@ -325,7 +369,7 @@ export default function ProductCatalogView({
                 </span>
               </div>
 
-              {/* Product grid (keyed so filtering re-runs the reveal animation) */}
+              {/* Product grid (keyed so filtering re-runs cleanly) */}
               <div className="catalog-view-grid" key={itemFilter}>
                 {filteredProducts.length === 0 && (
                   <p className="catalog-grid-empty">
