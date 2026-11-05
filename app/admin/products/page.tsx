@@ -15,8 +15,8 @@ const INITIAL_CATEGORIES = [
   "Activewear",
   "Sportswear",
   "Streetwear",
-  "Safety Wear",
   "Leather Products",
+  "Safety Wear",
   "Custom Bags",
   "Denim & Casual",
   "Jackets & Outerwear",
@@ -90,11 +90,17 @@ export default function AdminProductsPage() {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [isManageCatsModalOpen, setIsManageCatsModalOpen] = useState(false);
 
+  // Manage Categories draft state
+  const [draftCategories, setDraftCategories] = useState<string[]>(INITIAL_CATEGORIES);
+  const [newCatInput, setNewCatInput] = useState("");
+  const [editingCatIndex, setEditingCatIndex] = useState<number | null>(null);
+  const [editingCatValue, setEditingCatValue] = useState("");
+
   // File input refs for uploading images
   const addFileInputRef = useRef<HTMLInputElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
 
-  // Form states
+  // Form states for Add/Edit
   const [activeProduct, setActiveProduct] = useState<ProductItem | null>(null);
   const [formData, setFormData] = useState({
     title: "",
@@ -102,7 +108,6 @@ export default function AdminProductsPage() {
     category: "",
     image: "/images/triptych_leather_stitch.jpg",
   });
-  const [newCatInput, setNewCatInput] = useState("");
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -114,6 +119,7 @@ export default function AdminProductsPage() {
       const savedCats = localStorage.getItem("qw_admin_categories");
       if (savedCats) {
         setCategories(JSON.parse(savedCats));
+        setDraftCategories(JSON.parse(savedCats));
       }
     } catch {
       // Fallback to initial
@@ -246,18 +252,78 @@ export default function AdminProductsPage() {
     setActiveProduct(null);
   };
 
-  // Handlers for Categories
+  // Handlers for Manage Categories
+  const handleOpenManageCats = () => {
+    setDraftCategories([...categories]);
+    setNewCatInput("");
+    setEditingCatIndex(null);
+    setEditingCatValue("");
+    setIsManageCatsModalOpen(true);
+  };
+
   const handleAddCategory = () => {
     const trimmed = newCatInput.trim();
-    if (!trimmed || categories.includes(trimmed)) return;
-    saveCategories([...categories, trimmed]);
+    if (!trimmed) return;
+    if (draftCategories.some((c) => c.toLowerCase() === trimmed.toLowerCase())) {
+      setNewCatInput("");
+      return;
+    }
+    setDraftCategories([...draftCategories, trimmed]);
     setNewCatInput("");
   };
 
-  const handleRemoveCategory = (catToRemove: string) => {
-    if (categories.length <= 1) return;
-    saveCategories(categories.filter((c) => c !== catToRemove));
-    if (selectedTab === catToRemove) setSelectedTab("All Products");
+  const handleStartEditCategory = (index: number, currentName: string) => {
+    setEditingCatIndex(index);
+    setEditingCatValue(currentName);
+  };
+
+  const handleSaveEditCategory = (index: number) => {
+    const trimmed = editingCatValue.trim();
+    if (
+      trimmed &&
+      !draftCategories.some(
+        (c, i) => i !== index && c.toLowerCase() === trimmed.toLowerCase()
+      )
+    ) {
+      const updated = [...draftCategories];
+      const oldName = updated[index];
+      updated[index] = trimmed;
+      setDraftCategories(updated);
+
+      // Also update any products using the old name
+      if (oldName !== trimmed) {
+        const updatedProducts = products.map((p) =>
+          p.category === oldName ? { ...p, category: trimmed } : p
+        );
+        saveProducts(updatedProducts);
+      }
+    }
+    setEditingCatIndex(null);
+    setEditingCatValue("");
+  };
+
+  const handleDeleteCategory = (index: number) => {
+    if (draftCategories.length <= 1) return;
+    const catToDelete = draftCategories[index];
+    setDraftCategories(draftCategories.filter((_, i) => i !== index));
+    if (selectedTab === catToDelete) {
+      setSelectedTab("All Products");
+    }
+  };
+
+  const handleSaveManageCats = () => {
+    saveCategories(draftCategories);
+    if (!draftCategories.includes(selectedTab) && selectedTab !== "All Products") {
+      setSelectedTab("All Products");
+    }
+    setIsManageCatsModalOpen(false);
+  };
+
+  const handleCancelManageCats = () => {
+    setIsManageCatsModalOpen(false);
+    setEditingCatIndex(null);
+    setEditingCatValue("");
+    setNewCatInput("");
   };
 
   // Additional categories for "More categories" dropdown
@@ -401,7 +467,7 @@ export default function AdminProductsPage() {
             <button
               type="button"
               className="admin-btn-secondary"
-              onClick={() => setIsManageCatsModalOpen(true)}
+              onClick={handleOpenManageCats}
             >
               <span>+ MANAGE CATEGORIES</span>
             </button>
@@ -816,111 +882,185 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* ================= MODAL: MANAGE CATEGORIES ================= */}
+      {/* ================= MODAL: MANAGE CATEGORIES (MATCHING SCREENSHOT) ================= */}
       {isManageCatsModalOpen && (
         <div
           className="admin-modal-overlay"
           onClick={(e) => {
-            if (e.target === e.currentTarget) setIsManageCatsModalOpen(false);
+            if (e.target === e.currentTarget) handleCancelManageCats();
           }}
         >
-          <div className="add-product-modal-box">
-            <div className="add-product-modal-header">
-              <h2 className="add-product-modal-title">Manage Categories</h2>
-              <p className="add-product-modal-subtitle">
-                Add, organize, or remove product categories
-              </p>
-            </div>
-
-            {/* Add Category row */}
-            <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-              <input
-                type="text"
-                placeholder="New category name..."
-                className="add-product-input"
-                style={{ padding: "10px 14px" }}
-                value={newCatInput}
-                onChange={(e) => setNewCatInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleAddCategory();
-                  }
-                }}
-              />
+          <div className="manage-cats-modal-box">
+            {/* Header */}
+            <div className="manage-cats-header">
+              <h2 className="manage-cats-title">Manage Categories</h2>
               <button
                 type="button"
-                className="add-product-btn-submit"
-                style={{ padding: "10px 20px" }}
-                onClick={handleAddCategory}
+                className="manage-cats-close-btn"
+                onClick={handleCancelManageCats}
+                aria-label="Close"
               >
-                Add
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
 
-            {/* Existing Categories list */}
-            <div
-              style={{
-                maxHeight: "280px",
-                overflowY: "auto",
-                display: "flex",
-                flexDirection: "column",
-                gap: "8px",
-              }}
-            >
-              {categories.map((cat) => {
-                const count = products.filter(
-                  (p) => p.category.toLowerCase() === cat.toLowerCase()
-                ).length;
-                return (
-                  <div
-                    key={cat}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "10px 14px",
-                      background: "#08080c",
-                      borderRadius: "8px",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
-                    }}
+            {/* ADD NEW CATEGORY section */}
+            <div>
+              <label className="manage-cats-section-label">
+                ADD NEW CATEGORY
+              </label>
+              <div className="manage-cats-add-row">
+                <input
+                  type="text"
+                  placeholder="e.g. Compression Gear"
+                  className="manage-cats-input"
+                  value={newCatInput}
+                  onChange={(e) => setNewCatInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddCategory();
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  className="manage-cats-btn-add"
+                  onClick={handleAddCategory}
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
                   >
-                    <div>
-                      <span style={{ fontWeight: 600, color: "#fff", fontSize: "14px" }}>
-                        {cat}
-                      </span>
-                      <span style={{ fontSize: "12px", color: "#7a7a8d", marginLeft: "8px" }}>
-                        ({count} {count === 1 ? "product" : "products"})
-                      </span>
-                    </div>
-                    {categories.length > 1 && (
-                      <button
-                        type="button"
-                        style={{
-                          background: "none",
-                          border: "none",
-                          color: "#eb4553",
-                          cursor: "pointer",
-                          fontSize: "12px",
-                          fontWeight: 700,
-                        }}
-                        onClick={() => handleRemoveCategory(cat)}
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                  <span>ADD</span>
+                </button>
+              </div>
             </div>
 
-            <div className="add-product-footer">
+            {/* EXISTING CATEGORIES section */}
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <label className="manage-cats-section-label">
+                EXISTING CATEGORIES
+              </label>
+              <div className="manage-cats-list">
+                {draftCategories.map((cat, idx) => (
+                  <div key={`${cat}-${idx}`} className="manage-cats-item">
+                    {editingCatIndex === idx ? (
+                      <input
+                        type="text"
+                        autoFocus
+                        className="manage-cats-inline-input"
+                        value={editingCatValue}
+                        onChange={(e) => setEditingCatValue(e.target.value)}
+                        onBlur={() => handleSaveEditCategory(idx)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleSaveEditCategory(idx);
+                          } else if (e.key === "Escape") {
+                            setEditingCatIndex(null);
+                          }
+                        }}
+                      />
+                    ) : (
+                      <span className="manage-cats-name">{cat}</span>
+                    )}
+
+                    <div className="manage-cats-actions">
+                      {/* Edit Button */}
+                      <button
+                        type="button"
+                        className="manage-cats-action-btn"
+                        aria-label={`Edit ${cat}`}
+                        onClick={() => {
+                          if (editingCatIndex === idx) {
+                            handleSaveEditCategory(idx);
+                          } else {
+                            handleStartEditCategory(idx, cat);
+                          }
+                        }}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.1"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M12 20h9" />
+                          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                        </svg>
+                      </button>
+
+                      {/* Delete Button */}
+                      <button
+                        type="button"
+                        className="manage-cats-action-btn delete"
+                        aria-label={`Delete ${cat}`}
+                        onClick={() => handleDeleteCategory(idx)}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.1"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          <line x1="10" y1="11" x2="10" y2="17" />
+                          <line x1="14" y1="11" x2="14" y2="17" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="manage-cats-footer">
               <button
                 type="button"
-                className="add-product-btn-submit"
-                onClick={() => setIsManageCatsModalOpen(false)}
+                className="manage-cats-btn-save"
+                onClick={handleSaveManageCats}
               >
-                DONE
+                SAVE CHANGES
+              </button>
+              <button
+                type="button"
+                className="manage-cats-btn-cancel"
+                onClick={handleCancelManageCats}
+              >
+                CANCEL
               </button>
             </div>
           </div>
