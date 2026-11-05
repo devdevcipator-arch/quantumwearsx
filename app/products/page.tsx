@@ -282,7 +282,7 @@ export default function ProductsPage() {
       {/* ================= COLLECTIONS / CATEGORIES BROWSER ================= */}
       <section
         id="catalog"
-        className="catalog-section"
+        className={`catalog-section ${!showCategories && !query ? "categories-collapsed" : ""}`}
         aria-label="Collections and Categories Browser"
       >
         <div className="catalog-container">
@@ -359,13 +359,7 @@ export default function ProductsPage() {
                 onClick={() => setShowCategories((prev) => !prev)}
                 aria-expanded={showCategories}
               >
-                <span className="toggle-btn-icon" aria-hidden="true">
-                  {showCategories ? "👁" : "👁‍🗨"}
-                </span>
-                <span>{showCategories ? "Hide Categories" : "Show Categories"}</span>
-                <span className={`toggle-btn-arrow ${showCategories ? "open" : ""}`} aria-hidden="true">
-                  ▾
-                </span>
+                {showCategories ? "Hide Categories" : "Show Categories"}
               </button>
             )}
           </div>
@@ -463,14 +457,15 @@ export default function ProductsPage() {
             </div>
           ) : (
             /* Two-column category browser when not searching */
-            <AnimatePresence mode="wait">
-              {showCategories ? (
+            <AnimatePresence>
+              {showCategories && (
                 <motion.div
-                  key="catalog-columns-open"
-                  initial={reduce ? {} : { opacity: 0, y: 10 }}
-                  animate={reduce ? {} : { opacity: 1, y: 0 }}
-                  exit={reduce ? {} : { opacity: 0, y: -10 }}
-                  transition={{ duration: 0.25 }}
+                  key="catalog-columns"
+                  initial={reduce ? {} : { opacity: 0, height: 0 }}
+                  animate={reduce ? {} : { opacity: 1, height: "auto" }}
+                  exit={reduce ? {} : { opacity: 0, height: 0 }}
+                  transition={{ duration: 0.28, ease: "easeInOut" }}
+                  style={{ overflow: "hidden" }}
                   className="catalog-columns"
                 >
               {/* Left column: Collections / Categories */}
@@ -544,27 +539,6 @@ export default function ProductsPage() {
                 </ul>
               </motion.div>
 
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="catalog-columns-hidden"
-                  initial={reduce ? {} : { opacity: 0, y: 8 }}
-                  animate={reduce ? {} : { opacity: 1, y: 0 }}
-                  exit={reduce ? {} : { opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2 }}
-                  className="catalog-categories-collapsed-notice"
-                >
-                  <div className="collapsed-notice-content">
-                    <span className="collapsed-notice-icon" aria-hidden="true">📁</span>
-                    <span>Categories directory is currently hidden.</span>
-                  </div>
-                  <button
-                    type="button"
-                    className="collapsed-notice-btn"
-                    onClick={() => setShowCategories(true)}
-                  >
-                    Show Categories
-                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
