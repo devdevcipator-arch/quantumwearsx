@@ -119,6 +119,17 @@ export default function ProductsPage() {
   const [dbCategories, setDbCategories] = useState<string[]>(collectionCategories);
 
   useEffect(() => {
+    // Instant cache read for zero-latency UI update
+    try {
+      const cached = localStorage.getItem("qw_admin_products");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setDbProducts(parsed);
+        }
+      }
+    } catch {}
+
     async function loadLiveData() {
       try {
         const [liveProds, liveCats] = await Promise.all([
@@ -127,6 +138,9 @@ export default function ProductsPage() {
         ]);
         if (liveProds && liveProds.length > 0) {
           setDbProducts(liveProds);
+          try {
+            localStorage.setItem("qw_admin_products", JSON.stringify(liveProds));
+          } catch {}
         }
         if (liveCats && liveCats.length > 0) {
           setDbCategories(liveCats);

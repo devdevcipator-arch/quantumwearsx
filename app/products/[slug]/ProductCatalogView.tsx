@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import Navbar from "../../components/Navbar";
@@ -13,7 +13,9 @@ import {
   categoryCatalogs,
   matchSubItem,
   type CategoryCatalog,
+  type CatalogProduct,
 } from "../../data/categories";
+import { fetchProductsFromDb } from "@/lib/products-service";
 
 const viewportConfig = { once: true, amount: 0.15 };
 
@@ -52,15 +54,80 @@ export default function ProductCatalogView({
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(category.products[0]?.quoteCategory ?? "General Inquiry");
 
+  // Dynamic products from Supabase Live DB matching this category
+  const [liveDbProducts, setLiveDbProducts] = useState<CatalogProduct[]>([]);
+
+  useEffect(() => {
+    const normCatName = category.name.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const normCatSlug = category.slug.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+    function filterAndConvert(items: any[]): CatalogProduct[] {
+      const matched = items.filter((p: any) => {
+        const normProdCat = (p.category || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        return (
+          normProdCat === normCatName ||
+          normProdCat === normCatSlug ||
+          normCatName.includes(normProdCat) ||
+          normProdCat.includes(normCatName)
+        );
+      });
+
+      return matched.map((p: any) => ({
+        name: p.title,
+        filter: category.subItems[0],
+        tag: "CUSTOM PRODUCTION",
+        image: p.image,
+        alt: `${p.title} - QuantumWear X custom manufactured product`,
+        quoteCategory: category.products[0]?.quoteCategory ?? "General Inquiry",
+      }));
+    }
+
+    // Instant local cache check
+    try {
+      const cached = localStorage.getItem("qw_admin_products");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const converted = filterAndConvert(parsed);
+          if (converted.length > 0) {
+            setLiveDbProducts(converted);
+          }
+        }
+      }
+    } catch {}
+
+    async function loadCategoryProducts() {
+      try {
+        const allDbProducts = await fetchProductsFromDb();
+        const converted = filterAndConvert(allDbProducts);
+        setLiveDbProducts(converted);
+      } catch (err) {
+        console.warn("ProductCatalogView live DB fetch fallback:", err);
+      }
+    }
+
+    loadCategoryProducts();
+  }, [category.name, category.slug, category.subItems]);
+
   const handleOpenQuote = (quoteCategory?: string) => {
     if (quoteCategory) setSelectedCategory(quoteCategory);
     setQuoteModalOpen(true);
   };
 
   const filteredProducts = useMemo(() => {
-    if (itemFilter === category.subItems[0]) return category.products;
-    return category.products.filter((p) => p.filter === itemFilter);
-  }, [itemFilter, category]);
+    const liveNames = new Set(liveDbProducts.map((p) => p.name.toLowerCase().trim()));
+    const combined = [
+      ...liveDbProducts,
+      ...category.products.filter(
+        (p) => !liveNames.has(p.name.toLowerCase().trim())
+      ),
+    ];
+
+    if (itemFilter === category.subItems[0]) return combined;
+    return combined.filter(
+      (p) => p.filter === itemFilter || liveNames.has(p.name.toLowerCase().trim())
+    );
+  }, [itemFilter, category, liveDbProducts]);
 
   return (
     <main className="landing-page-root" id="top">

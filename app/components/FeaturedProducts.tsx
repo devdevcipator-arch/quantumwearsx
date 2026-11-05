@@ -18,6 +18,16 @@ export default function FeaturedProducts({ onOpenQuote }: FeaturedProductsProps)
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    try {
+      const cached = localStorage.getItem("qw_admin_products");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setProducts(parsed.slice(0, 6));
+        }
+      }
+    } catch {}
+
     async function loadProducts() {
       try {
         const liveProducts = await fetchProductsFromDb();
