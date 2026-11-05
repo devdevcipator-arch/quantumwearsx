@@ -7,7 +7,8 @@ import ScrollProgress from "../components/ScrollProgress";
 import RevealObserver from "../components/RevealObserver";
 import AboutHero from "../components/AboutHero";
 import AboutStory from "../components/AboutStory";
-import Collections from "../components/Collections";
+import AboutJourney from "../components/AboutJourney";
+import AboutPhilosophy from "../components/AboutPhilosophy";
 import AboutMissionVision from "../components/AboutMissionVision";
 import CallToAction from "../components/CallToAction";
 import Footer from "../components/Footer";
@@ -44,24 +45,22 @@ export default function AboutPage() {
       {/* 1. About Hero Section */}
       <AboutHero />
 
-      {/* 2. Story & Heritage ("Turning Sketches Into Reality") */}
+      {/* 2. Story: Established 2020 in Sialkot, Pakistan */}
       <AboutStory />
 
-      {/* 3. Product & Performance Range (Using the site's signature Collections section) */}
-      <Collections
-        eyebrow="Engineered For Champions"
-        title="ENGINEERED PERFORMANCE"
-        description="Every stitch is driven by passion, every seam built to endure. We combine advanced textile engineering, custom fit, and modern aesthetics for performance that speaks for itself."
-        onSelectCategory={(cat) => handleOpenQuote(cat)}
-      />
+      {/* 3. Journey Since 2020: Milestones */}
+      <AboutJourney />
 
-      {/* 4. Brand Enablement & Global Manufacturing Partner (Mission & Vision) */}
+      {/* 4. Manufacturing Philosophy: Direct pricing, customization, craftsmanship */}
+      <AboutPhilosophy />
+
+      {/* 5. Mission & Vision */}
       <AboutMissionVision />
 
-      {/* 5. Call To Action Banner ("Ready to Build Your Brand?") */}
+      {/* 6. Call To Action Banner */}
       <CallToAction onOpenQuote={() => handleOpenQuote("Custom Production")} />
 
-      {/* 6. Footer */}
+      {/* 7. Global Footer */}
       <Footer />
 
       {/* Interactive Custom Quote Modal */}
@@ -73,4 +72,3 @@ export default function AboutPage() {
     </main>
   );
 }
-

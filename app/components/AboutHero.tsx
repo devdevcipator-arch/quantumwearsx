@@ -9,7 +9,7 @@ export default function AboutHero() {
     <section className="about-hero-section" aria-label="About QuantumWear X">
       <img
         src="/images/hero_factory_sewing.jpg"
-        alt="QuantumWear X precision industrial manufacturing facility"
+        alt="QuantumWear X manufacturing facility in Sialkot, Pakistan"
         className="about-hero-bg"
       />
       <div className="about-hero-overlay" />
@@ -20,16 +20,27 @@ export default function AboutHero() {
           animate={reduce ? undefined : { opacity: 1, y: 0 }}
           transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span className="about-hero-script">Crafted With Precision</span>
+          <span className="about-hero-script">Precision in Every Stitch</span>
+          <p
+            style={{
+              color: "var(--accent-red)",
+              fontSize: "13px",
+              fontWeight: 800,
+              letterSpacing: "2.5px",
+              textTransform: "uppercase",
+              marginBottom: "16px",
+            }}
+          >
+            Established in 2020 · Sialkot, Pakistan
+          </p>
           <h1 className="about-hero-title">
             ABOUT QUANTUMWEAR<br />
             X YOUR<br />
             MANUFACTURING<br />
-            PARTNER. <span className="text-red">YOUR BRAND&apos;S<br />VISION.</span>
+            PARTNER. <span className="text-red">YOUR BRAND&apos;S<br />IDENTITY.</span>
           </h1>
         </motion.div>
       </div>
     </section>
   );
 }
-

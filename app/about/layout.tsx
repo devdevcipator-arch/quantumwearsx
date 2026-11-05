@@ -3,17 +3,17 @@ import type { Metadata } from "next";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://quantumwearx.com";
 
 export const metadata: Metadata = {
-  title: "About Us — Global Custom Apparel & Private Label Partner",
+  title: "About Us — Established in 2020 | QuantumWear X Sialkot",
   description:
-    "Learn about QuantumWear X: turning designer sketches into market reality with precision apparel engineering, ethical sourcing, SEDEX & BSCI compliance, and agile private label manufacturing since 2008.",
+    "QuantumWear X was established in 2020 as a family-owned manufacturing business in Sialkot, Pakistan, delivering high-quality custom apparel, sportswear, leather goods, and bags worldwide.",
   keywords: [
     "about quantumwearx",
-    "custom apparel manufacturer story",
-    "ethical clothing factory Sialkot",
+    "custom apparel manufacturer Sialkot",
+    "family owned garment factory Pakistan",
     "private label apparel partner",
-    "BSCI compliant garment factory",
-    "SEDEX certified apparel supplier",
-    "OEM clothing manufacturing Pakistan",
+    "leather goods manufacturer Sialkot",
+    "sports bags OEM factory",
+    "custom clothing manufacturing Pakistan",
   ],
   alternates: {
     canonical: "/about",
@@ -23,9 +23,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: `${siteUrl}/about`,
     siteName: "QUANTUMWEARX",
-    title: "About QuantumWear X — Turning Sketches Into Reality",
+    title: "About QuantumWear X — Precision in Every Stitch",
     description:
-      "High-end apparel engineering, ethical sourcing, global compliance, and agile private label manufacturing.",
+      "Established in 2020 in Sialkot, Pakistan. Transforming ideas into professionally manufactured apparel, leather goods, and custom bags.",
     images: [
       {
         url: "/images/about_sketching_designer.jpg",
@@ -37,9 +37,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "About QuantumWear X — Global Manufacturing Partner",
+    title: "About QuantumWear X — Sialkot Manufacturing Partner",
     description:
-      "Turning designer sketches into market-ready apparel with precision engineering and global compliance.",
+      "Established in 2020 in Sialkot, Pakistan. Precision in Every Stitch. Your Vision. Our Manufacturing. Your Brand's Identity.",
     images: ["/images/about_sketching_designer.jpg"],
   },
 };
@@ -53,7 +53,7 @@ const aboutStructuredData = {
       url: `${siteUrl}/about`,
       name: "About QuantumWear X",
       description:
-        "Learn about QuantumWear X: turning sketches into reality with high-end apparel engineering, ethical sourcing, and private label manufacturing.",
+        "QuantumWear X was established in 2020 as a family-owned manufacturing business in Sialkot, Pakistan, delivering high-quality customized apparel, leather products, and bags worldwide.",
       isPartOf: {
         "@id": `${siteUrl}/#website`,
       },

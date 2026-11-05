@@ -6,10 +6,10 @@ export default function AboutStory() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="about-story-section" aria-label="Our Story & Craftsmanship">
+    <section className="about-story-section" aria-label="Company History & Story">
       <div className="about-story-container">
         <div className="about-story-grid">
-          {/* Left Column: Sketching Atelier Image with Floating Circular Badge */}
+          {/* Left Column: Studio Craftsmanship Image with Badge */}
           <motion.div
             className="about-story-image-wrap"
             initial={reduce ? undefined : { opacity: 0, x: -40 }}
@@ -19,20 +19,20 @@ export default function AboutStory() {
           >
             <img
               src="/images/about_sketching_designer.jpg"
-              alt="Fashion designer drafting garment tech packs in the QuantumWear X studio"
+              alt="QuantumWear X garment design and pattern drafting in Sialkot, Pakistan"
               className="about-story-image"
               loading="lazy"
             />
-            {/* Circular Red Badge */}
-            <div className="about-badge-circle" aria-label="Custom and Private Label Solutions">
-              <span>CUSTOM AND</span>
-              <span>PRIVATE</span>
-              <span>LABEL</span>
-              <span>SOLUTIONS</span>
+            {/* Circular Badge */}
+            <div className="about-badge-circle" aria-label="Established 2020 in Sialkot, Pakistan">
+              <span>EST. 2020</span>
+              <span>SIALKOT, PK</span>
+              <span>CUSTOM &amp;</span>
+              <span>PRIVATE LABEL</span>
             </div>
           </motion.div>
 
-          {/* Right Column: Narrative & Craftsmanship Features */}
+          {/* Right Column: Authentic Narrative */}
           <motion.div
             className="about-story-content"
             initial={reduce ? undefined : { opacity: 0, x: 40 }}
@@ -40,38 +40,25 @@ export default function AboutStory() {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.85, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
           >
-            <span className="about-story-eyebrow">OUR STORY &amp; CRAFTSMANSHIP</span>
-            <h2 className="about-story-title">TURNING SKETCHES INTO REALITY</h2>
+            <span className="about-story-eyebrow">COMPANY HISTORY · OUR STORY</span>
+            <h2 className="about-story-title">BRINGING YOUR BRAND&apos;S IDENTITY TO LIFE</h2>
 
             <p className="about-story-p1">
-              Since 2012, QuantumWear X has stood as the silent backbone for global fashion
-              houses and emerging streetwear labels. We don&apos;t just manufacture garments; we
-              engineer movements and bring vision into reality. From concept to finished
-              garment, we engineer every seam with precision, pride, and an obsession with quality.
+              QuantumWear X was established in 2020 as a family-owned manufacturing business in
+              Sialkot, Pakistan, with a clear vision: to deliver high-quality customized apparel
+              and manufacturing solutions to businesses around the world.
             </p>
 
             <p className="about-story-p2">
-              Our mission is simple: to make custom apparel manufacturing seamless and accessible
-              for visionary brands. With our state-of-the-art facilities and dedicated
-              craftspeople, we turn complex designs into market-ready products with uncompromising
-              speed and excellence.
+              What began as a family-driven passion for garment manufacturing gradually evolved
+              into a broader manufacturing operation spanning custom clothing, leather products,
+              fashion accessories, and bags. Every brand has its own identity, and our role is to
+              bring that identity to life through quality materials, precision stitching, professional
+              finishing, and complete customization.
             </p>
 
-            {/* Quality & Ethics Indicators */}
+            {/* Core Values Indicators */}
             <div className="about-story-features">
-              <div className="about-feature-item">
-                <div className="about-feature-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
-                    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
-                  </svg>
-                </div>
-                <div className="about-feature-text">
-                  <span className="about-feature-title">Ethical Sourcing</span>
-                  <span className="about-feature-desc">Sustainably produced</span>
-                </div>
-              </div>
-
               <div className="about-feature-item">
                 <div className="about-feature-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -80,8 +67,21 @@ export default function AboutStory() {
                   </svg>
                 </div>
                 <div className="about-feature-text">
-                  <span className="about-feature-title">Global Standards</span>
-                  <span className="about-feature-desc">Rigorous QA checks</span>
+                  <span className="about-feature-title">Quality Creates Trust</span>
+                  <span className="about-feature-desc">Family-driven craftsmanship</span>
+                </div>
+              </div>
+
+              <div className="about-feature-item">
+                <div className="about-feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+                    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+                  </svg>
+                </div>
+                <div className="about-feature-text">
+                  <span className="about-feature-title">Complete Customization</span>
+                  <span className="about-feature-desc">From sketch to finished product</span>
                 </div>
               </div>
             </div>
@@ -91,4 +91,3 @@ export default function AboutStory() {
     </section>
   );
 }
-

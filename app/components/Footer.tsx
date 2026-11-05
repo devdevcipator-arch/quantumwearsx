@@ -22,7 +22,7 @@ export default function Footer() {
             </div>
             <p className="footer-desc">
               Your trusted global manufacturing partner for custom athletic apparel,
-              fine leather goods, streetwear, and tactical bags. Precision engineered since 2008.
+              fine leather goods, streetwear, and tactical bags. Established in 2020 in Sialkot, Pakistan.
             </p>
             <div className="footer-socials">
               <a

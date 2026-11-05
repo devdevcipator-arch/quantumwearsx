@@ -19,10 +19,10 @@ export default function AboutMissionVision() {
           >
             <div>
               <span className="about-card-script-red">Our Mission</span>
-              <h3 className="about-card-title">BRAND ENABLEMENT</h3>
+              <h3 className="about-card-title">ACCESSIBLE &amp; RELIABLE SOLUTIONS</h3>
               <p className="about-card-body-gray">
-                To democratize high-end manufacturing by providing brands with the technical
-                resources, craftsmanship, and infrastructure needed to compete with global titans.
+                To provide accessible, reliable, and high-quality custom manufacturing solutions
+                that help businesses turn creative ideas into successful products and collections.
               </p>
             </div>
             <div className="about-card-bar" aria-hidden="true" />
@@ -38,10 +38,11 @@ export default function AboutMissionVision() {
           >
             <div>
               <span className="about-card-script-white">Our Vision</span>
-              <h3 className="about-card-title">GLOBAL MANUFACTURING PARTNER</h3>
+              <h3 className="about-card-title">TRUSTED INTERNATIONAL PARTNER</h3>
               <p className="about-card-body-white">
-                To become the world&apos;s most trusted agile manufacturing partner, transforming
-                the relationship between designer, maker, and customer through innovation.
+                To establish QuantumWear X as a trusted international manufacturing partner
+                in the apparel, sportswear, leather goods, and fashion accessories industries —
+                growing through innovation, consistent quality, and lasting customer satisfaction.
               </p>
             </div>
             <div className="about-card-bar" aria-hidden="true" />
