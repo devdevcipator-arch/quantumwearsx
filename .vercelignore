@@ -4,5 +4,5 @@ public/Antigravity IDE.lnk
 .vercel
 .next
 node_modules
-*.mp4
+# Root-level stray videos (e.g. banned movie files) — do NOT exclude public/videos/
 /*.mp4
