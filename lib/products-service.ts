@@ -76,6 +76,42 @@ export const DEFAULT_SUBCATEGORIES: Record<string, string[]> = {
   ],
 };
 
+// Helper to get local subcategory overrides so user-assigned subcategories are never lost
+export function getStoredSubcategoryMap(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem("qw_product_subcategories");
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function setStoredSubcategory(id: string, title: string, subcategory: string) {
+  if (typeof window === "undefined" || !subcategory) return;
+  try {
+    const map = getStoredSubcategoryMap();
+    if (id) map[id] = subcategory;
+    if (title) map[title.toLowerCase().trim()] = subcategory;
+    localStorage.setItem("qw_product_subcategories", JSON.stringify(map));
+  } catch {}
+}
+
+// Helpers to transparently persist subcategory inside product description
+// ensuring zero data loss across devices even before database schema migrations
+export function extractSubcategoryFromDescription(desc: string): { cleanDescription: string; subcategory: string } {
+  if (!desc) return { cleanDescription: "", subcategory: "" };
+  const match = desc.match(/<!--subcategory:([^>]+)-->/);
+  const subcategory = match ? match[1].trim() : "";
+  const cleanDescription = desc.replace(/<!--subcategory:[^>]*-->/g, "").trim();
+  return { cleanDescription, subcategory };
+}
+
+export function encodeSubcategoryInDescription(desc: string, sub: string): string {
+  const clean = (desc || "").replace(/<!--subcategory:[^>]*-->/g, "").trim();
+  return sub ? `${clean}\n<!--subcategory:${sub}-->` : clean;
+}
+
 // Helper to infer subcategory from product title/category if not explicitly set
 export function inferSubcategory(title: string, category: string): string {
   const subs = DEFAULT_SUBCATEGORIES[category] || [];
@@ -85,7 +121,7 @@ export function inferSubcategory(title: string, category: string): string {
       return s;
     }
   }
-  return subs[0] || "";
+  return "";
 }
 
 export const DEFAULT_PRODUCTS: ProductItem[] = [
@@ -357,18 +393,36 @@ export async function fetchProductsFromDb(): Promise<ProductItem[]> {
     throw error;
   }
 
-  return (data || []).map((row) => ({
-    id: row.id,
-    title: row.title,
-    description: row.description || "",
-    category: row.category,
-    subcategory: row.subcategory || inferSubcategory(row.title, row.category),
-    subcategory_id: row.subcategory_id || null,
-    image: row.image || "/images/triptych_leather_stitch.jpg",
-    category_id: row.category_id,
-    created_at: row.created_at,
-    updated_at: row.updated_at,
-  }));
+  const localMap = getStoredSubcategoryMap();
+
+  return (data || []).map((row) => {
+    const { cleanDescription, subcategory: descSub } = extractSubcategoryFromDescription(row.description || "");
+    const localSub = localMap[row.id] || localMap[(row.title || "").toLowerCase().trim()] || "";
+    const resolvedSub =
+      row.subcategory ||
+      descSub ||
+      localSub ||
+      inferSubcategory(row.title, row.category) ||
+      "";
+
+    // Keep cached in localMap
+    if (resolvedSub && typeof window !== "undefined") {
+      setStoredSubcategory(row.id, row.title, resolvedSub);
+    }
+
+    return {
+      id: row.id,
+      title: row.title,
+      description: cleanDescription || row.description || "",
+      category: row.category,
+      subcategory: resolvedSub,
+      subcategory_id: row.subcategory_id || null,
+      image: row.image || "/images/triptych_leather_stitch.jpg",
+      category_id: row.category_id,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+    };
+  });
 }
 
 export async function addProductToDb(product: {
@@ -378,20 +432,23 @@ export async function addProductToDb(product: {
   subcategory?: string;
   image: string;
 }): Promise<ProductItem> {
+  const chosenSub = product.subcategory || inferSubcategory(product.title, product.category);
+  const encodedDesc = encodeSubcategoryInDescription(product.description, chosenSub);
+
   // Find category ID if exists
   const { data: catData } = await supabase
     .from("categories")
     .select("id")
     .eq("name", product.category)
-    .single();
+    .maybeSingle();
 
   // Find subcategory ID if exists
   let subcategoryId: string | null = null;
-  if (product.subcategory) {
+  if (chosenSub) {
     const { data: subData } = await supabase
       .from("subcategories")
       .select("id")
-      .eq("name", product.subcategory)
+      .eq("name", chosenSub)
       .eq("category", product.category)
       .maybeSingle();
     subcategoryId = subData?.id || null;
@@ -399,10 +456,10 @@ export async function addProductToDb(product: {
 
   const insertPayload: any = {
     title: product.title,
-    description: product.description,
+    description: encodedDesc,
     category: product.category,
     category_id: catData?.id || null,
-    subcategory: product.subcategory || inferSubcategory(product.title, product.category),
+    subcategory: chosenSub,
     subcategory_id: subcategoryId,
     image: product.image,
   };
@@ -424,12 +481,16 @@ export async function addProductToDb(product: {
         .select()
         .single();
       if (retryErr) throw retryErr;
+
+      setStoredSubcategory(retryData.id, retryData.title, chosenSub);
+      const { cleanDescription } = extractSubcategoryFromDescription(retryData.description || "");
+
       return {
         id: retryData.id,
         title: retryData.title,
-        description: retryData.description || "",
+        description: cleanDescription || product.description,
         category: retryData.category,
-        subcategory: product.subcategory || "",
+        subcategory: chosenSub,
         subcategory_id: null,
         image: retryData.image || "/images/triptych_leather_stitch.jpg",
         category_id: retryData.category_id,
@@ -439,12 +500,15 @@ export async function addProductToDb(product: {
     throw error;
   }
 
+  setStoredSubcategory(data.id, data.title, chosenSub);
+  const { cleanDescription } = extractSubcategoryFromDescription(data.description || "");
+
   return {
     id: data.id,
     title: data.title,
-    description: data.description || "",
+    description: cleanDescription || product.description,
     category: data.category,
-    subcategory: data.subcategory || product.subcategory || "",
+    subcategory: data.subcategory || chosenSub,
     subcategory_id: data.subcategory_id || null,
     image: data.image || "/images/triptych_leather_stitch.jpg",
     category_id: data.category_id,
@@ -460,7 +524,17 @@ export async function updateProductInDb(
   };
 
   if (updates.title !== undefined) payload.title = updates.title;
-  if (updates.description !== undefined) payload.description = updates.description;
+
+  if (updates.subcategory !== undefined || updates.description !== undefined) {
+    const rawDesc = updates.description !== undefined ? updates.description : "";
+    const rawSub = updates.subcategory !== undefined ? updates.subcategory : "";
+    if (rawSub) {
+      payload.description = encodeSubcategoryInDescription(rawDesc, rawSub);
+    } else if (updates.description !== undefined) {
+      payload.description = updates.description;
+    }
+  }
+
   if (updates.category !== undefined) {
     payload.category = updates.category;
     const { data: catData } = await supabase
@@ -517,12 +591,18 @@ export async function updateProductInDb(
     throw error;
   }
 
+  if (updates.subcategory) {
+    setStoredSubcategory(id, data.title || updates.title || "", updates.subcategory);
+  }
+
+  const { cleanDescription, subcategory: descSub } = extractSubcategoryFromDescription(data.description || "");
+
   return {
     id: data.id,
     title: data.title,
-    description: data.description || "",
+    description: cleanDescription || data.description || "",
     category: data.category,
-    subcategory: data.subcategory || updates.subcategory || "",
+    subcategory: data.subcategory || descSub || updates.subcategory || "",
     subcategory_id: data.subcategory_id || null,
     image: data.image,
     category_id: data.category_id,

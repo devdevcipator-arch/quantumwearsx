@@ -18,7 +18,12 @@ import {
   type CategoryCatalog,
   type CatalogProduct,
 } from "../../data/categories";
-import { fetchProductsFromDb, inferSubcategory } from "@/lib/products-service";
+import {
+  fetchProductsFromDb,
+  inferSubcategory,
+  getStoredSubcategoryMap,
+  extractSubcategoryFromDescription,
+} from "@/lib/products-service";
 
 interface ProductCatalogViewProps {
   category: CategoryCatalog;
@@ -92,29 +97,46 @@ export default function ProductCatalogView({
         return normProdCat === normCatName || normProdCat === normCatSlug;
       });
 
+      const localMap = getStoredSubcategoryMap();
+
       // 2. Map and associate each product with its true subcategory
       return matched.map((p: any) => {
         const title = p.title || p.name || "";
-        let sub = (p.subcategory || "").trim();
+        const { cleanDescription, subcategory: descSub } = extractSubcategoryFromDescription(p.description || "");
+        const localSub = localMap[p.id] || localMap[(title || "").toLowerCase().trim()] || "";
+
+        let sub = (p.subcategory || descSub || localSub || "").trim();
         if (!sub || sub.toLowerCase().startsWith("all ")) {
           sub = inferSubcategory(title, category.name);
         }
 
         // Match against category's subItems
-        const matchedSubItem = category.subItems.find(
-          (item, idx) =>
-            idx > 0 &&
-            (item.toLowerCase().trim() === sub.toLowerCase().trim() ||
-              item.toLowerCase().trim().includes(sub.toLowerCase().trim()) ||
-              sub.toLowerCase().trim().includes(item.toLowerCase().trim()) ||
-              title.toLowerCase().trim().includes(item.toLowerCase().trim()))
-        );
+        let matchedSubItem = "";
+        if (sub) {
+          matchedSubItem =
+            category.subItems.find(
+              (item, idx) =>
+                idx > 0 &&
+                (item.toLowerCase().trim() === sub.toLowerCase().trim() ||
+                  item.toLowerCase().trim().includes(sub.toLowerCase().trim()) ||
+                  sub.toLowerCase().trim().includes(item.toLowerCase().trim()))
+            ) || "";
+        }
 
-        const finalFilter = matchedSubItem || sub || category.subItems[0];
+        if (!matchedSubItem && title) {
+          matchedSubItem =
+            category.subItems.find(
+              (item, idx) =>
+                idx > 0 &&
+                title.toLowerCase().trim().includes(item.toLowerCase().trim())
+            ) || "";
+        }
+
+        const finalFilter = matchedSubItem || sub || "";
 
         return {
           name: title,
-          description: p.description || "",
+          description: cleanDescription || p.description || "",
           filter: finalFilter,
           tag: p.tag || "CUSTOM PRODUCTION",
           image: p.image || getCatalogFallbackImage(category.slug),
@@ -195,13 +217,23 @@ export default function ProductCatalogView({
       const pFilter = (p.filter || "").toLowerCase().trim();
       const pName = (p.name || "").toLowerCase().trim();
 
-      const matchesSubcategory =
-        pFilter === normTarget ||
-        pName === normTarget ||
-        pFilter.includes(normTarget) ||
-        normTarget.includes(pFilter) ||
-        pName.includes(normTarget) ||
-        normTarget.includes(pName);
+      const isFilterMatch =
+        Boolean(pFilter) &&
+        !pFilter.startsWith("all ") &&
+        (pFilter === normTarget ||
+          (pFilter.length >= 4 &&
+            normTarget.length >= 4 &&
+            (pFilter.includes(normTarget) || normTarget.includes(pFilter))));
+
+      const isNameMatch =
+        !pFilter &&
+        Boolean(pName) &&
+        (pName === normTarget ||
+          (pName.length >= 4 &&
+            normTarget.length >= 4 &&
+            (pName.includes(normTarget) || normTarget.includes(pName))));
+
+      const matchesSubcategory = isFilterMatch || isNameMatch;
 
       return matchesSubcategory && matchesSearch(p);
     });

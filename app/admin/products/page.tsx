@@ -20,6 +20,7 @@ import {
   renameSubcategoryInDb,
   deleteSubcategoryFromDb,
   uploadProductImage,
+  setStoredSubcategory,
 } from "@/lib/products-service";
 
 export type { ProductItem, SubcategoryItem };
@@ -269,6 +270,7 @@ export default function AdminProductsPage() {
         };
       }
 
+      setStoredSubcategory(savedProd.id, savedProd.title, subcategory);
       saveProducts([savedProd, ...products]);
       setIsAddModalOpen(false);
       setSelectedFile(null);
@@ -338,6 +340,7 @@ export default function AdminProductsPage() {
           : p
       );
 
+      setStoredSubcategory(activeProduct.id, formData.title.trim(), subcategory);
       saveProducts(updated);
       setIsEditModalOpen(false);
       setActiveProduct(null);
