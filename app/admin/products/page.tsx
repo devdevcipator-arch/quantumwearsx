@@ -3,24 +3,25 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
+  ProductItem,
+  SubcategoryItem,
   fetchProductsFromDb,
   fetchCategoriesFromDb,
+  fetchSubcategoriesFromDb,
+  getDefaultSubcategoriesList,
   addProductToDb,
   updateProductInDb,
   removeProductFromDb,
   addCategoryToDb,
   renameCategoryInDb,
   deleteCategoryFromDb,
+  addSubcategoryToDb,
+  renameSubcategoryInDb,
+  deleteSubcategoryFromDb,
   uploadProductImage,
 } from "@/lib/products-service";
 
-export interface ProductItem {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  image: string;
-}
+export type { ProductItem, SubcategoryItem };
 
 const INITIAL_CATEGORIES = [
   "Activewear",
@@ -37,6 +38,7 @@ const INITIAL_PRODUCTS: ProductItem[] = [
     title: "Gym T-shirts and tank tops",
     description: "Custom breathable athletic fabrics engineered for gym performance and durability",
     category: "Activewear",
+    subcategory: "Gym T-shirts and tank tops",
     image: "/images/grid_sportswear.jpg",
   },
   {
@@ -44,6 +46,7 @@ const INITIAL_PRODUCTS: ProductItem[] = [
     title: "Football and hockey uniforms",
     description: "Reinforced tear-resistant match jerseys and socks with vivid all-over sublimation printing",
     category: "Sportswear",
+    subcategory: "Football and hockey uniforms",
     image: "/images/grid_sportswear.jpg",
   },
   {
@@ -51,6 +54,7 @@ const INITIAL_PRODUCTS: ProductItem[] = [
     title: "Oversized T-shirts",
     description: "Vintage-washed heavyweight combed cotton tees featuring dropped shoulders and custom fit blocks",
     category: "Streetwear",
+    subcategory: "Oversized T-shirts",
     image: "/images/hero_factory_sewing.jpg",
   },
   {
@@ -58,6 +62,7 @@ const INITIAL_PRODUCTS: ProductItem[] = [
     title: "High-visibility safety vests",
     description: "ANSI/ISEA 107 Class 2 certified mesh and solid polyester safety vests with silver reflective tape",
     category: "Safety Wear",
+    subcategory: "High-visibility safety vests",
     image: "/images/grid_workwear.jpg",
   },
   {
@@ -65,6 +70,7 @@ const INITIAL_PRODUCTS: ProductItem[] = [
     title: "Leather jackets",
     description: "Handcrafted 100% genuine top-grain cowhide and sheepskin leather jackets with antique YKK hardware",
     category: "Leather Products",
+    subcategory: "Leather jackets",
     image: "/images/grid_leather_jacket.jpg",
   },
   {
@@ -72,6 +78,7 @@ const INITIAL_PRODUCTS: ProductItem[] = [
     title: "Backpacks",
     description: "High-density Cordura daypacks with waterproof zippers, ergonomic straps, and laptop sleeves",
     category: "Custom Bags",
+    subcategory: "Backpacks",
     image: "/images/grid_backpack.jpg",
   },
 ];
@@ -79,6 +86,7 @@ const INITIAL_PRODUCTS: ProductItem[] = [
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<ProductItem[]>(INITIAL_PRODUCTS);
   const [categories, setCategories] = useState<string[]>(INITIAL_CATEGORIES);
+  const [subcategories, setSubcategories] = useState<SubcategoryItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTab, setSelectedTab] = useState("All Products");
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
@@ -95,11 +103,16 @@ export default function AdminProductsPage() {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [isManageCatsModalOpen, setIsManageCatsModalOpen] = useState(false);
 
-  // Manage Categories draft state
+  // Manage Categories & Subcategories draft state
   const [draftCategories, setDraftCategories] = useState<string[]>(INITIAL_CATEGORIES);
+  const [activeManageCategory, setActiveManageCategory] = useState<string>(INITIAL_CATEGORIES[0]);
+  const [draftSubcategories, setDraftSubcategories] = useState<SubcategoryItem[]>([]);
   const [newCatInput, setNewCatInput] = useState("");
+  const [newSubcatInput, setNewSubcatInput] = useState("");
   const [editingCatIndex, setEditingCatIndex] = useState<number | null>(null);
   const [editingCatValue, setEditingCatValue] = useState("");
+  const [editingSubcatId, setEditingSubcatId] = useState<string | null>(null);
+  const [editingSubcatValue, setEditingSubcatValue] = useState("");
 
   // File input refs for uploading images
   const addFileInputRef = useRef<HTMLInputElement>(null);
@@ -111,6 +124,7 @@ export default function AdminProductsPage() {
     title: "",
     description: "",
     category: "",
+    subcategory: "",
     image: "/images/triptych_leather_stitch.jpg",
   });
 
@@ -119,9 +133,10 @@ export default function AdminProductsPage() {
     async function loadData() {
       setIsDbLoading(true);
       try {
-        const [dbProds, dbCats] = await Promise.all([
+        const [dbProds, dbCats, dbSubs] = await Promise.all([
           fetchProductsFromDb(),
           fetchCategoriesFromDb(),
+          fetchSubcategoriesFromDb(),
         ]);
 
         if (dbProds && dbProds.length > 0) {
@@ -133,9 +148,21 @@ export default function AdminProductsPage() {
         if (dbCats && dbCats.length > 0) {
           setCategories(dbCats);
           setDraftCategories(dbCats);
+          setActiveManageCategory(dbCats[0]);
           try {
             localStorage.setItem("qw_admin_categories", JSON.stringify(dbCats));
           } catch {}
+        }
+        if (dbSubs && dbSubs.length > 0) {
+          setSubcategories(dbSubs);
+          setDraftSubcategories(dbSubs);
+          try {
+            localStorage.setItem("qw_admin_subcategories", JSON.stringify(dbSubs));
+          } catch {}
+        } else {
+          const defaults = getDefaultSubcategoriesList();
+          setSubcategories(defaults);
+          setDraftSubcategories(defaults);
         }
         setDbConnected(true);
       } catch (err) {
@@ -145,8 +172,20 @@ export default function AdminProductsPage() {
           if (savedProducts) setProducts(JSON.parse(savedProducts));
           const savedCats = localStorage.getItem("qw_admin_categories");
           if (savedCats) {
-            setCategories(JSON.parse(savedCats));
-            setDraftCategories(JSON.parse(savedCats));
+            const parsedCats = JSON.parse(savedCats);
+            setCategories(parsedCats);
+            setDraftCategories(parsedCats);
+            if (parsedCats.length > 0) setActiveManageCategory(parsedCats[0]);
+          }
+          const savedSubs = localStorage.getItem("qw_admin_subcategories");
+          if (savedSubs) {
+            const parsedSubs = JSON.parse(savedSubs);
+            setSubcategories(parsedSubs);
+            setDraftSubcategories(parsedSubs);
+          } else {
+            const defaults = getDefaultSubcategoriesList();
+            setSubcategories(defaults);
+            setDraftSubcategories(defaults);
           }
         } catch {}
       } finally {
@@ -171,6 +210,14 @@ export default function AdminProductsPage() {
     } catch {}
   };
 
+  const saveSubcategories = (updated: SubcategoryItem[]) => {
+    setSubcategories(updated);
+    setDraftSubcategories(updated);
+    try {
+      localStorage.setItem("qw_admin_subcategories", JSON.stringify(updated));
+    } catch {}
+  };
+
   // Image upload handler
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -179,6 +226,18 @@ export default function AdminProductsPage() {
       const previewUrl = URL.createObjectURL(file);
       setFormData((prev) => ({ ...prev, image: previewUrl }));
     }
+  };
+
+  // Handle category change in forms to sync default subcategory
+  const handleCategoryChange = (newCat: string) => {
+    const matchingSubs = subcategories.filter(
+      (s) => s.category.toLowerCase() === newCat.toLowerCase()
+    );
+    setFormData((prev) => ({
+      ...prev,
+      category: newCat,
+      subcategory: matchingSubs[0]?.name || "",
+    }));
   };
 
   // Filter products by tab & search query
@@ -192,7 +251,8 @@ export default function AdminProductsPage() {
         !q ||
         prod.title.toLowerCase().includes(q) ||
         prod.description.toLowerCase().includes(q) ||
-        prod.category.toLowerCase().includes(q);
+        prod.category.toLowerCase().includes(q) ||
+        (prod.subcategory && prod.subcategory.toLowerCase().includes(q));
       return matchesTab && matchesSearch;
     });
   }, [products, selectedTab, searchQuery]);
@@ -200,10 +260,15 @@ export default function AdminProductsPage() {
   // Handlers for Add
   const handleOpenAdd = () => {
     setSelectedFile(null);
+    const initialCat = categories[0] || "Activewear";
+    const matchingSubs = subcategories.filter(
+      (s) => s.category.toLowerCase() === initialCat.toLowerCase()
+    );
     setFormData({
       title: "",
       description: "",
-      category: categories[0] || "Leather Products",
+      category: initialCat,
+      subcategory: matchingSubs[0]?.name || "",
       image: "/images/triptych_leather_stitch.jpg",
     });
     setIsAddModalOpen(true);
@@ -225,10 +290,11 @@ export default function AdminProductsPage() {
         }
       }
 
-      const category = formData.category || (categories[0] || "Leather Products");
+      const category = formData.category || (categories[0] || "Activewear");
+      const subcategory = formData.subcategory || "";
       const description =
         formData.description.trim() ||
-        `${category} · Premium handcrafted specification`;
+        `${subcategory || category} · Premium handcrafted specification`;
 
       let savedProd: ProductItem;
       try {
@@ -236,6 +302,7 @@ export default function AdminProductsPage() {
           title: formData.title.trim(),
           description,
           category,
+          subcategory,
           image: finalImageUrl,
         });
       } catch (dbErr) {
@@ -245,6 +312,7 @@ export default function AdminProductsPage() {
           title: formData.title.trim(),
           description,
           category,
+          subcategory,
           image: finalImageUrl,
         };
       }
@@ -265,6 +333,7 @@ export default function AdminProductsPage() {
       title: prod.title,
       description: prod.description,
       category: prod.category,
+      subcategory: prod.subcategory || "",
       image: prod.image,
     });
     setIsEditModalOpen(true);
@@ -287,15 +356,17 @@ export default function AdminProductsPage() {
       }
 
       const category = formData.category || activeProduct.category;
+      const subcategory = formData.subcategory || "";
       const description =
         formData.description.trim() ||
-        `${category} · Premium handcrafted specification`;
+        `${subcategory || category} · Premium handcrafted specification`;
 
       try {
         await updateProductInDb(activeProduct.id, {
           title: formData.title.trim(),
           description,
           category,
+          subcategory,
           image: finalImageUrl,
         });
       } catch (dbErr) {
@@ -309,6 +380,7 @@ export default function AdminProductsPage() {
               title: formData.title.trim(),
               description,
               category,
+              subcategory,
               image: finalImageUrl,
             }
           : p
@@ -347,12 +419,17 @@ export default function AdminProductsPage() {
     }
   };
 
-  // Handlers for Manage Categories
+  // Handlers for Manage Categories & Subcategories
   const handleOpenManageCats = () => {
     setDraftCategories([...categories]);
+    setDraftSubcategories([...subcategories]);
+    setActiveManageCategory(categories[0] || "Activewear");
     setNewCatInput("");
+    setNewSubcatInput("");
     setEditingCatIndex(null);
     setEditingCatValue("");
+    setEditingSubcatId(null);
+    setEditingSubcatValue("");
     setIsManageCatsModalOpen(true);
   };
 
@@ -363,7 +440,9 @@ export default function AdminProductsPage() {
       setNewCatInput("");
       return;
     }
-    setDraftCategories([...draftCategories, trimmed]);
+    const updatedCats = [...draftCategories, trimmed];
+    setDraftCategories(updatedCats);
+    setActiveManageCategory(trimmed);
     setNewCatInput("");
   };
 
@@ -386,6 +465,17 @@ export default function AdminProductsPage() {
       setDraftCategories(updated);
 
       if (oldName !== trimmed) {
+        if (activeManageCategory === oldName) {
+          setActiveManageCategory(trimmed);
+        }
+
+        // Update linked subcategories in draft state
+        const updatedSubs = draftSubcategories.map((s) =>
+          s.category === oldName ? { ...s, category: trimmed } : s
+        );
+        setDraftSubcategories(updatedSubs);
+        saveSubcategories(updatedSubs);
+
         try {
           await renameCategoryInDb(oldName, trimmed);
         } catch (e) {
@@ -405,9 +495,116 @@ export default function AdminProductsPage() {
   const handleDeleteCategory = (index: number) => {
     if (draftCategories.length <= 1) return;
     const catToDelete = draftCategories[index];
-    setDraftCategories(draftCategories.filter((_, i) => i !== index));
+    const newCats = draftCategories.filter((_, i) => i !== index);
+    setDraftCategories(newCats);
+
+    if (activeManageCategory === catToDelete) {
+      setActiveManageCategory(newCats[0] || "");
+    }
+
+    // Also remove subcategories linked to this category
+    const remainingSubs = draftSubcategories.filter((s) => s.category !== catToDelete);
+    setDraftSubcategories(remainingSubs);
+    saveSubcategories(remainingSubs);
+
     if (selectedTab === catToDelete) {
       setSelectedTab("All Products");
+    }
+  };
+
+  // Subcategories management handlers
+  const handleAddSubcategory = async () => {
+    const trimmed = newSubcatInput.trim();
+    if (!trimmed || !activeManageCategory) return;
+
+    // Check duplicate under this category
+    const exists = draftSubcategories.some(
+      (s) =>
+        s.category.toLowerCase() === activeManageCategory.toLowerCase() &&
+        s.name.toLowerCase() === trimmed.toLowerCase()
+    );
+    if (exists) {
+      setNewSubcatInput("");
+      return;
+    }
+
+    const currentCatSubs = draftSubcategories.filter(
+      (s) => s.category.toLowerCase() === activeManageCategory.toLowerCase()
+    );
+    const newSubItem: SubcategoryItem = {
+      id: `sub-${Date.now()}`,
+      name: trimmed,
+      category: activeManageCategory,
+      display_order: currentCatSubs.length + 1,
+    };
+
+    const updated = [...draftSubcategories, newSubItem];
+    setDraftSubcategories(updated);
+    saveSubcategories(updated);
+    setNewSubcatInput("");
+
+    try {
+      await addSubcategoryToDb(trimmed, activeManageCategory, newSubItem.display_order);
+    } catch (e) {
+      console.warn("Error inserting subcategory into DB:", e);
+    }
+  };
+
+  const handleStartEditSubcategory = (sub: SubcategoryItem) => {
+    setEditingSubcatId(sub.id);
+    setEditingSubcatValue(sub.name);
+  };
+
+  const handleSaveEditSubcategory = async (sub: SubcategoryItem) => {
+    const trimmed = editingSubcatValue.trim();
+    if (!trimmed || trimmed === sub.name) {
+      setEditingSubcatId(null);
+      setEditingSubcatValue("");
+      return;
+    }
+
+    const oldName = sub.name;
+    const updated = draftSubcategories.map((s) =>
+      s.id === sub.id ? { ...s, name: trimmed } : s
+    );
+    setDraftSubcategories(updated);
+    saveSubcategories(updated);
+
+    // Update products with this subcategory
+    const updatedProds = products.map((p) =>
+      p.category === sub.category && p.subcategory === oldName
+        ? { ...p, subcategory: trimmed }
+        : p
+    );
+    saveProducts(updatedProds);
+
+    try {
+      await renameSubcategoryInDb(oldName, trimmed, sub.category);
+    } catch (e) {
+      console.warn("Error renaming subcategory in DB:", e);
+    }
+
+    setEditingSubcatId(null);
+    setEditingSubcatValue("");
+  };
+
+  const handleDeleteSubcategory = async (sub: SubcategoryItem) => {
+    const updated = draftSubcategories.filter((s) => s.id !== sub.id);
+    setDraftSubcategories(updated);
+    saveSubcategories(updated);
+
+    // Clear subcategory from affected products
+    const updatedProds = products.map((p) =>
+      p.category === sub.category && p.subcategory === sub.name
+        ? { ...p, subcategory: "" }
+        : p
+    );
+    saveProducts(updatedProds);
+
+    try {
+      await deleteSubcategoryFromDb(sub.name, sub.category);
+    } catch (e) {
+      console.warn("Error deleting subcategory from DB:", e);
     }
   };
 
@@ -438,6 +635,7 @@ export default function AdminProductsPage() {
       }
 
       saveCategories(draftCategories);
+      saveSubcategories(draftSubcategories);
       if (!draftCategories.includes(selectedTab) && selectedTab !== "All Products") {
         setSelectedTab("All Products");
       }
@@ -452,6 +650,9 @@ export default function AdminProductsPage() {
     setEditingCatIndex(null);
     setEditingCatValue("");
     setNewCatInput("");
+    setEditingSubcatId(null);
+    setEditingSubcatValue("");
+    setNewSubcatInput("");
   };
 
   // Additional categories for "More categories" dropdown
@@ -594,7 +795,7 @@ export default function AdminProductsPage() {
             <input
               type="search"
               className="admin-search-input"
-              placeholder="Search products..."
+              placeholder="Search products, categories, subcategories..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Search products"
@@ -707,6 +908,14 @@ export default function AdminProductsPage() {
                     }}
                   />
                   <div className="admin-product-info">
+                    <div className="admin-product-meta-row">
+                      <span className="admin-product-cat-pill">{prod.category}</span>
+                      {prod.subcategory && (
+                        <span className="admin-product-subcat-pill">
+                          {prod.subcategory}
+                        </span>
+                      )}
+                    </div>
                     <h3 className="admin-product-title">{prod.title}</h3>
                     <p className="admin-product-desc">{prod.description}</p>
                   </div>
@@ -734,7 +943,7 @@ export default function AdminProductsPage() {
         </div>
       </main>
 
-      {/* ================= MODAL: ADD PRODUCT (MATCHING SCREENSHOT) ================= */}
+      {/* ================= MODAL: ADD PRODUCT ================= */}
       {isAddModalOpen && (
         <div
           className="admin-modal-overlay"
@@ -747,7 +956,7 @@ export default function AdminProductsPage() {
             <div className="add-product-modal-header">
               <h2 className="add-product-modal-title">Add New Product</h2>
               <p className="add-product-modal-subtitle">
-                Enter the details for your new product
+                Enter the details and subcategory for your new product
               </p>
             </div>
 
@@ -824,9 +1033,7 @@ export default function AdminProductsPage() {
                     className="add-product-select"
                     required
                     value={formData.category}
-                    onChange={(e) =>
-                      setFormData({ ...formData, category: e.target.value })
-                    }
+                    onChange={(e) => handleCategoryChange(e.target.value)}
                   >
                     <option value="" disabled>
                       Select category
@@ -836,6 +1043,61 @@ export default function AdminProductsPage() {
                         {c}
                       </option>
                     ))}
+                  </select>
+                  <svg
+                    className="add-product-select-arrow"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Field 5: SUBCATEGORY (LINKED TO SELECTED CATEGORY) */}
+              <div className="add-product-form-group">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <label className="add-product-label" style={{ marginBottom: 0 }}>
+                    SUBCATEGORY
+                  </label>
+                  <span style={{ fontSize: "11px", color: "#727284" }}>
+                    Linked to {formData.category || "category"}
+                  </span>
+                </div>
+                <div className="add-product-select-wrapper">
+                  <select
+                    className="add-product-select"
+                    value={formData.subcategory}
+                    onChange={(e) =>
+                      setFormData({ ...formData, subcategory: e.target.value })
+                    }
+                  >
+                    <option value="">Select subcategory (Optional)</option>
+                    {subcategories
+                      .filter(
+                        (s) =>
+                          s.category.toLowerCase() ===
+                          (formData.category || "").toLowerCase()
+                      )
+                      .map((sub) => (
+                        <option key={sub.id || sub.name} value={sub.name}>
+                          {sub.name}
+                        </option>
+                      ))}
                   </select>
                   <svg
                     className="add-product-select-arrow"
@@ -878,7 +1140,7 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* ================= MODAL: EDIT PRODUCT (MATCHING SCREENSHOT STYLE) ================= */}
+      {/* ================= MODAL: EDIT PRODUCT ================= */}
       {isEditModalOpen && activeProduct && (
         <div
           className="admin-modal-overlay"
@@ -891,7 +1153,7 @@ export default function AdminProductsPage() {
             <div className="add-product-modal-header">
               <h2 className="add-product-modal-title">Edit Product</h2>
               <p className="add-product-modal-subtitle">
-                Update the details for this product
+                Update the details and subcategory for this product
               </p>
             </div>
 
@@ -968,9 +1230,7 @@ export default function AdminProductsPage() {
                     className="add-product-select"
                     required
                     value={formData.category}
-                    onChange={(e) =>
-                      setFormData({ ...formData, category: e.target.value })
-                    }
+                    onChange={(e) => handleCategoryChange(e.target.value)}
                   >
                     <option value="" disabled>
                       Select category
@@ -980,6 +1240,61 @@ export default function AdminProductsPage() {
                         {c}
                       </option>
                     ))}
+                  </select>
+                  <svg
+                    className="add-product-select-arrow"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Field 5: SUBCATEGORY (LINKED TO SELECTED CATEGORY) */}
+              <div className="add-product-form-group">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <label className="add-product-label" style={{ marginBottom: 0 }}>
+                    SUBCATEGORY
+                  </label>
+                  <span style={{ fontSize: "11px", color: "#727284" }}>
+                    Linked to {formData.category || "category"}
+                  </span>
+                </div>
+                <div className="add-product-select-wrapper">
+                  <select
+                    className="add-product-select"
+                    value={formData.subcategory}
+                    onChange={(e) =>
+                      setFormData({ ...formData, subcategory: e.target.value })
+                    }
+                  >
+                    <option value="">Select subcategory (Optional)</option>
+                    {subcategories
+                      .filter(
+                        (s) =>
+                          s.category.toLowerCase() ===
+                          (formData.category || "").toLowerCase()
+                      )
+                      .map((sub) => (
+                        <option key={sub.id || sub.name} value={sub.name}>
+                          {sub.name}
+                        </option>
+                      ))}
                   </select>
                   <svg
                     className="add-product-select-arrow"
@@ -1059,7 +1374,11 @@ export default function AdminProductsPage() {
               <button
                 type="button"
                 className="admin-btn-remove"
-                style={{ padding: "12px 28px", borderRadius: "12px", ...(isSaving ? { opacity: 0.7, cursor: "not-allowed" } : {}) }}
+                style={{
+                  padding: "12px 28px",
+                  borderRadius: "12px",
+                  ...(isSaving ? { opacity: 0.7, cursor: "not-allowed" } : {}),
+                }}
                 onClick={handleConfirmRemove}
                 disabled={isSaving}
               >
@@ -1070,7 +1389,7 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* ================= MODAL: MANAGE CATEGORIES (MATCHING SCREENSHOT) ================= */}
+      {/* ================= MODAL: MANAGE CATEGORIES & SUBCATEGORIES ================= */}
       {isManageCatsModalOpen && (
         <div
           className="admin-modal-overlay"
@@ -1078,10 +1397,15 @@ export default function AdminProductsPage() {
             if (e.target === e.currentTarget) handleCancelManageCats();
           }}
         >
-          <div className="manage-cats-modal-box">
+          <div className="manage-cats-modal-box expanded">
             {/* Header */}
             <div className="manage-cats-header">
-              <h2 className="manage-cats-title">Manage Categories</h2>
+              <div>
+                <h2 className="manage-cats-title">Manage Categories &amp; Subcategories</h2>
+                <p className="manage-cats-subtitle">
+                  Configure store categories and manage linked subcategories
+                </p>
+              </div>
               <button
                 type="button"
                 className="manage-cats-close-btn"
@@ -1104,154 +1428,289 @@ export default function AdminProductsPage() {
               </button>
             </div>
 
-            {/* ADD NEW CATEGORY section */}
-            <div>
-              <label className="manage-cats-section-label">
-                ADD NEW CATEGORY
-              </label>
-              <div className="manage-cats-add-row">
-                <input
-                  type="text"
-                  placeholder="e.g. Compression Gear"
-                  className="manage-cats-input"
-                  value={newCatInput}
-                  onChange={(e) => setNewCatInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleAddCategory();
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  className="manage-cats-btn-add"
-                  onClick={handleAddCategory}
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
+            {/* Split layout: Categories on Left, Subcategories on Right */}
+            <div className="manage-cats-layout">
+              {/* LEFT COLUMN: Categories */}
+              <div className="manage-cats-col">
+                <label className="manage-cats-section-label">
+                  CATEGORIES ({draftCategories.length})
+                </label>
+                <div className="manage-cats-add-row">
+                  <input
+                    type="text"
+                    placeholder="New category..."
+                    className="manage-cats-input"
+                    value={newCatInput}
+                    onChange={(e) => setNewCatInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddCategory();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="manage-cats-btn-add"
+                    onClick={handleAddCategory}
                   >
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                  <span>ADD</span>
-                </button>
+                    <span>+ ADD</span>
+                  </button>
+                </div>
+
+                <div className="manage-cats-list">
+                  {draftCategories.map((cat, idx) => {
+                    const subsCount = draftSubcategories.filter(
+                      (s) => s.category.toLowerCase() === cat.toLowerCase()
+                    ).length;
+                    const isActive = activeManageCategory.toLowerCase() === cat.toLowerCase();
+
+                    return (
+                      <div
+                        key={`${cat}-${idx}`}
+                        className={`manage-cats-item ${isActive ? "active" : ""}`}
+                        onClick={() => setActiveManageCategory(cat)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {editingCatIndex === idx ? (
+                          <input
+                            type="text"
+                            autoFocus
+                            className="manage-cats-inline-input"
+                            value={editingCatValue}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => setEditingCatValue(e.target.value)}
+                            onBlur={() => handleSaveEditCategory(idx)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleSaveEditCategory(idx);
+                              } else if (e.key === "Escape") {
+                                setEditingCatIndex(null);
+                              }
+                            }}
+                          />
+                        ) : (
+                          <div className="manage-cats-name-wrapper">
+                            <span className="manage-cats-name">{cat}</span>
+                            <span className="manage-cats-sub-badge">
+                              {subsCount} {subsCount === 1 ? "sub" : "subs"}
+                            </span>
+                          </div>
+                        )}
+
+                        <div
+                          className="manage-cats-actions"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            type="button"
+                            className="manage-cats-action-btn"
+                            aria-label={`Edit ${cat}`}
+                            onClick={() => {
+                              if (editingCatIndex === idx) {
+                                handleSaveEditCategory(idx);
+                              } else {
+                                handleStartEditCategory(idx, cat);
+                              }
+                            }}
+                          >
+                            <svg
+                              width="15"
+                              height="15"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.1"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M12 20h9" />
+                              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                            </svg>
+                          </button>
+                          <button
+                            type="button"
+                            className="manage-cats-action-btn delete"
+                            aria-label={`Delete ${cat}`}
+                            onClick={() => handleDeleteCategory(idx)}
+                          >
+                            <svg
+                              width="15"
+                              height="15"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.1"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
-            {/* EXISTING CATEGORIES section */}
-            <div style={{ flex: 1, minHeight: 0 }}>
-              <label className="manage-cats-section-label">
-                EXISTING CATEGORIES
-              </label>
-              <div className="manage-cats-list">
-                {draftCategories.map((cat, idx) => (
-                  <div key={`${cat}-${idx}`} className="manage-cats-item">
-                    {editingCatIndex === idx ? (
-                      <input
-                        type="text"
-                        autoFocus
-                        className="manage-cats-inline-input"
-                        value={editingCatValue}
-                        onChange={(e) => setEditingCatValue(e.target.value)}
-                        onBlur={() => handleSaveEditCategory(idx)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            handleSaveEditCategory(idx);
-                          } else if (e.key === "Escape") {
-                            setEditingCatIndex(null);
-                          }
-                        }}
-                      />
-                    ) : (
-                      <span className="manage-cats-name">{cat}</span>
-                    )}
+              {/* RIGHT COLUMN: Subcategories of activeManageCategory */}
+              <div className="manage-cats-col">
+                <label className="manage-cats-section-label">
+                  SUBCATEGORIES · {activeManageCategory.toUpperCase()}
+                </label>
+                <div className="manage-cats-add-row">
+                  <input
+                    type="text"
+                    placeholder={`Add subcategory to ${activeManageCategory}...`}
+                    className="manage-cats-input"
+                    value={newSubcatInput}
+                    onChange={(e) => setNewSubcatInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddSubcategory();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="manage-cats-btn-add"
+                    onClick={handleAddSubcategory}
+                  >
+                    <span>+ ADD</span>
+                  </button>
+                </div>
 
-                    <div className="manage-cats-actions">
-                      {/* Edit Button */}
-                      <button
-                        type="button"
-                        className="manage-cats-action-btn"
-                        aria-label={`Edit ${cat}`}
-                        onClick={() => {
-                          if (editingCatIndex === idx) {
-                            handleSaveEditCategory(idx);
-                          } else {
-                            handleStartEditCategory(idx, cat);
-                          }
-                        }}
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.1"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M12 20h9" />
-                          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                        </svg>
-                      </button>
-
-                      {/* Delete Button */}
-                      <button
-                        type="button"
-                        className="manage-cats-action-btn delete"
-                        aria-label={`Delete ${cat}`}
-                        onClick={() => handleDeleteCategory(idx)}
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.1"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="3 6 5 6 21 6" />
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                          <line x1="10" y1="11" x2="10" y2="17" />
-                          <line x1="14" y1="11" x2="14" y2="17" />
-                        </svg>
-                      </button>
+                <div className="manage-cats-list">
+                  {draftSubcategories.filter(
+                    (s) =>
+                      s.category.toLowerCase() ===
+                      activeManageCategory.toLowerCase()
+                  ).length === 0 ? (
+                    <div className="manage-subcats-empty">
+                      No subcategories for {activeManageCategory} yet.
+                      <br />
+                      Type a name above and click ADD.
                     </div>
-                  </div>
-                ))}
+                  ) : (
+                    draftSubcategories
+                      .filter(
+                        (s) =>
+                          s.category.toLowerCase() ===
+                          activeManageCategory.toLowerCase()
+                      )
+                      .map((sub) => (
+                        <div key={sub.id} className="manage-cats-item">
+                          {editingSubcatId === sub.id ? (
+                            <input
+                              type="text"
+                              autoFocus
+                              className="manage-cats-inline-input"
+                              value={editingSubcatValue}
+                              onChange={(e) => setEditingSubcatValue(e.target.value)}
+                              onBlur={() => handleSaveEditSubcategory(sub)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  handleSaveEditSubcategory(sub);
+                                } else if (e.key === "Escape") {
+                                  setEditingSubcatId(null);
+                                }
+                              }}
+                            />
+                          ) : (
+                            <span className="manage-cats-name">{sub.name}</span>
+                          )}
+
+                          <div className="manage-cats-actions">
+                            <button
+                              type="button"
+                              className="manage-cats-action-btn"
+                              aria-label={`Edit ${sub.name}`}
+                              onClick={() => {
+                                if (editingSubcatId === sub.id) {
+                                  handleSaveEditSubcategory(sub);
+                                } else {
+                                  handleStartEditSubcategory(sub);
+                                }
+                              }}
+                            >
+                              <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.1"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M12 20h9" />
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              className="manage-cats-action-btn delete"
+                              aria-label={`Delete ${sub.name}`}
+                              onClick={() => handleDeleteSubcategory(sub)}
+                            >
+                              <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.1"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Footer Buttons */}
-            <div className="manage-cats-footer">
-              <button
-                type="button"
-                className="manage-cats-btn-save"
-                onClick={handleSaveManageCats}
-                disabled={isSaving}
-                style={isSaving ? { opacity: 0.7, cursor: "not-allowed" } : undefined}
-              >
-                {isSaving ? "SAVING CHANGES..." : "SAVE CHANGES"}
-              </button>
+            <div
+              className="manage-cats-footer"
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                gap: "12px",
+              }}
+            >
               <button
                 type="button"
                 className="manage-cats-btn-cancel"
                 onClick={handleCancelManageCats}
                 disabled={isSaving}
+                style={{ width: "auto", minWidth: "120px" }}
               >
                 CANCEL
+              </button>
+              <button
+                type="button"
+                className="manage-cats-btn-save"
+                onClick={handleSaveManageCats}
+                disabled={isSaving}
+                style={{
+                  width: "auto",
+                  minWidth: "160px",
+                  ...(isSaving ? { opacity: 0.7, cursor: "not-allowed" } : {}),
+                }}
+              >
+                {isSaving ? "SAVING CHANGES..." : "SAVE CHANGES"}
               </button>
             </div>
           </div>

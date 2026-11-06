@@ -5,8 +5,20 @@ export interface ProductItem {
   title: string;
   description: string;
   category: string;
+  subcategory?: string;
+  subcategory_id?: string | null;
   image: string;
   category_id?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SubcategoryItem {
+  id: string;
+  name: string;
+  category: string;
+  category_id?: string | null;
+  display_order?: number;
   created_at?: string;
 }
 
@@ -19,12 +31,70 @@ export const DEFAULT_CATEGORIES: string[] = [
   "Custom Bags",
 ];
 
+export const DEFAULT_SUBCATEGORIES: Record<string, string[]> = {
+  "Activewear": [
+    "Gym T-shirts and tank tops",
+    "Leggings and sports bras",
+    "Compression wear",
+    "Workout shorts and joggers",
+    "Custom fitness sets",
+  ],
+  "Sportswear": [
+    "Football and hockey uniforms",
+    "Tracksuits and training suits",
+    "Cycling jerseys and bib shorts",
+    "Basketball jerseys and shorts",
+    "Sports jackets and teamwear",
+  ],
+  "Streetwear": [
+    "Oversized T-shirts",
+    "Hoodies and sweatshirts",
+    "Baggy jeans and joggers",
+    "Varsity and bomber jackets",
+    "Custom caps and beanies",
+  ],
+  "Safety Wear": [
+    "High-visibility safety vests",
+    "Reflective jackets and trousers",
+    "Work shirts and uniforms",
+    "Industrial coveralls",
+    "Company-branded workwear",
+  ],
+  "Leather Products": [
+    "Leather jackets",
+    "Leather wallets and cardholders",
+    "Leather belts",
+    "Leather accessories",
+    "Custom leather products",
+  ],
+  "Custom Bags": [
+    "Backpacks",
+    "Gym and duffel bags",
+    "Sports and team bags",
+    "Travel bags",
+    "Custom promotional bags",
+  ],
+};
+
+// Helper to infer subcategory from product title/category if not explicitly set
+export function inferSubcategory(title: string, category: string): string {
+  const subs = DEFAULT_SUBCATEGORIES[category] || [];
+  const lowerTitle = (title || "").toLowerCase();
+  for (const s of subs) {
+    if (lowerTitle.includes(s.toLowerCase())) {
+      return s;
+    }
+  }
+  return subs[0] || "";
+}
+
 export const DEFAULT_PRODUCTS: ProductItem[] = [
   {
     id: "prod-1",
     title: "Gym T-shirts and tank tops",
     description: "Custom breathable athletic fabrics engineered for gym performance and durability",
     category: "Activewear",
+    subcategory: "Gym T-shirts and tank tops",
     image: "/images/grid_sportswear.jpg",
   },
   {
@@ -32,6 +102,7 @@ export const DEFAULT_PRODUCTS: ProductItem[] = [
     title: "Football and hockey uniforms",
     description: "Reinforced tear-resistant match jerseys and socks with vivid all-over sublimation printing",
     category: "Sportswear",
+    subcategory: "Football and hockey uniforms",
     image: "/images/grid_sportswear.jpg",
   },
   {
@@ -39,6 +110,7 @@ export const DEFAULT_PRODUCTS: ProductItem[] = [
     title: "Oversized T-shirts",
     description: "Vintage-washed heavyweight combed cotton tees featuring dropped shoulders and custom fit blocks",
     category: "Streetwear",
+    subcategory: "Oversized T-shirts",
     image: "/images/hero_factory_sewing.jpg",
   },
   {
@@ -46,6 +118,7 @@ export const DEFAULT_PRODUCTS: ProductItem[] = [
     title: "High-visibility safety vests",
     description: "ANSI/ISEA 107 Class 2 certified mesh and solid polyester safety vests with silver reflective tape",
     category: "Safety Wear",
+    subcategory: "High-visibility safety vests",
     image: "/images/grid_workwear.jpg",
   },
   {
@@ -53,6 +126,7 @@ export const DEFAULT_PRODUCTS: ProductItem[] = [
     title: "Leather jackets",
     description: "Handcrafted 100% genuine top-grain cowhide and sheepskin leather jackets with antique YKK hardware",
     category: "Leather Products",
+    subcategory: "Leather jackets",
     image: "/images/grid_leather_jacket.jpg",
   },
   {
@@ -60,9 +134,14 @@ export const DEFAULT_PRODUCTS: ProductItem[] = [
     title: "Backpacks",
     description: "High-density Cordura daypacks with waterproof zippers, ergonomic straps, and laptop sleeves",
     category: "Custom Bags",
+    subcategory: "Backpacks",
     image: "/images/grid_backpack.jpg",
   },
 ];
+
+/* ---------------------------------------------------------------
+   Products Queries & Mutations
+--------------------------------------------------------------- */
 
 export async function fetchProductsFromDb(): Promise<ProductItem[]> {
   const { data, error } = await supabase
@@ -80,30 +159,20 @@ export async function fetchProductsFromDb(): Promise<ProductItem[]> {
     title: row.title,
     description: row.description || "",
     category: row.category,
+    subcategory: row.subcategory || inferSubcategory(row.title, row.category),
+    subcategory_id: row.subcategory_id || null,
     image: row.image || "/images/triptych_leather_stitch.jpg",
     category_id: row.category_id,
     created_at: row.created_at,
+    updated_at: row.updated_at,
   }));
-}
-
-export async function fetchCategoriesFromDb(): Promise<string[]> {
-  const { data, error } = await supabase
-    .from("categories")
-    .select("name, display_order")
-    .order("display_order", { ascending: true });
-
-  if (error) {
-    console.error("Error fetching categories from Supabase:", error);
-    throw error;
-  }
-
-  return (data || []).map((c) => c.name);
 }
 
 export async function addProductToDb(product: {
   title: string;
   description: string;
   category: string;
+  subcategory?: string;
   image: string;
 }): Promise<ProductItem> {
   // Find category ID if exists
@@ -113,21 +182,56 @@ export async function addProductToDb(product: {
     .eq("name", product.category)
     .single();
 
+  // Find subcategory ID if exists
+  let subcategoryId: string | null = null;
+  if (product.subcategory) {
+    const { data: subData } = await supabase
+      .from("subcategories")
+      .select("id")
+      .eq("name", product.subcategory)
+      .eq("category", product.category)
+      .maybeSingle();
+    subcategoryId = subData?.id || null;
+  }
+
+  const insertPayload: any = {
+    title: product.title,
+    description: product.description,
+    category: product.category,
+    category_id: catData?.id || null,
+    subcategory: product.subcategory || inferSubcategory(product.title, product.category),
+    subcategory_id: subcategoryId,
+    image: product.image,
+  };
+
   const { data, error } = await supabase
     .from("products")
-    .insert([
-      {
-        title: product.title,
-        description: product.description,
-        category: product.category,
-        category_id: catData?.id || null,
-        image: product.image,
-      },
-    ])
+    .insert([insertPayload])
     .select()
     .single();
 
   if (error) {
+    // If subcategory column doesn't exist yet, retry without subcategory columns
+    if (error.message?.includes("subcategory")) {
+      delete insertPayload.subcategory;
+      delete insertPayload.subcategory_id;
+      const { data: retryData, error: retryErr } = await supabase
+        .from("products")
+        .insert([insertPayload])
+        .select()
+        .single();
+      if (retryErr) throw retryErr;
+      return {
+        id: retryData.id,
+        title: retryData.title,
+        description: retryData.description || "",
+        category: retryData.category,
+        subcategory: product.subcategory || "",
+        subcategory_id: null,
+        image: retryData.image || "/images/triptych_leather_stitch.jpg",
+        category_id: retryData.category_id,
+      };
+    }
     console.error("Error inserting product into Supabase:", error);
     throw error;
   }
@@ -137,6 +241,8 @@ export async function addProductToDb(product: {
     title: data.title,
     description: data.description || "",
     category: data.category,
+    subcategory: data.subcategory || product.subcategory || "",
+    subcategory_id: data.subcategory_id || null,
     image: data.image || "/images/triptych_leather_stitch.jpg",
     category_id: data.category_id,
   };
@@ -158,19 +264,50 @@ export async function updateProductInDb(
       .from("categories")
       .select("id")
       .eq("name", updates.category)
-      .single();
+      .maybeSingle();
     if (catData?.id) {
       payload.category_id = catData.id;
     }
   }
+
+  if (updates.subcategory !== undefined) {
+    payload.subcategory = updates.subcategory;
+    const catName = updates.category;
+    if (catName && updates.subcategory) {
+      const { data: subData } = await supabase
+        .from("subcategories")
+        .select("id")
+        .eq("name", updates.subcategory)
+        .eq("category", catName)
+        .maybeSingle();
+      if (subData?.id) {
+        payload.subcategory_id = subData.id;
+      }
+    }
+  }
+
   if (updates.image !== undefined) payload.image = updates.image;
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("products")
     .update(payload)
     .eq("id", id)
     .select()
     .single();
+
+  if (error && error.message?.includes("subcategory")) {
+    // Retry without subcategory fields if columns not yet present in schema
+    delete payload.subcategory;
+    delete payload.subcategory_id;
+    const res = await supabase
+      .from("products")
+      .update(payload)
+      .eq("id", id)
+      .select()
+      .single();
+    data = res.data;
+    error = res.error;
+  }
 
   if (error) {
     console.error("Error updating product in Supabase:", error);
@@ -182,6 +319,8 @@ export async function updateProductInDb(
     title: data.title,
     description: data.description || "",
     category: data.category,
+    subcategory: data.subcategory || updates.subcategory || "",
+    subcategory_id: data.subcategory_id || null,
     image: data.image,
     category_id: data.category_id,
   };
@@ -194,6 +333,24 @@ export async function removeProductFromDb(id: string): Promise<boolean> {
     throw error;
   }
   return true;
+}
+
+/* ---------------------------------------------------------------
+   Categories Queries & Mutations
+--------------------------------------------------------------- */
+
+export async function fetchCategoriesFromDb(): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("categories")
+    .select("name, display_order")
+    .order("display_order", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching categories from Supabase:", error);
+    throw error;
+  }
+
+  return (data || []).map((c) => c.name);
 }
 
 export async function addCategoryToDb(name: string, displayOrder: number): Promise<string> {
@@ -223,14 +380,16 @@ export async function renameCategoryInDb(oldName: string, newName: string): Prom
   }
 
   // Update products referencing this category name
-  const { error: prodError } = await supabase
+  await supabase
     .from("products")
     .update({ category: newName })
     .eq("category", oldName);
 
-  if (prodError) {
-    console.warn("Notice: Updating category name across products had warning:", prodError);
-  }
+  // Update subcategories referencing this category name
+  await supabase
+    .from("subcategories")
+    .update({ category: newName })
+    .eq("category", oldName);
 
   return true;
 }
@@ -241,8 +400,161 @@ export async function deleteCategoryFromDb(name: string): Promise<boolean> {
     console.error("Error deleting category from Supabase:", error);
     throw error;
   }
+
+  // Also remove subcategories linked to this category
+  await supabase.from("subcategories").delete().eq("category", name);
+
   return true;
 }
+
+/* ---------------------------------------------------------------
+   Subcategories Queries & Mutations
+--------------------------------------------------------------- */
+
+export async function fetchSubcategoriesFromDb(): Promise<SubcategoryItem[]> {
+  try {
+    const { data, error } = await supabase
+      .from("subcategories")
+      .select("*")
+      .order("display_order", { ascending: true });
+
+    if (error) {
+      console.warn("Notice: Subcategories table query fallback to default client list:", error.message);
+      return getDefaultSubcategoriesList();
+    }
+
+    if (!data || data.length === 0) {
+      return getDefaultSubcategoriesList();
+    }
+
+    return data.map((row) => ({
+      id: row.id,
+      name: row.name,
+      category: row.category,
+      category_id: row.category_id || null,
+      display_order: row.display_order || 0,
+      created_at: row.created_at,
+    }));
+  } catch (err) {
+    console.warn("Subcategories fetch fallback to defaults:", err);
+    return getDefaultSubcategoriesList();
+  }
+}
+
+export function getDefaultSubcategoriesList(): SubcategoryItem[] {
+  const list: SubcategoryItem[] = [];
+  let order = 1;
+  for (const [cat, subs] of Object.entries(DEFAULT_SUBCATEGORIES)) {
+    for (const sub of subs) {
+      list.push({
+        id: `sub-${cat.toLowerCase().replace(/\s+/g, '-')}-${sub.toLowerCase().replace(/\s+/g, '-')}`,
+        name: sub,
+        category: cat,
+        display_order: order++,
+      });
+    }
+  }
+  return list;
+}
+
+export async function addSubcategoryToDb(
+  name: string,
+  category: string,
+  displayOrder?: number
+): Promise<SubcategoryItem> {
+  const { data: catData } = await supabase
+    .from("categories")
+    .select("id")
+    .eq("name", category)
+    .maybeSingle();
+
+  const payload: any = {
+    name,
+    category,
+    category_id: catData?.id || null,
+    display_order: displayOrder || 0,
+  };
+
+  const { data, error } = await supabase
+    .from("subcategories")
+    .insert([payload])
+    .select()
+    .single();
+
+  if (error) {
+    console.warn("Notice: Inserting subcategory into Supabase had error:", error.message);
+    // Return constructed item so client UI stays functional
+    return {
+      id: `local-sub-${Date.now()}`,
+      name,
+      category,
+      category_id: catData?.id || null,
+      display_order: displayOrder || 0,
+    };
+  }
+
+  return {
+    id: data.id,
+    name: data.name,
+    category: data.category,
+    category_id: data.category_id,
+    display_order: data.display_order,
+    created_at: data.created_at,
+  };
+}
+
+export async function renameSubcategoryInDb(
+  oldName: string,
+  newName: string,
+  category: string
+): Promise<boolean> {
+  const { error: subError } = await supabase
+    .from("subcategories")
+    .update({ name: newName })
+    .eq("name", oldName)
+    .eq("category", category);
+
+  if (subError) {
+    console.warn("Notice: Updating subcategory in Supabase had error:", subError.message);
+  }
+
+  // Also update products referencing this subcategory
+  await supabase
+    .from("products")
+    .update({ subcategory: newName })
+    .eq("subcategory", oldName)
+    .eq("category", category);
+
+  return true;
+}
+
+export async function deleteSubcategoryFromDb(
+  name: string,
+  category: string
+): Promise<boolean> {
+  const { error } = await supabase
+    .from("subcategories")
+    .delete()
+    .eq("name", name)
+    .eq("category", category);
+
+  if (error) {
+    console.warn("Notice: Deleting subcategory from Supabase had error:", error.message);
+  }
+
+  // Clear subcategory on products that used this subcategory
+  await supabase
+    .from("products")
+    .update({ subcategory: null, subcategory_id: null })
+    .eq("subcategory", name)
+    .eq("category", category);
+
+  return true;
+}
+
+/* ---------------------------------------------------------------
+   Storage & Image Upload
+--------------------------------------------------------------- */
 
 export async function uploadProductImage(file: File): Promise<string> {
   const fileExt = file.name.split(".").pop() || "jpg";
@@ -267,4 +579,3 @@ export async function uploadProductImage(file: File): Promise<string> {
 
   return publicUrlData.publicUrl;
 }
-

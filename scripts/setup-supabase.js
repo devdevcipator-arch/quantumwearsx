@@ -22,16 +22,32 @@ CREATE TABLE IF NOT EXISTS public.products (
     description TEXT,
     category TEXT NOT NULL,
     category_id UUID REFERENCES public.categories(id) ON DELETE SET NULL,
+    subcategory TEXT,
+    subcategory_id UUID,
     image TEXT,
     created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Ensure description column exists on products
+-- Ensure description and subcategory columns exist on products
 ALTER TABLE public.products ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS subcategory TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS subcategory_id UUID;
+
+-- 2b. Create subcategories table
+CREATE TABLE IF NOT EXISTS public.subcategories (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    category TEXT NOT NULL,
+    category_id UUID REFERENCES public.categories(id) ON DELETE CASCADE,
+    display_order INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL,
+    UNIQUE(category, name)
+);
 
 -- 3. Enable RLS
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.subcategories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 
 -- 4. Create RLS Policies
@@ -40,6 +56,12 @@ CREATE POLICY "Public can view categories" ON public.categories FOR SELECT USING
 
 DROP POLICY IF EXISTS "Enable all operations for categories" ON public.categories;
 CREATE POLICY "Enable all operations for categories" ON public.categories FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public can view subcategories" ON public.subcategories;
+CREATE POLICY "Public can view subcategories" ON public.subcategories FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Enable all operations for subcategories" ON public.subcategories;
+CREATE POLICY "Enable all operations for subcategories" ON public.subcategories FOR ALL USING (true) WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public can view products" ON public.products;
 CREATE POLICY "Public can view products" ON public.products FOR SELECT USING (true);
