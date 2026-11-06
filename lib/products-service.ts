@@ -89,8 +89,9 @@ export function inferSubcategory(title: string, category: string): string {
 }
 
 export const DEFAULT_PRODUCTS: ProductItem[] = [
+  // Activewear
   {
-    id: "prod-1",
+    id: "prod-act-1",
     title: "Gym T-shirts and tank tops",
     description: "Custom breathable athletic fabrics engineered for gym performance and durability",
     category: "Activewear",
@@ -98,7 +99,41 @@ export const DEFAULT_PRODUCTS: ProductItem[] = [
     image: "/images/grid_sportswear.jpg",
   },
   {
-    id: "prod-2",
+    id: "prod-act-2",
+    title: "Leggings and sports bras",
+    description: "Four-way stretch non-sheer compression leggings paired with supportive sports bras",
+    category: "Activewear",
+    subcategory: "Leggings and sports bras",
+    image: "/images/triptych_brand_tag.jpg",
+  },
+  {
+    id: "prod-act-3",
+    title: "Compression wear",
+    description: "Ergonomic compression tops and bottoms providing targeted muscular support",
+    category: "Activewear",
+    subcategory: "Compression wear",
+    image: "/images/grid_backpack.jpg",
+  },
+  {
+    id: "prod-act-4",
+    title: "Workout shorts and joggers",
+    description: "Lightweight gym shorts with zipper pockets and tapered fleece training joggers",
+    category: "Activewear",
+    subcategory: "Workout shorts and joggers",
+    image: "/images/grid_tracksuit.jpg",
+  },
+  {
+    id: "prod-act-5",
+    title: "Custom fitness sets",
+    description: "Color-coordinated fitness two-piece sets ready for private label collection drops",
+    category: "Activewear",
+    subcategory: "Custom fitness sets",
+    image: "/images/triptych_embroidery.jpg",
+  },
+
+  // Sportswear
+  {
+    id: "prod-spt-1",
     title: "Football and hockey uniforms",
     description: "Reinforced tear-resistant match jerseys and socks with vivid all-over sublimation printing",
     category: "Sportswear",
@@ -106,7 +141,41 @@ export const DEFAULT_PRODUCTS: ProductItem[] = [
     image: "/images/grid_sportswear.jpg",
   },
   {
-    id: "prod-3",
+    id: "prod-spt-2",
+    title: "Tracksuits and training suits",
+    description: "Breathable poly-spandex athletic tracksuits tailored for warm-ups and team travel",
+    category: "Sportswear",
+    subcategory: "Tracksuits and training suits",
+    image: "/images/grid_tracksuit.jpg",
+  },
+  {
+    id: "prod-spt-3",
+    title: "Cycling jerseys and bib shorts",
+    description: "Pro-cut aerodynamic cycling jerseys with anti-slip silicone hems and gel-padded bib shorts",
+    category: "Sportswear",
+    subcategory: "Cycling jerseys and bib shorts",
+    image: "/images/triptych_brand_tag.jpg",
+  },
+  {
+    id: "prod-spt-4",
+    title: "Basketball jerseys and shorts",
+    description: "Quick-drying breathable court uniforms available in single and reversible team styles",
+    category: "Sportswear",
+    subcategory: "Basketball jerseys and shorts",
+    image: "/images/hero_factory_sewing.jpg",
+  },
+  {
+    id: "prod-spt-5",
+    title: "Sports jackets and teamwear",
+    description: "Waterproof and windbreaker team jackets featuring custom crest embroidery and thermal lining",
+    category: "Sportswear",
+    subcategory: "Sports jackets and teamwear",
+    image: "/images/triptych_embroidery.jpg",
+  },
+
+  // Streetwear
+  {
+    id: "prod-str-1",
     title: "Oversized T-shirts",
     description: "Vintage-washed heavyweight combed cotton tees featuring dropped shoulders and custom fit blocks",
     category: "Streetwear",
@@ -114,7 +183,41 @@ export const DEFAULT_PRODUCTS: ProductItem[] = [
     image: "/images/hero_factory_sewing.jpg",
   },
   {
-    id: "prod-4",
+    id: "prod-str-2",
+    title: "Hoodies and sweatshirts",
+    description: "Boxy luxury cut 400 GSM French terry pullover hoodies with double-layer hoods and puff printing",
+    category: "Streetwear",
+    subcategory: "Hoodies and sweatshirts",
+    image: "/images/triptych_embroidery.jpg",
+  },
+  {
+    id: "prod-str-3",
+    title: "Baggy jeans and joggers",
+    description: "Relaxed wide-leg denim and heavy fleece casual streetwear sweatpants with custom metal hardware",
+    category: "Streetwear",
+    subcategory: "Baggy jeans and joggers",
+    image: "/images/grid_tracksuit.jpg",
+  },
+  {
+    id: "prod-str-4",
+    title: "Varsity and bomber jackets",
+    description: "Heritage wool body with genuine leather sleeves, custom chenille embroidery, and quilted interior",
+    category: "Streetwear",
+    subcategory: "Varsity and bomber jackets",
+    image: "/images/grid_leather_jacket.jpg",
+  },
+  {
+    id: "prod-str-5",
+    title: "Custom caps and beanies",
+    description: "6-panel flat brim snapbacks, curved dad hats, and acrylic ribbed knit beanies with custom patch tags",
+    category: "Streetwear",
+    subcategory: "Custom caps and beanies",
+    image: "/images/triptych_brand_tag.jpg",
+  },
+
+  // Safety Wear
+  {
+    id: "prod-saf-1",
     title: "High-visibility safety vests",
     description: "ANSI/ISEA 107 Class 2 certified mesh and solid polyester safety vests with silver reflective tape",
     category: "Safety Wear",
@@ -122,7 +225,41 @@ export const DEFAULT_PRODUCTS: ProductItem[] = [
     image: "/images/grid_workwear.jpg",
   },
   {
-    id: "prod-5",
+    id: "prod-saf-2",
+    title: "Reflective jackets and trousers",
+    description: "Waterproof polyurethane-coated shell jackets and trousers with 360-degree reflective bands",
+    category: "Safety Wear",
+    subcategory: "Reflective jackets and trousers",
+    image: "/images/grid_workwear.jpg",
+  },
+  {
+    id: "prod-saf-3",
+    title: "Work shirts and uniforms",
+    description: "Rip-stop cotton-poly twill work shirts with dual chest pockets and reinforced stress points",
+    category: "Safety Wear",
+    subcategory: "Work shirts and uniforms",
+    image: "/images/grid_workwear.jpg",
+  },
+  {
+    id: "prod-saf-4",
+    title: "Industrial coveralls",
+    description: "Heavy twill safety coveralls with two-way heavy brass zippers and tool storage loops",
+    category: "Safety Wear",
+    subcategory: "Industrial coveralls",
+    image: "/images/hero_factory_sewing.jpg",
+  },
+  {
+    id: "prod-saf-5",
+    title: "Company-branded workwear",
+    description: "Customized corporate workwear branded with direct embroidery, heat transfers, and high-visibility patches",
+    category: "Safety Wear",
+    subcategory: "Company-branded workwear",
+    image: "/images/triptych_brand_tag.jpg",
+  },
+
+  // Leather Products
+  {
+    id: "prod-lea-1",
     title: "Leather jackets",
     description: "Handcrafted 100% genuine top-grain cowhide and sheepskin leather jackets with antique YKK hardware",
     category: "Leather Products",
@@ -130,12 +267,78 @@ export const DEFAULT_PRODUCTS: ProductItem[] = [
     image: "/images/grid_leather_jacket.jpg",
   },
   {
-    id: "prod-6",
+    id: "prod-lea-2",
+    title: "Leather wallets and cardholders",
+    description: "Full-grain bifold wallets, minimalist cardholders, and passport covers with RFID blocking liners",
+    category: "Leather Products",
+    subcategory: "Leather wallets and cardholders",
+    image: "/images/grid_leather_hide.jpg",
+  },
+  {
+    id: "prod-lea-3",
+    title: "Leather belts",
+    description: "Vegetable-tanned harness leather belts fitted with solid brass, stainless steel, or matte black buckles",
+    category: "Leather Products",
+    subcategory: "Leather belts",
+    image: "/images/triptych_leather_stitch.jpg",
+  },
+  {
+    id: "prod-lea-4",
+    title: "Leather accessories",
+    description: "Key fobs, luggage tags, watch straps, and small bespoke goods customized with foil stamping or debossing",
+    category: "Leather Products",
+    subcategory: "Leather accessories",
+    image: "/images/triptych_leather_stitch.jpg",
+  },
+  {
+    id: "prod-lea-5",
+    title: "Custom leather products",
+    description: "Custom-dyed and patterned specialty leather creations built to exact client CAD tech packs",
+    category: "Leather Products",
+    subcategory: "Custom leather products",
+    image: "/images/grid_leather_hide.jpg",
+  },
+
+  // Custom Bags
+  {
+    id: "prod-bag-1",
     title: "Backpacks",
     description: "High-density Cordura daypacks with waterproof zippers, ergonomic straps, and laptop sleeves",
     category: "Custom Bags",
     subcategory: "Backpacks",
     image: "/images/grid_backpack.jpg",
+  },
+  {
+    id: "prod-bag-2",
+    title: "Gym and duffel bags",
+    description: "Heavy-duty ripstop nylon gym bags with dedicated shoe compartments and ventilated wet pockets",
+    category: "Custom Bags",
+    subcategory: "Gym and duffel bags",
+    image: "/images/hero_factory_sewing.jpg",
+  },
+  {
+    id: "prod-bag-3",
+    title: "Sports and team bags",
+    description: "Large-capacity squad gear bags with reinforced bottoms, heavy-duty pull tabs, and player name slots",
+    category: "Custom Bags",
+    subcategory: "Sports and team bags",
+    image: "/images/grid_backpack.jpg",
+  },
+  {
+    id: "prod-bag-4",
+    title: "Travel bags",
+    description: "Cabin-size weekender duffels and rolling garment bags engineered for durability across transit",
+    category: "Custom Bags",
+    subcategory: "Travel bags",
+    image: "/images/triptych_leather_stitch.jpg",
+  },
+  {
+    id: "prod-bag-5",
+    title: "Custom promotional bags",
+    description: "Eco-friendly canvas totes, drawstring packs, and customized retail merchandise bags with screen printing",
+    category: "Custom Bags",
+    subcategory: "Custom promotional bags",
+    image: "/images/triptych_embroidery.jpg",
   },
 ];
 

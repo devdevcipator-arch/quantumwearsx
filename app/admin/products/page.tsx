@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   ProductItem,
   SubcategoryItem,
+  DEFAULT_PRODUCTS,
   fetchProductsFromDb,
   fetchCategoriesFromDb,
   fetchSubcategoriesFromDb,
@@ -32,56 +33,7 @@ const INITIAL_CATEGORIES = [
   "Custom Bags",
 ];
 
-const INITIAL_PRODUCTS: ProductItem[] = [
-  {
-    id: "prod-1",
-    title: "Gym T-shirts and tank tops",
-    description: "Custom breathable athletic fabrics engineered for gym performance and durability",
-    category: "Activewear",
-    subcategory: "Gym T-shirts and tank tops",
-    image: "/images/grid_sportswear.jpg",
-  },
-  {
-    id: "prod-2",
-    title: "Football and hockey uniforms",
-    description: "Reinforced tear-resistant match jerseys and socks with vivid all-over sublimation printing",
-    category: "Sportswear",
-    subcategory: "Football and hockey uniforms",
-    image: "/images/grid_sportswear.jpg",
-  },
-  {
-    id: "prod-3",
-    title: "Oversized T-shirts",
-    description: "Vintage-washed heavyweight combed cotton tees featuring dropped shoulders and custom fit blocks",
-    category: "Streetwear",
-    subcategory: "Oversized T-shirts",
-    image: "/images/hero_factory_sewing.jpg",
-  },
-  {
-    id: "prod-4",
-    title: "High-visibility safety vests",
-    description: "ANSI/ISEA 107 Class 2 certified mesh and solid polyester safety vests with silver reflective tape",
-    category: "Safety Wear",
-    subcategory: "High-visibility safety vests",
-    image: "/images/grid_workwear.jpg",
-  },
-  {
-    id: "prod-5",
-    title: "Leather jackets",
-    description: "Handcrafted 100% genuine top-grain cowhide and sheepskin leather jackets with antique YKK hardware",
-    category: "Leather Products",
-    subcategory: "Leather jackets",
-    image: "/images/grid_leather_jacket.jpg",
-  },
-  {
-    id: "prod-6",
-    title: "Backpacks",
-    description: "High-density Cordura daypacks with waterproof zippers, ergonomic straps, and laptop sleeves",
-    category: "Custom Bags",
-    subcategory: "Backpacks",
-    image: "/images/grid_backpack.jpg",
-  },
-];
+const INITIAL_PRODUCTS: ProductItem[] = DEFAULT_PRODUCTS;
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<ProductItem[]>(INITIAL_PRODUCTS);

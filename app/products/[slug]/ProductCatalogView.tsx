@@ -18,7 +18,7 @@ import {
   type CategoryCatalog,
   type CatalogProduct,
 } from "../../data/categories";
-import { fetchProductsFromDb } from "@/lib/products-service";
+import { fetchProductsFromDb, inferSubcategory } from "@/lib/products-service";
 
 interface ProductCatalogViewProps {
   category: CategoryCatalog;
@@ -81,29 +81,47 @@ export default function ProductCatalogView({
   const [liveDbProducts, setLiveDbProducts] = useState<CatalogProduct[]>([]);
 
   useEffect(() => {
-    const normCatName = category.name.toLowerCase().replace(/[^a-z0-9]/g, "");
-    const normCatSlug = category.slug.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const normCatName = (category.name || "").toLowerCase().trim().replace(/[^a-z0-9]/g, "");
+    const normCatSlug = (category.slug || "").toLowerCase().trim().replace(/[^a-z0-9]/g, "");
 
     function filterAndConvert(items: any[]): CatalogProduct[] {
+      // 1. Strict category matching: only match products that belong to this category
       const matched = items.filter((p: any) => {
-        const normProdCat = (p.category || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-        return (
-          normProdCat === normCatName ||
-          normProdCat === normCatSlug ||
-          normCatName.includes(normProdCat) ||
-          normProdCat.includes(normCatName)
-        );
+        const normProdCat = (p.category || "").toLowerCase().trim().replace(/[^a-z0-9]/g, "");
+        if (!normProdCat) return false;
+        return normProdCat === normCatName || normProdCat === normCatSlug;
       });
 
-      return matched.map((p: any) => ({
-        name: p.title,
-        description: p.description,
-        filter: category.subItems[0],
-        tag: "CUSTOM PRODUCTION",
-        image: p.image,
-        alt: `${p.title} - QuantumWear X custom manufactured product`,
-        quoteCategory: category.products[0]?.quoteCategory ?? "General Inquiry",
-      }));
+      // 2. Map and associate each product with its true subcategory
+      return matched.map((p: any) => {
+        const title = p.title || p.name || "";
+        let sub = (p.subcategory || "").trim();
+        if (!sub || sub.toLowerCase().startsWith("all ")) {
+          sub = inferSubcategory(title, category.name);
+        }
+
+        // Match against category's subItems
+        const matchedSubItem = category.subItems.find(
+          (item, idx) =>
+            idx > 0 &&
+            (item.toLowerCase().trim() === sub.toLowerCase().trim() ||
+              item.toLowerCase().trim().includes(sub.toLowerCase().trim()) ||
+              sub.toLowerCase().trim().includes(item.toLowerCase().trim()) ||
+              title.toLowerCase().trim().includes(item.toLowerCase().trim()))
+        );
+
+        const finalFilter = matchedSubItem || sub || category.subItems[0];
+
+        return {
+          name: title,
+          description: p.description || "",
+          filter: finalFilter,
+          tag: p.tag || "CUSTOM PRODUCTION",
+          image: p.image || getCatalogFallbackImage(category.slug),
+          alt: `${title} - QuantumWear X custom manufactured product`,
+          quoteCategory: category.products[0]?.quoteCategory ?? "General Inquiry",
+        };
+      });
     }
 
     // Instant local cache check
@@ -138,8 +156,19 @@ export default function ProductCatalogView({
     setQuoteModalOpen(true);
   };
 
+  const isAllFilter = useMemo(() => {
+    if (!itemFilter) return true;
+    const clean = itemFilter.toLowerCase().trim();
+    return (
+      clean === (category.subItems[0] || "").toLowerCase().trim() ||
+      clean.startsWith("all ")
+    );
+  }, [itemFilter, category.subItems]);
+
   const filteredProducts = useMemo(() => {
-    const liveNames = new Set(liveDbProducts.map((p) => p.name.toLowerCase().trim()));
+    const liveNames = new Set(
+      liveDbProducts.map((p) => p.name.toLowerCase().trim())
+    );
     const combined = [
       ...liveDbProducts,
       ...category.products.filter(
@@ -151,17 +180,32 @@ export default function ProductCatalogView({
     const matchesSearch = (p: CatalogProduct) =>
       !q ||
       p.name.toLowerCase().includes(q) ||
-      (p.filter || "").toLowerCase().includes(q);
+      (p.filter || "").toLowerCase().includes(q) ||
+      (p.description || "").toLowerCase().includes(q);
 
-    if (itemFilter === category.subItems[0]) {
+    // If "All ..." is selected, return all products matching search
+    if (isAllFilter) {
       return combined.filter(matchesSearch);
     }
-    return combined.filter(
-      (p) =>
-        (p.filter === itemFilter || liveNames.has(p.name.toLowerCase().trim())) &&
-        matchesSearch(p)
-    );
-  }, [itemFilter, category, liveDbProducts, searchQuery]);
+
+    const normTarget = itemFilter.toLowerCase().trim();
+
+    // Specific subcategory filter: strictly match target subcategory
+    return combined.filter((p) => {
+      const pFilter = (p.filter || "").toLowerCase().trim();
+      const pName = (p.name || "").toLowerCase().trim();
+
+      const matchesSubcategory =
+        pFilter === normTarget ||
+        pName === normTarget ||
+        pFilter.includes(normTarget) ||
+        normTarget.includes(pFilter) ||
+        pName.includes(normTarget) ||
+        normTarget.includes(pName);
+
+      return matchesSubcategory && matchesSearch(p);
+    });
+  }, [itemFilter, isAllFilter, category.products, liveDbProducts, searchQuery]);
 
   return (
     <main className="landing-page-root" id="top">
@@ -333,14 +377,16 @@ export default function ProductCatalogView({
                 <span className="catalog-filters-label">ACTIVE FILTERS:</span>
                 <span className="catalog-filter-chip">
                   <span>{itemFilter}</span>
-                  <button
-                    type="button"
-                    className="catalog-chip-x"
-                    onClick={() => setItemFilter(category.subItems[0])}
-                    aria-label={`Clear filter ${itemFilter}`}
-                  >
-                    ×
-                  </button>
+                  {!isAllFilter && (
+                    <button
+                      type="button"
+                      className="catalog-chip-x"
+                      onClick={() => setItemFilter(category.subItems[0])}
+                      aria-label={`Clear filter ${itemFilter}`}
+                    >
+                      ×
+                    </button>
+                  )}
                 </span>
               </div>
 

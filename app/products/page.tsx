@@ -210,6 +210,7 @@ export default function ProductsPage() {
       id: string;
       title: string;
       category: string;
+      subcategory?: string;
       description?: string;
       image: string;
       quoteCategory?: string;
@@ -227,6 +228,7 @@ export default function ProductsPage() {
           id: p.id,
           title: p.title,
           category: p.category,
+          subcategory: p.subcategory,
           description: p.description,
           image: p.image || "/images/triptych_leather_stitch.jpg",
           quoteCategory: p.category,
@@ -245,6 +247,7 @@ export default function ProductsPage() {
             id: `cat-${cat.slug}-${lower}`,
             title: p.name,
             category: cat.name,
+            subcategory: p.filter,
             description: `${cat.name} · Custom manufacturing specification`,
             image: p.image,
             quoteCategory: p.quoteCategory,
@@ -263,6 +266,7 @@ export default function ProductsPage() {
       (p) =>
         p.title.toLowerCase().includes(query) ||
         p.category.toLowerCase().includes(query) ||
+        (p.subcategory && p.subcategory.toLowerCase().includes(query)) ||
         (p.description && p.description.toLowerCase().includes(query))
     );
   }, [allSearchableProducts, query]);
@@ -273,6 +277,7 @@ export default function ProductsPage() {
       (p) =>
         p.title.toLowerCase().includes(query) ||
         p.category.toLowerCase().includes(query) ||
+        (p.subcategory && p.subcategory.toLowerCase().includes(query)) ||
         (p.description && p.description.toLowerCase().includes(query))
     );
   }, [dbProducts, query]);

@@ -486,8 +486,25 @@ export const bentoCategorySlugs: Record<string, string> = {
  */
 export function matchSubItem(query: string | null | undefined, subItems: string[]): string {
   if (!query) return "";
-  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 6);
-  const key = norm(query);
-  if (!key) return "";
-  return subItems.find((sub) => norm(sub).startsWith(key)) ?? "";
+  const clean = query.trim().toLowerCase();
+
+  // 1. Exact match (case-insensitive)
+  const exact = subItems.find((s) => s.toLowerCase() === clean);
+  if (exact) return exact;
+
+  // 2. Full alphanumeric normalized match (without arbitrary 6-char truncation)
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const normQuery = norm(clean);
+  if (!normQuery) return "";
+
+  const normExact = subItems.find((s) => norm(s) === normQuery);
+  if (normExact) return normExact;
+
+  // 3. Normalized containment (one contains the other)
+  const contains = subItems.find(
+    (s) => norm(s).includes(normQuery) || normQuery.includes(norm(s))
+  );
+  if (contains) return contains;
+
+  return "";
 }
