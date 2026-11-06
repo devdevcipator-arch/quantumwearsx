@@ -20,9 +20,12 @@ import {
 } from "../../data/categories";
 import {
   fetchProductsFromDb,
+  fetchCategoriesFromDb,
+  fetchSubcategoriesFromDb,
   inferSubcategory,
   getStoredSubcategoryMap,
   extractSubcategoryFromDescription,
+  SubcategoryItem,
 } from "@/lib/products-service";
 
 interface ProductCatalogViewProps {
@@ -73,14 +76,106 @@ export default function ProductCatalogView({
     category.products[0]?.quoteCategory ?? "General Inquiry"
   );
 
+  // Dynamic categories and subcategories from DB / localStorage
+  const [dynamicCats, setDynamicCats] = useState<string[]>([]);
+  const [dynamicSubs, setDynamicSubs] = useState<SubcategoryItem[]>([]);
+
+  useEffect(() => {
+    try {
+      const cachedCats = localStorage.getItem("qw_admin_categories");
+      if (cachedCats) {
+        const parsed = JSON.parse(cachedCats);
+        if (Array.isArray(parsed) && parsed.length > 0) setDynamicCats(parsed);
+      }
+      const cachedSubs = localStorage.getItem("qw_admin_subcategories");
+      if (cachedSubs) {
+        const parsed = JSON.parse(cachedSubs);
+        if (Array.isArray(parsed) && parsed.length > 0) setDynamicSubs(parsed);
+      }
+    } catch {}
+
+    async function loadMeta() {
+      try {
+        const [cats, subs] = await Promise.all([
+          fetchCategoriesFromDb(),
+          fetchSubcategoriesFromDb(),
+        ]);
+        if (cats && cats.length > 0) setDynamicCats(cats);
+        if (subs && subs.length > 0) setDynamicSubs(subs);
+      } catch {}
+    }
+    loadMeta();
+  }, []);
+
+  // Helper to get sub-items for any category with user-created subcategories at the TOP
+  const getCategorySubItems = (catName: string, staticSubItems: string[]) => {
+    const allBtn = staticSubItems[0] || `All ${catName}`;
+    const defaultSubs = staticSubItems.slice(1);
+
+    const customSubs = dynamicSubs
+      .filter((s) => s.category.toLowerCase() === catName.toLowerCase())
+      .map((s) => s.name)
+      .filter(
+        (name) => !defaultSubs.some((def) => def.toLowerCase() === name.toLowerCase())
+      );
+
+    // Newly created subcategories appear at the TOP (right under "All ...")
+    return [allBtn, ...customSubs, ...defaultSubs];
+  };
+
+  const currentCategorySubItems = useMemo(() => {
+    return getCategorySubItems(category.name, category.subItems);
+  }, [category.name, category.subItems, dynamicSubs]);
+
+  // Sidebar categories with newly created categories at the TOP
+  const sidebarCategories = useMemo(() => {
+    if (dynamicCats.length === 0) return categoryCatalogs;
+
+    const catalogMap = new Map(categoryCatalogs.map((c) => [c.name.toLowerCase(), c]));
+    const ordered: CategoryCatalog[] = [];
+    const seen = new Set<string>();
+
+    for (const catName of dynamicCats) {
+      const lower = catName.toLowerCase();
+      if (seen.has(lower)) continue;
+      seen.add(lower);
+
+      const existing = catalogMap.get(lower);
+      if (existing) {
+        ordered.push(existing);
+      } else {
+        const slug = catName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+        ordered.push({
+          slug,
+          name: catName,
+          eyebrow: "CUSTOM PRODUCTION",
+          headingTitle: `${catName.toUpperCase()} CATALOG`,
+          engineeringTitle: "Performance Engineering",
+          introTitle: `CUSTOM ${catName.toUpperCase()} MANUFACTURING`,
+          intro: `QuantumWear X manufactures custom ${catName} engineered to enterprise grade.`,
+          subItems: [`All ${catName}`],
+          products: [],
+        });
+      }
+    }
+
+    for (const cat of categoryCatalogs) {
+      if (!seen.has(cat.name.toLowerCase())) {
+        ordered.push(cat);
+      }
+    }
+
+    return ordered;
+  }, [dynamicCats]);
+
   // Keep state synchronized whenever category route changes
   useEffect(() => {
     if (currentCategorySlug) {
       setExpanded(currentCategorySlug);
     }
-    setItemFilter(matchSubItem(itemQuery, category.subItems) || category.subItems[0]);
+    setItemFilter(matchSubItem(itemQuery, currentCategorySubItems) || currentCategorySubItems[0]);
     setSearchQuery("");
-  }, [currentCategorySlug, category.subItems, itemQuery]);
+  }, [currentCategorySlug, currentCategorySubItems, itemQuery]);
 
   // Dynamic products from Supabase Live DB matching this category
   const [liveDbProducts, setLiveDbProducts] = useState<CatalogProduct[]>([]);
@@ -114,7 +209,7 @@ export default function ProductCatalogView({
         let matchedSubItem = "";
         if (sub) {
           matchedSubItem =
-            category.subItems.find(
+            currentCategorySubItems.find(
               (item, idx) =>
                 idx > 0 &&
                 (item.toLowerCase().trim() === sub.toLowerCase().trim() ||
@@ -125,7 +220,7 @@ export default function ProductCatalogView({
 
         if (!matchedSubItem && title) {
           matchedSubItem =
-            category.subItems.find(
+            currentCategorySubItems.find(
               (item, idx) =>
                 idx > 0 &&
                 title.toLowerCase().trim().includes(item.toLowerCase().trim())
@@ -171,7 +266,7 @@ export default function ProductCatalogView({
     }
 
     loadCategoryProducts();
-  }, [category.name, category.slug, category.subItems]);
+  }, [category.name, category.slug, currentCategorySubItems]);
 
   const handleOpenQuote = (quoteCategory?: string) => {
     if (quoteCategory) setSelectedCategory(quoteCategory);
@@ -182,10 +277,10 @@ export default function ProductCatalogView({
     if (!itemFilter) return true;
     const clean = itemFilter.toLowerCase().trim();
     return (
-      clean === (category.subItems[0] || "").toLowerCase().trim() ||
+      clean === (currentCategorySubItems[0] || "").toLowerCase().trim() ||
       clean.startsWith("all ")
     );
-  }, [itemFilter, category.subItems]);
+  }, [itemFilter, currentCategorySubItems]);
 
   const filteredProducts = useMemo(() => {
     const liveNames = new Set(
@@ -323,9 +418,10 @@ export default function ProductCatalogView({
             <aside className="catalog-sidebar" aria-label="Categories">
               <h2 className="catalog-sidebar-heading">Categories</h2>
               <ul className="catalog-accordion">
-                {categoryCatalogs.map((cat) => {
+                {sidebarCategories.map((cat) => {
                   const isCurrent = cat.slug === currentCategorySlug;
                   const isOpen = expanded === cat.slug;
+                  const subs = getCategorySubItems(cat.name, cat.subItems);
                   return (
                     <li
                       key={cat.slug}
@@ -361,7 +457,7 @@ export default function ProductCatalogView({
 
                       {isOpen && (
                         <ul className="catalog-sublist">
-                          {cat.subItems.map((sub) => (
+                          {subs.map((sub) => (
                             <li key={sub}>
                               {isCurrent ? (
                                 // Current category: filter stays on this page
@@ -413,7 +509,7 @@ export default function ProductCatalogView({
                     <button
                       type="button"
                       className="catalog-chip-x"
-                      onClick={() => setItemFilter(category.subItems[0])}
+                      onClick={() => setItemFilter(currentCategorySubItems[0])}
                       aria-label={`Clear filter ${itemFilter}`}
                     >
                       ×

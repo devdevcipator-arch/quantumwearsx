@@ -18,8 +18,10 @@ import ProductDetailModal, {
 import {
   fetchProductsFromDb,
   fetchCategoriesFromDb,
+  fetchSubcategoriesFromDb,
   DEFAULT_PRODUCTS,
   ProductItem,
+  SubcategoryItem,
 } from "@/lib/products-service";
 import {
   activewearEssentialFilters,
@@ -143,6 +145,7 @@ export default function ProductsPage() {
   // Dynamic products & categories from Supabase Live DB
   const [dbProducts, setDbProducts] = useState<ProductItem[]>(DEFAULT_PRODUCTS);
   const [dbCategories, setDbCategories] = useState<string[]>(collectionCategories);
+  const [dbSubcategories, setDbSubcategories] = useState<SubcategoryItem[]>([]);
 
   useEffect(() => {
     // Instant cache read for zero-latency UI update
@@ -154,13 +157,28 @@ export default function ProductsPage() {
           setDbProducts(parsed);
         }
       }
+      const cachedCats = localStorage.getItem("qw_admin_categories");
+      if (cachedCats) {
+        const parsedCats = JSON.parse(cachedCats);
+        if (Array.isArray(parsedCats) && parsedCats.length > 0) {
+          setDbCategories(parsedCats);
+        }
+      }
+      const cachedSubs = localStorage.getItem("qw_admin_subcategories");
+      if (cachedSubs) {
+        const parsedSubs = JSON.parse(cachedSubs);
+        if (Array.isArray(parsedSubs) && parsedSubs.length > 0) {
+          setDbSubcategories(parsedSubs);
+        }
+      }
     } catch {}
 
     async function loadLiveData() {
       try {
-        const [liveProds, liveCats] = await Promise.all([
+        const [liveProds, liveCats, liveSubs] = await Promise.all([
           fetchProductsFromDb(),
           fetchCategoriesFromDb(),
+          fetchSubcategoriesFromDb(),
         ]);
         if (liveProds && liveProds.length > 0) {
           setDbProducts(liveProds);
@@ -170,6 +188,9 @@ export default function ProductsPage() {
         }
         if (liveCats && liveCats.length > 0) {
           setDbCategories(liveCats);
+        }
+        if (liveSubs && liveSubs.length > 0) {
+          setDbSubcategories(liveSubs);
         }
       } catch (err) {
         console.warn("ProductsPage live DB fetch fallback:", err);
@@ -199,9 +220,20 @@ export default function ProductsPage() {
     [dbCategories, query]
   );
 
+  const activewearSubItems = useMemo(() => {
+    const customSubs = dbSubcategories
+      .filter((s) => s.category.toLowerCase() === "activewear")
+      .map((s) => s.name)
+      .filter(
+        (name) => !activewearEssentials.some((def) => def.toLowerCase() === name.toLowerCase())
+      );
+    // Newly created subcategories appear at the TOP
+    return [...customSubs, ...activewearEssentials];
+  }, [dbSubcategories]);
+
   const filteredEssentials = useMemo(
-    () => activewearEssentials.filter((c) => c.toLowerCase().includes(query)),
-    [query]
+    () => activewearSubItems.filter((c) => c.toLowerCase().includes(query)),
+    [activewearSubItems, query]
   );
 
   // Complete collection of searchable products across the platform (Live DB + Category Catalogs)
@@ -468,7 +500,9 @@ export default function ProductsPage() {
                         type="button"
                         className="search-category-chip"
                         onClick={() => {
-                          const slug = catalogListSlugs[category];
+                          const slug =
+                            catalogListSlugs[category] ||
+                            category.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
                           if (slug) router.push(`/products/${slug}`);
                         }}
                       >
@@ -516,7 +550,9 @@ export default function ProductsPage() {
                         type="button"
                         className="catalog-link-item"
                         onClick={() => {
-                          const slug = catalogListSlugs[category];
+                          const slug =
+                            catalogListSlugs[category] ||
+                            category.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
                           if (slug) router.push(`/products/${slug}`);
                         }}
                       >

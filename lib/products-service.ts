@@ -650,6 +650,14 @@ export async function addCategoryToDb(name: string, displayOrder: number): Promi
   return data.name;
 }
 
+export async function updateCategoryOrderInDb(name: string, displayOrder: number): Promise<boolean> {
+  const { error } = await supabase
+    .from("categories")
+    .update({ display_order: displayOrder })
+    .eq("name", name);
+  return !error;
+}
+
 export async function renameCategoryInDb(oldName: string, newName: string): Promise<boolean> {
   // Update categories table
   const { error: catError } = await supabase

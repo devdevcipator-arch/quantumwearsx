@@ -14,6 +14,7 @@ import {
   updateProductInDb,
   removeProductFromDb,
   addCategoryToDb,
+  updateCategoryOrderInDb,
   renameCategoryInDb,
   deleteCategoryFromDb,
   addSubcategoryToDb,
@@ -395,7 +396,8 @@ export default function AdminProductsPage() {
       setNewCatInput("");
       return;
     }
-    const updatedCats = [...draftCategories, trimmed];
+    // Newly created category appears at the TOP
+    const updatedCats = [trimmed, ...draftCategories];
     setDraftCategories(updatedCats);
     setActiveManageCategory(trimmed);
     setNewCatInput("");
@@ -486,20 +488,25 @@ export default function AdminProductsPage() {
     const currentCatSubs = draftSubcategories.filter(
       (s) => s.category.toLowerCase() === activeManageCategory.toLowerCase()
     );
+    const otherSubs = draftSubcategories.filter(
+      (s) => s.category.toLowerCase() !== activeManageCategory.toLowerCase()
+    );
+
     const newSubItem: SubcategoryItem = {
       id: `sub-${Date.now()}`,
       name: trimmed,
       category: activeManageCategory,
-      display_order: currentCatSubs.length + 1,
+      display_order: 0,
     };
 
-    const updated = [...draftSubcategories, newSubItem];
+    // Prepend so newly created subcategory appears at the TOP
+    const updated = [newSubItem, ...currentCatSubs, ...otherSubs];
     setDraftSubcategories(updated);
     saveSubcategories(updated);
     setNewSubcatInput("");
 
     try {
-      await addSubcategoryToDb(trimmed, activeManageCategory, newSubItem.display_order);
+      await addSubcategoryToDb(trimmed, activeManageCategory, 0);
     } catch (e) {
       console.warn("Error inserting subcategory into DB:", e);
     }
@@ -566,7 +573,7 @@ export default function AdminProductsPage() {
   const handleSaveManageCats = async () => {
     setIsSaving(true);
     try {
-      // Find additions
+      // Find additions and update order for all draft categories
       for (let i = 0; i < draftCategories.length; i++) {
         const cat = draftCategories[i];
         if (!categories.includes(cat)) {
@@ -575,6 +582,10 @@ export default function AdminProductsPage() {
           } catch (e) {
             console.warn("DB add category error:", e);
           }
+        } else {
+          try {
+            await updateCategoryOrderInDb(cat, i);
+          } catch (e) {}
         }
       }
 
@@ -787,60 +798,56 @@ export default function AdminProductsPage() {
           >
             All Products
           </button>
-          <button
-            type="button"
-            className={`admin-tab-btn ${
-              selectedTab === "Activewear" ? "active" : ""
-            }`}
-            onClick={() => setSelectedTab("Activewear")}
-          >
-            Activewear
-          </button>
-          <button
-            type="button"
-            className={`admin-tab-btn ${
-              selectedTab === "Sportswear" ? "active" : ""
-            }`}
-            onClick={() => setSelectedTab("Sportswear")}
-          >
-            Sportswear
-          </button>
-
-          {/* More categories dropdown */}
-          <div className="admin-more-cats-dropdown">
+          {categories.slice(0, 3).map((cat) => (
             <button
+              key={cat}
               type="button"
               className={`admin-tab-btn ${
-                moreCategories.includes(selectedTab) ? "active" : ""
+                selectedTab === cat ? "active" : ""
               }`}
-              onClick={() => setMoreDropdownOpen((prev) => !prev)}
+              onClick={() => setSelectedTab(cat)}
             >
-              {moreCategories.includes(selectedTab)
-                ? selectedTab
-                : "More categories"}{" "}
-              ▾
+              {cat}
             </button>
-            {moreDropdownOpen && (
-              <div className="admin-dropdown-menu">
-                {moreCategories.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    className={`admin-dropdown-item ${
-                      selectedTab === cat ? "active" : ""
-                    }`}
-                    onClick={() => {
-                      setSelectedTab(cat);
-                      setMoreDropdownOpen(false);
-                    }}
-                  >
-                    <span>{cat}</span>
-                    {selectedTab === cat && <span>✓</span>}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          ))}
+
+          {/* More categories dropdown */}
+          {categories.length > 3 && (
+            <div className="admin-more-cats-dropdown">
+              <button
+                type="button"
+                className={`admin-tab-btn ${
+                  categories.slice(3).includes(selectedTab) ? "active" : ""
+                }`}
+                onClick={() => setMoreDropdownOpen((prev) => !prev)}
+              >
+                {categories.slice(3).includes(selectedTab)
+                  ? selectedTab
+                  : "More categories"}{" "}
+                ▾
+              </button>
+              {moreDropdownOpen && (
+                <div className="admin-dropdown-menu">
+                  {categories.slice(3).map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`admin-dropdown-item ${
+                        selectedTab === cat ? "active" : ""
+                      }`}
+                      onClick={() => {
+                        setSelectedTab(cat);
+                        setMoreDropdownOpen(false);
+                      }}
+                    >
+                      <span>{cat}</span>
+                      {selectedTab === cat && <span>✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Product Cards List */}

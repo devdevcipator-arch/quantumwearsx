@@ -465,7 +465,29 @@ export const activewearEssentialFilters: Record<string, string> = {
 };
 
 export function findCategoryBySlug(slug: string): CategoryCatalog | undefined {
-  return categoryCatalogs.find((c) => c.slug === slug);
+  const found = categoryCatalogs.find((c) => c.slug === slug);
+  if (found) return found;
+
+  // Fallback for dynamically created categories
+  if (slug) {
+    const formattedName = slug
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+
+    return {
+      slug,
+      name: formattedName,
+      eyebrow: "CUSTOM PRODUCTION",
+      headingTitle: `${formattedName.toUpperCase()} CATALOG`,
+      engineeringTitle: "Performance Engineering",
+      introTitle: `CUSTOM ${formattedName.toUpperCase()} MANUFACTURING`,
+      intro: `QuantumWear X manufactures custom ${formattedName} engineered to enterprise grade.`,
+      subItems: [`All ${formattedName}`],
+      products: [],
+    };
+  }
+  return undefined;
 }
 
 /* Map the bento-grid labels (home + /products pages) onto catalog slugs */
