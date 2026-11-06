@@ -620,7 +620,7 @@ export default function AdminProductsPage() {
       {/* 1. Left Sidebar */}
       <aside className="admin-sidebar" aria-label="Admin Navigation">
         <div className="admin-sidebar-header">
-          <div className="admin-brand-icon">Q</div>
+          <img src="/images/logo.png" alt="QuantumWearX Logo" className="admin-brand-icon" />
           <span className="admin-brand-name">QuantumWear X</span>
         </div>
 

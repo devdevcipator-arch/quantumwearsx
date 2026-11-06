@@ -39,7 +39,7 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
       <div className="nav-container">
         {/* Brand Logo */}
         <Link href="/" className="nav-brand" aria-label="QuantumWearX Home">
-          <div className="brand-icon-box">Q</div>
+          <img src="/images/logo.png" alt="QuantumWearX Logo" className="brand-icon-box" />
           <span>
             QUANTUMWEAR<span className="logo-x">X</span>
           </span>

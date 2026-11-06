@@ -12,7 +12,7 @@ export default function Footer() {
           {/* Column 1: Brand info */}
           <div className="footer-brand-col" data-reveal="reveal-up">
             <div className="footer-logo">
-              <div className="brand-icon-box">Q</div>
+              <img src="/images/logo.png" alt="QuantumWearX Logo" className="brand-icon-box" />
               <span>
                 QUANTUMWEAR<span className="logo-x">X</span>
               </span>

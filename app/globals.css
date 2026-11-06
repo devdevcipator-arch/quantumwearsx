@@ -281,16 +281,11 @@ button {
 }
 
 .brand-icon-box {
-  width: 30px;
-  height: 30px;
-  background: var(--accent-red);
-  border-radius: 6px;
-  display: grid;
-  place-items: center;
-  font-weight: 900;
-  font-size: 16px;
-  color: #fff;
-  box-shadow: 0 0 12px var(--accent-red-glow);
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+  border-radius: 4px;
 }
 
 .logo-x {
@@ -2967,17 +2962,12 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 .admin-brand-icon {
-  width: 28px;
-  height: 28px;
-  background: #d10014;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  color: #ffffff;
-  font-size: 15px;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
   flex-shrink: 0;
+  filter: brightness(1.4);
 }
 
 .admin-brand-name {
