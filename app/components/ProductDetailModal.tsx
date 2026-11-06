@@ -63,6 +63,12 @@ export default function ProductDetailModal({
             src={product.image}
             alt={product.title}
             className="product-detail-image"
+            onError={(e) => {
+              const fallback = "/images/grid_leather_hide.jpg";
+              if (e.currentTarget.src !== fallback) {
+                e.currentTarget.src = fallback;
+              }
+            }}
           />
           {product.tag && (
             <span className="product-detail-tag">{product.tag}</span>

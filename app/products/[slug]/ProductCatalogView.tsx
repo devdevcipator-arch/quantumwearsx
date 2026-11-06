@@ -25,6 +25,23 @@ interface ProductCatalogViewProps {
   itemQuery?: string;
 }
 
+const getCatalogFallbackImage = (slug?: string) => {
+  switch (slug) {
+    case "leather-products":
+      return "/images/grid_leather_hide.jpg";
+    case "safety-wear":
+      return "/images/grid_workwear.jpg";
+    case "sportswear":
+      return "/images/grid_sportswear.jpg";
+    case "custom-bags":
+      return "/images/grid_backpack.jpg";
+    case "streetwear":
+      return "/images/grid_tracksuit.jpg";
+    default:
+      return "/images/grid_sportswear.jpg";
+  }
+};
+
 export default function ProductCatalogView({
   category,
   itemQuery,
@@ -347,6 +364,12 @@ export default function ProductCatalogView({
                         alt={product.alt}
                         className="product-card-image"
                         loading="lazy"
+                        onError={(e) => {
+                          const fallback = getCatalogFallbackImage(category.slug);
+                          if (e.currentTarget.src !== fallback) {
+                            e.currentTarget.src = fallback;
+                          }
+                        }}
                       />
                       {product.tag && (
                         <span

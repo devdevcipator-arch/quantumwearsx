@@ -109,6 +109,26 @@ const quoteCategoryMap: Record<string, string> = {
    Page
 --------------------------------------------------------------- */
 
+function getCategoryFallbackImage(category?: string) {
+  switch (category?.toLowerCase()) {
+    case "leather products":
+    case "leather goods":
+      return "/images/grid_leather_hide.jpg";
+    case "safety wear":
+    case "workwear & uniforms":
+      return "/images/grid_workwear.jpg";
+    case "sportswear":
+      return "/images/grid_sportswear.jpg";
+    case "custom bags":
+    case "bags & gear":
+      return "/images/grid_backpack.jpg";
+    case "streetwear":
+      return "/images/grid_tracksuit.jpg";
+    default:
+      return "/images/grid_tracksuit.jpg";
+  }
+}
+
 export default function ProductsPage() {
   const router = useRouter();
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);

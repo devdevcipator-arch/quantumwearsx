@@ -123,7 +123,7 @@ const INITIAL_PRODUCTS = [
     title: "Reflective jackets and trousers",
     description: "Waterproof polyurethane-coated shell jackets and trousers with 360-degree reflective bands",
     category: "Safety Wear",
-    image: "/images/grid_tactical_vest.jpg"
+    image: "/images/grid_workwear.jpg"
   },
   {
     title: "Work shirts and uniforms",
@@ -167,7 +167,7 @@ const INITIAL_PRODUCTS = [
     title: "Leather accessories",
     description: "Custom debossed leather key fobs, watch straps, desk pads, and leather coasters",
     category: "Leather Products",
-    image: "/images/triptych_leather_glove.jpg"
+    image: "/images/triptych_leather_stitch.jpg"
   },
   {
     title: "Custom leather products",
