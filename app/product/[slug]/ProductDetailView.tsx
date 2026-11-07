@@ -10,6 +10,7 @@ import RevealObserver from "@/app/components/RevealObserver";
 import Footer from "@/app/components/Footer";
 import { ProductDetailInfo, buildProductDetail } from "@/lib/product-details";
 import { supabase } from "@/lib/supabase";
+import { extractMetaFromDescription } from "@/lib/products-service";
 
 interface ProductDetailViewProps {
   product: ProductDetailInfo;
@@ -42,19 +43,24 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
             p.title?.toLowerCase().trim() === initialProduct.title.toLowerCase().trim()
         );
         if (match) {
+          const { cleanDescription, extras } = extractMetaFromDescription(match.description || "");
+          const longDesc =
+            match.long_description ||
+            extras.long_description ||
+            initialProduct.longDescription;
           const secs = [
-            match.secondary_image_1,
-            match.secondary_image_2,
-            match.secondary_image_3,
+            match.secondary_image_1 || extras.secondary_image_1,
+            match.secondary_image_2 || extras.secondary_image_2,
+            match.secondary_image_3 || extras.secondary_image_3,
           ].filter(Boolean);
           const updated = buildProductDetail(
             match.id || initialProduct.id,
             match.title || initialProduct.title,
             match.category || initialProduct.category,
             match.image || initialProduct.mainImage,
-            match.description || initialProduct.shortDescription,
+            cleanDescription || initialProduct.shortDescription,
             match.category || initialProduct.quoteCategory,
-            match.long_description || initialProduct.longDescription,
+            longDesc,
             secs.length > 0 ? secs : initialProduct.thumbnails
           );
           setProduct(updated);
@@ -65,33 +71,60 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
 
     async function syncFromDb() {
       try {
-        const { data } = await supabase
-          .from("products")
-          .select("*")
-          .eq("title", initialProduct.title)
-          .maybeSingle();
+        const cleanTitle = (initialProduct.title || "").toLowerCase().trim();
+        const cleanSlug = (initialProduct.slug || "").toLowerCase().trim();
+        const cleanId = (initialProduct.id || "").trim();
 
-        if (data) {
-          const secs = [
-            data.secondary_image_1,
-            data.secondary_image_2,
-            data.secondary_image_3,
-          ].filter(Boolean);
+        const { data: list } = await supabase.from("products").select("*");
 
-          const updated = buildProductDetail(
-            data.id,
-            data.title,
-            data.category,
-            data.image || initialProduct.mainImage,
-            data.description,
-            data.category,
-            data.long_description,
-            secs.length > 0 ? secs : initialProduct.thumbnails
-          );
-          setProduct(updated);
-          setActiveImage(updated.mainImage);
+        if (list && list.length > 0) {
+          const match = list.find((row) => {
+            if (cleanId && row.id === cleanId) return true;
+            const rTitle = (row.title || "").toLowerCase().trim();
+            const rSlug = rTitle
+              .replace(/&/g, "and")
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-+|-+$/g, "");
+            return (
+              rTitle === cleanTitle ||
+              rSlug === cleanSlug ||
+              rSlug === cleanTitle ||
+              (cleanTitle.length > 2 && rTitle.includes(cleanTitle)) ||
+              (cleanTitle.length > 2 && cleanTitle.includes(rTitle))
+            );
+          });
+
+          if (match) {
+            const { cleanDescription, extras } = extractMetaFromDescription(
+              match.description || ""
+            );
+            const longDesc =
+              match.long_description ||
+              extras.long_description ||
+              initialProduct.longDescription;
+            const secs = [
+              match.secondary_image_1 || extras.secondary_image_1,
+              match.secondary_image_2 || extras.secondary_image_2,
+              match.secondary_image_3 || extras.secondary_image_3,
+            ].filter(Boolean);
+
+            const updated = buildProductDetail(
+              match.id,
+              match.title,
+              match.category,
+              match.image || initialProduct.mainImage,
+              cleanDescription || initialProduct.shortDescription,
+              match.category || initialProduct.quoteCategory,
+              longDesc,
+              secs.length > 0 ? secs : initialProduct.thumbnails
+            );
+            setProduct(updated);
+            setActiveImage(updated.mainImage);
+          }
         }
-      } catch {}
+      } catch (err) {
+        console.warn("ProductDetailView syncFromDb fallback:", err);
+      }
     }
 
     syncFromDb();

@@ -182,8 +182,15 @@ export default function ProductsPage() {
         } catch {}
 
         const liveIds = new Set((liveProds || []).map((p) => p.id));
+        const liveTitles = new Set(
+          (liveProds || []).map((p) => (p.title || "").toLowerCase().trim())
+        );
         const mergedProds = [
-          ...localProducts.filter((p) => !liveIds.has(p.id)),
+          ...localProducts.filter(
+            (p) =>
+              !liveIds.has(p.id) &&
+              !liveTitles.has((p.title || "").toLowerCase().trim())
+          ),
           ...(liveProds || []),
         ];
 

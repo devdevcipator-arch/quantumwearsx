@@ -253,7 +253,25 @@ export default function ProductCatalogView({
     async function loadCategoryProducts() {
       try {
         const allDbProducts = await fetchProductsFromDb();
-        const converted = filterAndConvert(allDbProducts);
+        let localProducts: any[] = [];
+        try {
+          const cached = localStorage.getItem("qw_admin_products");
+          if (cached) localProducts = JSON.parse(cached);
+        } catch {}
+
+        const liveIds = new Set(allDbProducts.map((p) => p.id));
+        const liveTitles = new Set(
+          allDbProducts.map((p) => (p.title || "").toLowerCase().trim())
+        );
+        const merged = [
+          ...localProducts.filter(
+            (p) =>
+              !liveIds.has(p.id) &&
+              !liveTitles.has((p.title || p.name || "").toLowerCase().trim())
+          ),
+          ...allDbProducts,
+        ];
+        const converted = filterAndConvert(merged);
         setLiveDbProducts(converted);
       } catch (err) {
         console.warn("ProductCatalogView live DB fetch fallback:", err);

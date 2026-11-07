@@ -39,8 +39,15 @@ export default function FeaturedProducts({ onOpenQuote }: FeaturedProductsProps)
         } catch {}
 
         const liveIds = new Set((liveProducts || []).map((p) => p.id));
+        const liveTitles = new Set(
+          (liveProducts || []).map((p) => (p.title || "").toLowerCase().trim())
+        );
         const merged = [
-          ...localProducts.filter((p) => !liveIds.has(p.id)),
+          ...localProducts.filter(
+            (p) =>
+              !liveIds.has(p.id) &&
+              !liveTitles.has((p.title || "").toLowerCase().trim())
+          ),
           ...(liveProducts || []),
         ];
 
