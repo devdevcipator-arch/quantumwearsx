@@ -175,10 +175,22 @@ export default function ProductsPage() {
           fetchCategoriesFromDb(),
           fetchSubcategoriesFromDb(),
         ]);
-        if (liveProds && liveProds.length > 0) {
-          setDbProducts(liveProds);
+        let localProducts: ProductItem[] = [];
+        try {
+          const cached = localStorage.getItem("qw_admin_products");
+          if (cached) localProducts = JSON.parse(cached);
+        } catch {}
+
+        const liveIds = new Set((liveProds || []).map((p) => p.id));
+        const mergedProds = [
+          ...localProducts.filter((p) => !liveIds.has(p.id)),
+          ...(liveProds || []),
+        ];
+
+        if (mergedProds.length > 0) {
+          setDbProducts(mergedProds);
           try {
-            localStorage.setItem("qw_admin_products", JSON.stringify(liveProds));
+            localStorage.setItem("qw_admin_products", JSON.stringify(mergedProds));
           } catch {}
         }
         if (liveCats && liveCats.length > 0) {

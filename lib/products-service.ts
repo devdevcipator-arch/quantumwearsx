@@ -647,30 +647,22 @@ export async function addProductToDb(product: {
     .single();
 
   if (error) {
-    // If DB columns do not exist yet, strip them iteratively and retry
-    if (
-      error.message?.includes("long_description") ||
-      error.message?.includes("secondary_image") ||
-      error.message?.includes("subcategory")
-    ) {
-      delete insertPayload.long_description;
-      delete insertPayload.secondary_image_1;
-      delete insertPayload.secondary_image_2;
-      delete insertPayload.secondary_image_3;
-      delete insertPayload.secondary_images;
-      if (error.message?.includes("subcategory")) {
-        delete insertPayload.subcategory;
-        delete insertPayload.subcategory_id;
-      }
+    // If any DB column does not exist in schema cache, strip unmigrated columns and retry with core verified columns
+    delete insertPayload.long_description;
+    delete insertPayload.secondary_image_1;
+    delete insertPayload.secondary_image_2;
+    delete insertPayload.secondary_image_3;
+    delete insertPayload.secondary_images;
+    delete insertPayload.subcategory;
+    delete insertPayload.subcategory_id;
 
-      const retryRes = await supabase
-        .from("products")
-        .insert([insertPayload])
-        .select()
-        .single();
-      data = retryRes.data;
-      error = retryRes.error;
-    }
+    const retryRes = await supabase
+      .from("products")
+      .insert([insertPayload])
+      .select()
+      .single();
+    data = retryRes.data;
+    error = retryRes.error;
   }
 
   if (error) {
@@ -782,30 +774,23 @@ export async function updateProductInDb(
     .single();
 
   if (error) {
-    // If DB columns do not exist yet, strip them iteratively and retry
-    if (
-      error.message?.includes("long_description") ||
-      error.message?.includes("secondary_image") ||
-      error.message?.includes("subcategory")
-    ) {
-      delete payload.long_description;
-      delete payload.secondary_image_1;
-      delete payload.secondary_image_2;
-      delete payload.secondary_image_3;
-      delete payload.secondary_images;
-      if (error.message?.includes("subcategory")) {
-        delete payload.subcategory;
-        delete payload.subcategory_id;
-      }
-      const res = await supabase
-        .from("products")
-        .update(payload)
-        .eq("id", id)
-        .select()
-        .single();
-      data = res.data;
-      error = res.error;
-    }
+    // If any DB column does not exist in schema cache, strip unmigrated columns and retry with core verified columns
+    delete payload.long_description;
+    delete payload.secondary_image_1;
+    delete payload.secondary_image_2;
+    delete payload.secondary_image_3;
+    delete payload.secondary_images;
+    delete payload.subcategory;
+    delete payload.subcategory_id;
+
+    const res = await supabase
+      .from("products")
+      .update(payload)
+      .eq("id", id)
+      .select()
+      .single();
+    data = res.data;
+    error = res.error;
   }
 
   if (error) {

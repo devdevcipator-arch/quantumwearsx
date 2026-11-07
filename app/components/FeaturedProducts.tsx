@@ -32,8 +32,20 @@ export default function FeaturedProducts({ onOpenQuote }: FeaturedProductsProps)
     async function loadProducts() {
       try {
         const liveProducts = await fetchProductsFromDb();
-        if (liveProducts && liveProducts.length > 0) {
-          setProducts(liveProducts.slice(0, 6)); // Top 6 featured
+        let localProducts: ProductItem[] = [];
+        try {
+          const cached = localStorage.getItem("qw_admin_products");
+          if (cached) localProducts = JSON.parse(cached);
+        } catch {}
+
+        const liveIds = new Set((liveProducts || []).map((p) => p.id));
+        const merged = [
+          ...localProducts.filter((p) => !liveIds.has(p.id)),
+          ...(liveProducts || []),
+        ];
+
+        if (merged && merged.length > 0) {
+          setProducts(merged.slice(0, 6)); // Top 6 featured
         }
       } catch (err) {
         console.warn("FeaturedProducts fallback to defaults:", err);

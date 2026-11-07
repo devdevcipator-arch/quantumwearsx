@@ -109,9 +109,20 @@ export default function AdminProductsPage() {
         ]);
 
         if (dbProds && dbProds.length > 0) {
-          setProducts(dbProds);
+          let localProducts: ProductItem[] = [];
           try {
-            localStorage.setItem("qw_admin_products", JSON.stringify(dbProds));
+            const cached = localStorage.getItem("qw_admin_products");
+            if (cached) localProducts = JSON.parse(cached);
+          } catch {}
+
+          const liveIds = new Set(dbProds.map((p) => p.id));
+          const merged = [
+            ...localProducts.filter((p) => !liveIds.has(p.id)),
+            ...dbProds,
+          ];
+          setProducts(merged);
+          try {
+            localStorage.setItem("qw_admin_products", JSON.stringify(merged));
           } catch {}
         }
         if (dbCats && dbCats.length > 0) {
