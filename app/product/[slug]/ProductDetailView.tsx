@@ -186,23 +186,6 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                       transition={{ duration: 0.35, ease: "easeOut" }}
                     />
                   </AnimatePresence>
-
-                  {/* High-fashion athletic typographic overlay matching mockup */}
-                  <div className="product-view-stage-graphic" aria-hidden="true">
-                    {/* Watermark product background typography */}
-                    <span className="product-view-watermark-text">
-                      {product.title}
-                    </span>
-
-                    {/* Bold Italic Center Branding with Red Corner Accent */}
-                    <div className="product-view-push-badge">
-                      <span className="product-view-push-text">
-                        {product.graphicWord || "PUSH"}
-                      </span>
-                      {/* Red Right-Angle Corner Bracket Accent */}
-                      <span className="product-view-corner-bracket" />
-                    </div>
-                  </div>
                 </div>
               </div>
 

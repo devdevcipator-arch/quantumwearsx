@@ -5169,60 +5169,6 @@ input[type="search"]::-webkit-search-results-decoration {
   inset: 0;
 }
 
-/* Typographic Graphics Matching Mockup */
-.product-view-stage-graphic {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 5;
-}
-
-.product-view-watermark-text {
-  position: absolute;
-  font-size: clamp(38px, 6.5vw, 92px);
-  font-weight: 900;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  letter-spacing: -0.03em;
-  top: 22%;
-  left: 8%;
-  opacity: 0.85;
-  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  line-height: 1;
-}
-
-.product-view-push-badge {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 28px;
-}
-
-.product-view-push-text {
-  font-size: clamp(54px, 7.5vw, 96px);
-  font-weight: 900;
-  font-style: italic;
-  letter-spacing: -0.05em;
-  color: #0b0b10;
-  text-transform: uppercase;
-  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
-  line-height: 1;
-}
-
-.product-view-corner-bracket {
-  position: absolute;
-  top: -8px;
-  right: -14px;
-  width: 36px;
-  height: 36px;
-  border-top: 5px solid #d10014;
-  border-right: 5px solid #d10014;
-}
-
 /* Bottom-Right White REQUEST QUOTE Button */
 .product-view-quote-btn {
   position: absolute;
@@ -5620,16 +5566,6 @@ input[type="search"]::-webkit-search-results-decoration {
   .product-view-showcase-card {
     min-height: 350px;
     height: 350px;
-  }
-  .product-view-push-text {
-    font-size: 46px;
-  }
-  .product-view-corner-bracket {
-    width: 26px;
-    height: 26px;
-    border-width: 4px;
-    top: -4px;
-    right: -8px;
   }
   .product-view-badge {
     top: 16px;
