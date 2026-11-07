@@ -7,7 +7,7 @@ import ScrollProgress from "../components/ScrollProgress";
 import RevealObserver from "../components/RevealObserver";
 import AboutHero from "../components/AboutHero";
 import AboutStory from "../components/AboutStory";
-import AboutJourney from "../components/AboutJourney";
+import AboutCertificates from "../components/AboutCertificates";
 import AboutPhilosophy from "../components/AboutPhilosophy";
 import AboutMissionVision from "../components/AboutMissionVision";
 import CallToAction from "../components/CallToAction";
@@ -48,8 +48,8 @@ export default function AboutPage() {
       {/* 2. Story: Established 2020 in Sialkot, Pakistan */}
       <AboutStory />
 
-      {/* 3. Journey Since 2020: Milestones */}
-      <AboutJourney />
+      {/* 3. Official Accreditations & Verified Certifications */}
+      <AboutCertificates />
 
       {/* 4. Manufacturing Philosophy: Direct pricing, customization, craftsmanship */}
       <AboutPhilosophy />
