@@ -8,6 +8,7 @@ import {
   DEFAULT_PRODUCTS,
   ProductItem,
 } from "@/lib/products-service";
+import { getProductUrl } from "@/lib/product-details";
 
 interface FeaturedProductsProps {
   onOpenQuote?: (category: string) => void;
@@ -109,13 +110,13 @@ export default function FeaturedProducts({ onOpenQuote }: FeaturedProductsProps)
                     {item.description}
                   </p>
                 )}
-                <button
-                  type="button"
+                <Link
+                  href={getProductUrl(item)}
                   className="product-quote-btn"
-                  onClick={() => onOpenQuote?.(item.category)}
+                  style={{ display: "block", textAlign: "center", textDecoration: "none" }}
                 >
-                  REQUEST QUOTE
-                </button>
+                  DETAIL
+                </Link>
               </div>
             </div>
           ))}

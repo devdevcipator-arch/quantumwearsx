@@ -9,6 +9,7 @@ import ScrollProgress from "../../components/ScrollProgress";
 import RevealObserver from "../../components/RevealObserver";
 import Footer from "../../components/Footer";
 import QuoteModal from "../../components/QuoteModal";
+import { getProductUrl } from "@/lib/product-details";
 import {
   categoryCatalogs,
   matchSubItem,
@@ -551,15 +552,13 @@ export default function ProductCatalogView({
                     </div>
                     <div className="product-card-body">
                       <h3 className="product-card-title">{product.name}</h3>
-                      <button
-                        type="button"
+                      <Link
+                        href={getProductUrl({ name: product.name, title: product.name })}
                         className="product-quote-btn"
-                        onClick={() =>
-                          handleOpenQuote(product.quoteCategory || category.name)
-                        }
+                        style={{ display: "block", textAlign: "center", textDecoration: "none" }}
                       >
-                        REQUEST QUOTE
-                      </button>
+                        DETAIL
+                      </Link>
                     </div>
                   </div>
                 ))}

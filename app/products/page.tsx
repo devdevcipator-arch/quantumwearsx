@@ -12,6 +12,7 @@ import RevealObserver from "../components/RevealObserver";
 import Collections from "../components/Collections";
 import Footer from "../components/Footer";
 import QuoteModal from "../components/QuoteModal";
+import { getProductUrl } from "@/lib/product-details";
 import {
   fetchProductsFromDb,
   fetchCategoriesFromDb,
@@ -458,15 +459,13 @@ export default function ProductsPage() {
                           {prod.description && (
                             <p className="search-product-desc">{prod.description}</p>
                           )}
-                          <button
-                            type="button"
+                          <Link
+                            href={getProductUrl(prod)}
                             className="product-quote-btn"
-                            onClick={() =>
-                              handleOpenQuote(prod.quoteCategory || prod.category)
-                            }
+                            style={{ display: "block", textAlign: "center", textDecoration: "none" }}
                           >
-                            REQUEST QUOTE
-                          </button>
+                            DETAIL
+                          </Link>
                         </div>
                       </div>
                     ))}
@@ -668,13 +667,13 @@ export default function ProductsPage() {
                       {card.description}
                     </p>
                   )}
-                  <button
-                    type="button"
+                  <Link
+                    href={getProductUrl(card)}
                     className="product-quote-btn"
-                    onClick={() => handleOpenQuote(card.category)}
+                    style={{ display: "block", textAlign: "center", textDecoration: "none" }}
                   >
-                    REQUEST QUOTE
-                  </button>
+                    DETAIL
+                  </Link>
                 </div>
               </div>
             ))}
