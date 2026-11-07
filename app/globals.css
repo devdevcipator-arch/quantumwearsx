@@ -5038,7 +5038,59 @@ input[type="search"]::-webkit-search-results-decoration {
   color: #a6a6b5;
 }
 
-/* Specifications Block */
+/* Short Description Under Product Title */
+.product-view-short-desc {
+  margin-bottom: 32px;
+}
+
+.product-view-short-p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #d8d8e5;
+  font-weight: 400;
+}
+
+/* Long Description Block (Replaces Manufacturing Specifications) */
+.product-view-long-desc-box {
+  margin-top: auto;
+  padding-top: 26px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.product-view-long-desc-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 18px;
+}
+
+.product-view-long-desc-heading::before {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: var(--accent-red);
+  border-radius: 2px;
+}
+
+.product-view-long-desc-paragraphs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.product-view-long-p {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: #a6a6b5;
+}
+
+/* Specifications Block (Legacy reference retained) */
 .product-view-specs-box {
   margin-top: auto;
   padding-top: 24px;

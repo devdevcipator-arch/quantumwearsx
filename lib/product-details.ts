@@ -8,14 +8,16 @@ export interface ProductDetailInfo {
   category: string;
   categorySlug: string;
   badge: string;
+  shortDescription: string;
+  longDescription: string[];
   description1: string;
-  description2: string;
+  description2?: string;
   description3?: string;
   mainImage: string;
   thumbnails: string[];
   quoteCategory: string;
   graphicWord?: string;
-  specs: {
+  specs?: {
     moq: string;
     materials: string;
     branding: string;
@@ -90,6 +92,14 @@ const CSSA_PRODUCT: ProductDetailInfo = {
   categorySlug: "leather-products",
   badge: "CUSTOM PRODUCTION",
   graphicWord: "PUSH",
+  shortDescription:
+    "Handcrafted with masterful engineering and artisan precision, featuring top-grain bovine leather optimized for luxury brand standards and industrial durability.",
+  longDescription: [
+    "Handcrafted with masterful engineering and artisan precision. Our CSSA line features top-grain bovine leather optimized for luxury standards and industrial durability.",
+    "Designed for high-definition corporate identity integration, featuring advanced embossing, custom laser engraving, and reinforced saddle stitching for lifelong performance.",
+    "Every unit is cut from hand-selected hides, treated with eco-conscious tanning formulas, and finished with custom heavy-gauge hardware engineered to withstand demanding daily wear.",
+    "Manufactured directly in our Sialkot production facility with full tech pack prototyping support, dedicated sampling in 7–10 days, and multi-stage in-line quality assurance compliant with OEKO-TEX® and ICMES standards.",
+  ],
   description1:
     "Handcrafted with masterful engineering and artisan precision. Our CSSA line features top-grain bovine leather optimized for luxury standards and industrial durability.",
   description2:
@@ -103,13 +113,6 @@ const CSSA_PRODUCT: ProductDetailInfo = {
     "/images/grid_backpack.jpg",
   ],
   quoteCategory: "Leather Products",
-  specs: {
-    moq: "50 Units per custom colorway",
-    materials: "Top-grain bovine leather, premium brass hardware, bonded nylon thread",
-    branding: "Debossed / embossed logos, laser engraving, custom lining & woven tags",
-    leadTime: "Sample: 7–10 business days · Bulk production: 18–25 business days",
-    standards: "OEKO-TEX® Standard 100 tested, ICMES verified ethical compliance",
-  },
 };
 
 /** Build rich specifications and descriptions for any product item */
@@ -136,15 +139,19 @@ function buildProductDetail(
     fallbackThumbs[2] || "/images/grid_backpack.jpg",
   ];
 
-  const desc1 =
-    customDesc ||
-    `Handcrafted with masterful engineering and artisan precision. Our ${title} is optimized for luxury brand standards, rigorous athletic performance, and long-term durability.`;
+  const cleanDesc = customDesc ? customDesc.trim().replace(/\.+$/, "") : "";
 
-  const desc2 =
-    `Designed for high-definition corporate identity integration, featuring advanced stitching, reinforced seams, and custom brand detailing tailored to your exact tech pack specifications.`;
+  const shortDesc = cleanDesc
+    ? `${cleanDesc}.`
+    : `Artisan-engineered ${title} customized to your brand's specifications with premium materials, precision stitching, and direct factory pricing.`;
 
-  const desc3 =
-    `Manufactured in our Sialkot facility with direct factory pricing, comprehensive sample development, and multi-stage in-line quality control.`;
+  const longDesc = [
+    cleanDesc
+      ? `Handcrafted with masterful engineering and artisan precision. Our ${title} is purpose-built for international luxury standards, athletic performance, and everyday durability, featuring ${cleanDesc.toLowerCase()}.`
+      : `Handcrafted with masterful engineering and artisan precision. Our ${title} is optimized for luxury brand standards, rigorous athletic performance, and long-term durability.`,
+    `Designed for high-definition corporate identity integration, featuring advanced stitching, reinforced seams, and custom brand detailing tailored to your exact tech pack specifications.`,
+    `Manufactured in our Sialkot facility with direct factory pricing, comprehensive sample development, and multi-stage in-line quality control conforming to OEKO-TEX® and Sialkot Chamber standards.`,
+  ];
 
   return {
     id,
@@ -154,19 +161,14 @@ function buildProductDetail(
     categorySlug: catSlug,
     badge: "CUSTOM PRODUCTION",
     graphicWord: title.split(" ")[0]?.toUpperCase() || "PUSH",
-    description1: desc1,
-    description2: desc2,
-    description3: desc3,
+    shortDescription: shortDesc,
+    longDescription: longDesc,
+    description1: longDesc[0],
+    description2: longDesc[1],
+    description3: longDesc[2],
     mainImage: image || "/images/grid_leather_hide.jpg",
     thumbnails: thumbs,
     quoteCategory: quoteCat || category,
-    specs: {
-      moq: "50 Units (flexible tiered pricing for startups and enterprise brands)",
-      materials: "Premium technical grade fabrics, certified eco-dyes, high-tensile thread",
-      branding: "Screen print, 3D silicone, embroidery, woven labels, customized hardware",
-      leadTime: "Prototypes: 7–10 days · Full production: 15–22 business days",
-      standards: "OEKO-TEX® Standard 100 certified, Sialkot Chamber & FBR registered",
-    },
   };
 }
 

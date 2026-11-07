@@ -121,39 +121,36 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
               {/* Bold Large Product Title */}
               <h1 className="product-view-title">{product.title}</h1>
 
-              {/* Detailed Description Paragraphs matching mockup */}
-              <div className="product-view-desc-wrap">
-                <p className="product-view-desc-p">{product.description1}</p>
-                <p className="product-view-desc-p">{product.description2}</p>
-                {product.description3 && (
-                  <p className="product-view-desc-p">{product.description3}</p>
-                )}
+              {/* Short Description directly underneath Product Title */}
+              <div className="product-view-short-desc">
+                <p className="product-view-short-p">
+                  {product.shortDescription || product.description1}
+                </p>
               </div>
 
-              {/* Specifications Block */}
-              <div className="product-view-specs-box">
-                <h2 className="product-view-specs-heading">Manufacturing Specifications</h2>
-                <div className="product-view-specs-grid">
-                  <div className="product-view-spec-row">
-                    <span className="product-view-spec-label">MOQ</span>
-                    <span className="product-view-spec-val">{product.specs.moq}</span>
-                  </div>
-                  <div className="product-view-spec-row">
-                    <span className="product-view-spec-label">Materials</span>
-                    <span className="product-view-spec-val">{product.specs.materials}</span>
-                  </div>
-                  <div className="product-view-spec-row">
-                    <span className="product-view-spec-label">Branding</span>
-                    <span className="product-view-spec-val">{product.specs.branding}</span>
-                  </div>
-                  <div className="product-view-spec-row">
-                    <span className="product-view-spec-label">Lead Times</span>
-                    <span className="product-view-spec-val">{product.specs.leadTime}</span>
-                  </div>
-                  <div className="product-view-spec-row">
-                    <span className="product-view-spec-label">Compliance</span>
-                    <span className="product-view-spec-val">{product.specs.standards}</span>
-                  </div>
+              {/* Long Description Box replacing the Manufacturing Specifications */}
+              <div className="product-view-long-desc-box">
+                <h2 className="product-view-long-desc-heading">
+                  Product Overview &amp; Specifications
+                </h2>
+                <div className="product-view-long-desc-paragraphs">
+                  {product.longDescription && product.longDescription.length > 0 ? (
+                    product.longDescription.map((para, idx) => (
+                      <p key={idx} className="product-view-long-p">
+                        {para}
+                      </p>
+                    ))
+                  ) : (
+                    <>
+                      <p className="product-view-long-p">{product.description1}</p>
+                      {product.description2 && (
+                        <p className="product-view-long-p">{product.description2}</p>
+                      )}
+                      {product.description3 && (
+                        <p className="product-view-long-p">{product.description3}</p>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>

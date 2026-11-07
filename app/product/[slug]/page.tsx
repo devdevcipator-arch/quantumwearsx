@@ -21,7 +21,8 @@ export async function generateMetadata({
   const product = getProductDetailBySlug(slug);
 
   const title = `${product.title} — Custom ${product.category} Manufacturing | QUANTUMWEARX`;
-  const description = `${product.title}: ${product.description1.slice(0, 155)}...`;
+  const metaDesc = product.shortDescription || product.description1 || product.title;
+  const description = `${product.title}: ${metaDesc.slice(0, 155)}...`;
 
   return {
     title,
