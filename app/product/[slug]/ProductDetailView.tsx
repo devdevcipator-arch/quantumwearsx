@@ -37,12 +37,18 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
       const raw = localStorage.getItem("qw_admin_products");
       if (raw) {
         const list = JSON.parse(raw);
+        // Only trust the cache for LOCAL-ONLY products (those added while
+        // offline, id "prod-<timestamp>" — they don't exist server-side).
+        // For DB products the server already rendered the live row, and
+        // overriding it with a possibly-stale cache copy caused a visible
+        // data swap on every refresh.
+        const isLocalOnlyId = (id: string) => /^prod-\d+$/.test(id);
         const match = list.find(
           (p: any) =>
             p.id === initialProduct.id ||
             p.title?.toLowerCase().trim() === initialProduct.title.toLowerCase().trim()
         );
-        if (match) {
+        if (match && isLocalOnlyId(match.id)) {
           const { cleanDescription, extras } = extractMetaFromDescription(match.description || "");
           const longDesc =
             match.long_description ||
@@ -211,9 +217,9 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
             {/* 1. LEFT COLUMN: PRODUCT INFO & SPECIFICATIONS CARD */}
             <motion.div
               className="product-view-info-card"
-              initial={reduce ? undefined : { opacity: 0, x: -30 }}
-              animate={reduce ? undefined : { opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              initial={reduce ? undefined : { opacity: 0, y: 15 }}
+              animate={reduce ? undefined : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
             >
               {/* Category Eyebrow in Crimson */}
               <span className="product-view-eyebrow">
@@ -260,9 +266,9 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
             {/* 2. RIGHT COLUMN: VISUAL DISPLAY & 3 THUMBNAILS */}
             <motion.div
               className="product-view-visual-col"
-              initial={reduce ? undefined : { opacity: 0, x: 30 }}
-              animate={reduce ? undefined : { opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              initial={reduce ? undefined : { opacity: 0, y: 15 }}
+              animate={reduce ? undefined : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.08, ease: "easeOut" }}
             >
               {/* Top Showcase Card (Clean display without floating quote button) */}
               <div className="product-view-showcase-card">
@@ -279,10 +285,10 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                       src={activeImage}
                       alt={`${product.title} showcase`}
                       className="product-view-main-image"
-                      initial={{ opacity: 0, scale: 0.98 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 1.02 }}
-                      transition={{ duration: 0.35, ease: "easeOut" }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
                     />
                   </AnimatePresence>
                 </div>
@@ -312,13 +318,10 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
           </div>
 
           {/* ================= REQUEST QUOTE SECTION BENEATH THE TWO SECTIONS ================= */}
-          <motion.div
+          <section
             id="product-quote-section"
             className="product-view-quote-section"
-            initial={reduce ? undefined : { opacity: 0, y: 30 }}
-            whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            aria-label={`Request a Production Quote for ${product.title}`}
           >
             <div className="product-quote-section-header">
               <span className="product-quote-section-eyebrow">
@@ -545,7 +548,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                 </div>
               </form>
             )}
-          </motion.div>
+          </section>
         </div>
       </section>
 

@@ -12,22 +12,38 @@ import { getProductUrl } from "@/lib/product-details";
 
 interface FeaturedProductsProps {
   onOpenQuote?: (category: string) => void;
+  /** Live products pre-fetched on the server — first paint == final content */
+  initialProducts?: ProductItem[];
 }
 
-export default function FeaturedProducts({ onOpenQuote }: FeaturedProductsProps) {
-  const [products, setProducts] = useState<ProductItem[]>(DEFAULT_PRODUCTS);
+export default function FeaturedProducts({
+  onOpenQuote,
+  initialProducts,
+}: FeaturedProductsProps) {
+  const [products, setProducts] = useState<ProductItem[]>(
+    initialProducts && initialProducts.length > 0
+      ? initialProducts
+      : DEFAULT_PRODUCTS
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const cached = localStorage.getItem("qw_admin_products");
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setProducts(parsed.slice(0, 6));
+    // With server-provided (truth) data, don't wholesale-replace from the
+    // admin localStorage cache — that was the source of the visible swap on
+    // refresh. Local-only products are merged in the DB-fetch step below.
+    const hasServerData = initialProducts && initialProducts.length > 0;
+
+    if (!hasServerData) {
+      try {
+        const cached = localStorage.getItem("qw_admin_products");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setProducts(parsed.slice(0, 6));
+          }
         }
-      }
-    } catch {}
+      } catch {}
+    }
 
     async function loadProducts() {
       try {
@@ -124,6 +140,8 @@ export default function FeaturedProducts({ onOpenQuote }: FeaturedProductsProps)
                       WebkitLineClamp: 2,
                       WebkitBoxOrient: "vertical",
                       overflow: "hidden",
+                      overflowWrap: "break-word",
+                      wordBreak: "break-word",
                     }}
                   >
                     {item.description}

@@ -24,33 +24,29 @@ import {
   getStoredSubcategoryMap,
   extractSubcategoryFromDescription,
   SubcategoryItem,
+  ProductItem,
 } from "@/lib/products-service";
+import {
+  convertProductsForCategory,
+  getCatalogFallbackImage,
+} from "@/lib/catalog-convert";
 
 interface ProductCatalogViewProps {
   category: CategoryCatalog;
   itemQuery?: string;
+  /** Live data pre-fetched on the server — first paint == final content */
+  initialProducts?: CatalogProduct[];
+  initialCats?: string[];
+  initialSubs?: SubcategoryItem[];
 }
 
-const getCatalogFallbackImage = (slug?: string) => {
-  switch (slug) {
-    case "leather-products":
-      return "/images/grid_leather_hide.jpg";
-    case "safety-wear":
-      return "/images/grid_workwear.jpg";
-    case "sportswear":
-      return "/images/grid_sportswear.jpg";
-    case "custom-bags":
-      return "/images/grid_backpack.jpg";
-    case "streetwear":
-      return "/images/grid_tracksuit.jpg";
-    default:
-      return "/images/grid_sportswear.jpg";
-  }
-};
 
 export default function ProductCatalogView({
   category,
   itemQuery,
+  initialProducts,
+  initialCats,
+  initialSubs,
 }: ProductCatalogViewProps) {
   const pathname = usePathname();
 
@@ -71,23 +67,40 @@ export default function ProductCatalogView({
     category.products[0]?.quoteCategory ?? "General Inquiry"
   );
 
-  // Dynamic categories and subcategories from DB / localStorage
-  const [dynamicCats, setDynamicCats] = useState<string[]>([]);
-  const [dynamicSubs, setDynamicSubs] = useState<SubcategoryItem[]>([]);
+  // Dynamic categories and subcategories from server truth / DB / localStorage
+  const [dynamicCats, setDynamicCats] = useState<string[]>(
+    initialCats && initialCats.length > 0 ? initialCats : []
+  );
+  const [dynamicSubs, setDynamicSubs] = useState<SubcategoryItem[]>(
+    initialSubs && initialSubs.length > 0 ? initialSubs : []
+  );
 
   useEffect(() => {
-    try {
-      const cachedCats = localStorage.getItem("qw_admin_categories");
-      if (cachedCats) {
-        const parsed = JSON.parse(cachedCats);
-        if (Array.isArray(parsed) && parsed.length > 0) setDynamicCats(parsed);
-      }
-      const cachedSubs = localStorage.getItem("qw_admin_subcategories");
-      if (cachedSubs) {
-        const parsed = JSON.parse(cachedSubs);
-        if (Array.isArray(parsed) && parsed.length > 0) setDynamicSubs(parsed);
-      }
-    } catch {}
+    const hasServerCats = initialCats !== undefined && initialCats.length > 0;
+    const hasServerSubs =
+      initialSubs !== undefined && initialSubs.length > 0;
+
+    // Skip the wholesale cache read when the server already provided fresh
+    // truth data — replacing server data with the possibly-stale localStorage
+    // cache was one source of the visible garbage flash on refresh.
+    if (!hasServerCats || !hasServerSubs) {
+      try {
+        if (!hasServerCats) {
+          const cachedCats = localStorage.getItem("qw_admin_categories");
+          if (cachedCats) {
+            const parsed = JSON.parse(cachedCats);
+            if (Array.isArray(parsed) && parsed.length > 0) setDynamicCats(parsed);
+          }
+        }
+        if (!hasServerSubs) {
+          const cachedSubs = localStorage.getItem("qw_admin_subcategories");
+          if (cachedSubs) {
+            const parsed = JSON.parse(cachedSubs);
+            if (Array.isArray(parsed) && parsed.length > 0) setDynamicSubs(parsed);
+          }
+        }
+      } catch {}
+    }
 
     async function loadMeta() {
       try {
@@ -172,10 +185,15 @@ export default function ProductCatalogView({
     setSearchQuery("");
   }, [currentCategorySlug, currentCategorySubItems, itemQuery]);
 
-  // Dynamic products from Supabase Live DB matching this category
-  const [liveDbProducts, setLiveDbProducts] = useState<CatalogProduct[]>([]);
+  // Dynamic products from Supabase Live DB matching this category.
+  // Initialized from server-truth data when available so SSR == final view.
+  const [liveDbProducts, setLiveDbProducts] = useState<CatalogProduct[]>(
+    initialProducts && initialProducts.length > 0 ? initialProducts : []
+  );
 
   useEffect(() => {
+    const hasServerProducts =
+      initialProducts !== undefined && initialProducts.length > 0;
     const normCatName = (category.name || "").toLowerCase().trim().replace(/[^a-z0-9]/g, "");
     const normCatSlug = (category.slug || "").toLowerCase().trim().replace(/[^a-z0-9]/g, "");
 
@@ -236,19 +254,23 @@ export default function ProductCatalogView({
       });
     }
 
-    // Instant local cache check
-    try {
-      const cached = localStorage.getItem("qw_admin_products");
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const converted = filterAndConvert(parsed);
-          if (converted.length > 0) {
-            setLiveDbProducts(converted);
+    // Instant local cache check — ONLY when the server did not provide
+    // fresh DB data. Overwriting server truth with the stale localStorage
+    // cache produced the "old data for a second" flash on refresh.
+    if (!hasServerProducts) {
+      try {
+        const cached = localStorage.getItem("qw_admin_products");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const converted = filterAndConvert(parsed);
+            if (converted.length > 0) {
+              setLiveDbProducts(converted);
+            }
           }
         }
-      }
-    } catch {}
+      } catch {}
+    }
 
     async function loadCategoryProducts() {
       try {
@@ -260,15 +282,8 @@ export default function ProductCatalogView({
         } catch {}
 
         const liveIds = new Set(allDbProducts.map((p) => p.id));
-        const liveTitles = new Set(
-          allDbProducts.map((p) => (p.title || "").toLowerCase().trim())
-        );
         const merged = [
-          ...localProducts.filter(
-            (p) =>
-              !liveIds.has(p.id) &&
-              !liveTitles.has((p.title || p.name || "").toLowerCase().trim())
-          ),
+          ...localProducts.filter((p) => !liveIds.has(p.id)),
           ...allDbProducts,
         ];
         const converted = filterAndConvert(merged);

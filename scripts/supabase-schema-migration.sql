@@ -193,3 +193,4 @@ UPDATE public.products
 SET subcategory = 'Company-branded workwear',
     subcategory_id = (SELECT id FROM public.subcategories WHERE name = 'Company-branded workwear' LIMIT 1)
 WHERE title = 'gjg';
+

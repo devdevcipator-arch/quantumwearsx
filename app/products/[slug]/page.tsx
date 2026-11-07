@@ -5,8 +5,19 @@ import {
   categoryCatalogs,
   findCategoryBySlug,
 } from "../../data/categories";
+import {
+  fetchProductsFromDb,
+  fetchCategoriesFromDb,
+  fetchSubcategoriesFromDb,
+  SubcategoryItem,
+} from "@/lib/products-service";
+import { convertProductsForCategory } from "@/lib/catalog-convert";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://quantumwearx.com";
+
+// Server-render the live DB content so the first paint == final content —
+// no stale-cache → live-data swap on every refresh.
+export const dynamic = "force-dynamic";
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -16,6 +27,24 @@ interface CategoryPageProps {
 /** Pre-render every known category catalog at build time */
 export function generateStaticParams() {
   return categoryCatalogs.map((c) => ({ slug: c.slug }));
+}
+
+/** Load live products/categories/subcategories for SSR (failures tolerated) */
+async function loadInitialData() {
+  try {
+    const [products, cats, subs] = await Promise.all([
+      fetchProductsFromDb(),
+      fetchCategoriesFromDb(),
+      fetchSubcategoriesFromDb(),
+    ]);
+    return {
+      products: products || [],
+      cats: cats || [],
+      subs: subs || [],
+    };
+  } catch {
+    return { products: [], cats: [], subs: [] };
+  }
 }
 
 export async function generateMetadata({
@@ -95,6 +124,13 @@ export default async function CategoryCatalogPage({
 
   const { item } = await searchParams;
 
+  // Live DB data for SSR — the exact same conversion the client applies,
+  // so hydration never swaps the product cards for stale/different data.
+  const { products, cats, subs } = await loadInitialData();
+  const serverProducts = products.length > 0
+    ? convertProductsForCategory(category, products, subs)
+    : [];
+
   const categoryStructuredData = {
     "@context": "https://schema.org",
     "@graph": [
@@ -172,7 +208,14 @@ export default async function CategoryCatalogPage({
           __html: JSON.stringify(categoryStructuredData),
         }}
       />
-      <ProductCatalogView key={slug} category={category} itemQuery={item} />
+      <ProductCatalogView
+        key={slug}
+        category={category}
+        itemQuery={item}
+        initialProducts={serverProducts.length > 0 ? serverProducts : undefined}
+        initialCats={cats.length > 0 ? cats : undefined}
+        initialSubs={subs.length > 0 ? subs : undefined}
+      />
     </>
   );
 }

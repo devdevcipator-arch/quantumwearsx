@@ -1793,6 +1793,7 @@ input[type="search"]::-webkit-search-results-decoration {
   gap: 18px;
   padding: 20px 20px 22px;
   flex: 1;
+  min-width: 0;
 }
 
 .product-card-title {
@@ -1800,6 +1801,8 @@ input[type="search"]::-webkit-search-results-decoration {
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-white);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .product-quote-btn {
@@ -5031,7 +5034,7 @@ input[type="search"]::-webkit-search-results-decoration {
   padding: 130px 0 100px;
   background: #000000;
   position: relative;
-  overflow: hidden;
+  overflow-x: clip;
 }
 
 .product-view-container {
@@ -5095,6 +5098,12 @@ input[type="search"]::-webkit-search-results-decoration {
   align-items: stretch;
 }
 
+/* Grid children must be allowed to shrink below their content's natural width,
+   otherwise a long unbroken "word" stretches the column and breaks the layout */
+.product-view-grid > * {
+  min-width: 0;
+}
+
 /* Left Column: Product Info Card */
 .product-view-info-card {
   background: #09090e;
@@ -5106,6 +5115,9 @@ input[type="search"]::-webkit-search-results-decoration {
   flex-direction: column;
   position: relative;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  /* Allow the column to shrink instead of stretching the page with long unbroken text */
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .product-view-info-card:hover {
@@ -5131,6 +5143,8 @@ input[type="search"]::-webkit-search-results-decoration {
   color: #ffffff;
   line-height: 1.1;
   margin-bottom: 24px;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .product-view-desc-wrap {
@@ -5156,6 +5170,8 @@ input[type="search"]::-webkit-search-results-decoration {
   line-height: 1.7;
   color: #d8d8e5;
   font-weight: 400;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Long Description Block (Replaces Manufacturing Specifications) */
@@ -5196,6 +5212,8 @@ input[type="search"]::-webkit-search-results-decoration {
   font-size: 14.5px;
   line-height: 1.75;
   color: #a6a6b5;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Specifications Block (Legacy reference retained) */
@@ -5419,6 +5437,7 @@ input[type="search"]::-webkit-search-results-decoration {
   position: relative;
   overflow: hidden;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  will-change: auto;
 }
 
 .product-view-quote-section:hover {
