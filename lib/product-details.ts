@@ -247,3 +247,4 @@ export function getProductDetailBySlug(rawSlug: string): ProductDetailInfo {
     "Custom Manufacturing"
   );
 }
+

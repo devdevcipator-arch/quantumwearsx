@@ -55,3 +55,4 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   return <ProductDetailView product={product} />;
 }
+

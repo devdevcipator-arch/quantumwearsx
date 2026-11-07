@@ -5300,6 +5300,300 @@ input[type="search"]::-webkit-search-results-decoration {
   background: rgba(0, 0, 0, 0);
 }
 
+/* ==========================================================
+   DEDICATED REQUEST QUOTE SECTION BENEATH THE PRODUCT VIEW
+   ========================================================== */
+.product-view-quote-section {
+  margin-top: 56px;
+  background: linear-gradient(135deg, rgba(14, 14, 20, 0.96) 0%, rgba(9, 9, 13, 0.98) 100%);
+  border: 1px solid rgba(209, 0, 20, 0.42);
+  border-radius: 24px;
+  padding: 52px 48px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.75);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-view-quote-section:hover {
+  border-color: rgba(209, 0, 20, 0.65);
+  box-shadow: 0 26px 80px rgba(209, 0, 20, 0.12);
+}
+
+.product-quote-section-header {
+  max-width: 860px;
+  margin-bottom: 36px;
+}
+
+.product-quote-section-eyebrow {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-red);
+  margin-bottom: 12px;
+}
+
+.product-quote-section-title {
+  font-size: clamp(24px, 3.2vw, 38px);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: #ffffff;
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+
+.product-quote-section-subtitle {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #a6a6b5;
+}
+
+.product-quote-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.product-quote-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.product-quote-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.product-quote-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #d1d1de;
+}
+
+.product-quote-input,
+.product-quote-select,
+.product-quote-textarea {
+  background: #111118;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 14px 16px;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.product-quote-input:focus,
+.product-quote-select:focus,
+.product-quote-textarea:focus {
+  background: #151520;
+  border-color: var(--accent-red);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(209, 0, 20, 0.25);
+}
+
+.product-quote-custom-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.product-quote-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.product-quote-pill-btn {
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #c4c4d4;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.product-quote-pill-btn:hover {
+  border-color: rgba(209, 0, 20, 0.45);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.product-quote-pill-btn.active {
+  background: rgba(209, 0, 20, 0.18);
+  border-color: var(--accent-red);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(209, 0, 20, 0.25);
+}
+
+.product-quote-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.product-quote-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 34px;
+  background: var(--accent-red);
+  color: #ffffff;
+  border: 1px solid var(--accent-red);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 26px rgba(209, 0, 20, 0.4);
+}
+
+.product-quote-submit-btn:hover {
+  background: var(--accent-red-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(209, 0, 20, 0.55);
+}
+
+.product-quote-whatsapp-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 28px;
+  background: rgba(37, 211, 102, 0.12);
+  border: 1px solid rgba(37, 211, 102, 0.45);
+  color: #25d366;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.product-quote-whatsapp-pill:hover {
+  background: #25d366;
+  color: #0b0b10;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35);
+}
+
+.product-quote-assurances {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.product-quote-assurance-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #8e8e9f;
+}
+
+.product-quote-assurance-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-red);
+}
+
+/* Success Box */
+.product-quote-success-box {
+  padding: 44px 24px;
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.product-quote-success-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  border: 2px solid #10b981;
+  color: #10b981;
+  font-size: 26px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+}
+
+.product-quote-success-title {
+  font-size: 26px;
+  font-weight: 900;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.product-quote-success-desc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #a6a6b5;
+  margin-bottom: 28px;
+}
+
+.product-quote-success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+}
+
+.product-quote-reset-btn {
+  padding: 13px 26px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.product-quote-reset-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #ffffff;
+}
+
+.product-quote-whatsapp-btn {
+  padding: 13px 26px;
+  background: #25d366;
+  color: #0b0b10;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.product-quote-whatsapp-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
 /* Responsive Breakpoints */
 @media (max-width: 1024px) {
   .product-view-grid {
@@ -5309,6 +5603,9 @@ input[type="search"]::-webkit-search-results-decoration {
   .product-view-showcase-card {
     min-height: 440px;
     height: 440px;
+  }
+  .product-quote-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -5340,14 +5637,25 @@ input[type="search"]::-webkit-search-results-decoration {
     font-size: 10.5px;
     padding: 6px 14px;
   }
-  .product-view-quote-btn {
-    bottom: 16px;
-    right: 16px;
-    padding: 11px 20px;
-    font-size: 11px;
-  }
   .product-view-thumb-card {
     height: 96px;
     border-radius: 10px;
+  }
+  .product-view-quote-section {
+    padding: 32px 18px;
+    margin-top: 40px;
+    border-radius: 18px;
+  }
+  .product-quote-grid {
+    grid-template-columns: 1fr;
+  }
+  .product-quote-btn-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .product-quote-submit-btn,
+  .product-quote-whatsapp-pill {
+    width: 100%;
+    justify-content: center;
   }
 }
