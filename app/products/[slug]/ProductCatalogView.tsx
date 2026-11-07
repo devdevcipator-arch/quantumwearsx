@@ -9,9 +9,6 @@ import ScrollProgress from "../../components/ScrollProgress";
 import RevealObserver from "../../components/RevealObserver";
 import Footer from "../../components/Footer";
 import QuoteModal from "../../components/QuoteModal";
-import ProductDetailModal, {
-  type ProductDetailInfo,
-} from "../../components/ProductDetailModal";
 import {
   categoryCatalogs,
   matchSubItem,
@@ -69,9 +66,6 @@ export default function ProductCatalogView({
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
-  const [detailProduct, setDetailProduct] = useState<ProductDetailInfo | null>(
-    null
-  );
   const [selectedCategory, setSelectedCategory] = useState(
     category.products[0]?.quoteCategory ?? "General Inquiry"
   );
@@ -561,17 +555,10 @@ export default function ProductCatalogView({
                         type="button"
                         className="product-quote-btn"
                         onClick={() =>
-                          setDetailProduct({
-                            title: product.name,
-                            category: category.name,
-                            description: product.description,
-                            image: product.image,
-                            tag: product.tag,
-                            quoteCategory: product.quoteCategory,
-                          })
+                          handleOpenQuote(product.quoteCategory || category.name)
                         }
                       >
-                        DETAIL
+                        REQUEST QUOTE
                       </button>
                     </div>
                   </div>
@@ -588,16 +575,6 @@ export default function ProductCatalogView({
         isOpen={quoteModalOpen}
         onClose={() => setQuoteModalOpen(false)}
         initialCategory={selectedCategory}
-      />
-
-      {/* Product Detail Modal */}
-      <ProductDetailModal
-        product={detailProduct}
-        onClose={() => setDetailProduct(null)}
-        onRequestQuote={(quoteCat) => {
-          setDetailProduct(null);
-          handleOpenQuote(quoteCat);
-        }}
       />
     </main>
   );
