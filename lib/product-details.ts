@@ -15,6 +15,7 @@ export interface ProductDetailInfo {
   description3?: string;
   mainImage: string;
   thumbnails: string[];
+  secondaryImages?: string[];
   quoteCategory: string;
   graphicWord?: string;
   specs?: {
@@ -116,13 +117,15 @@ const CSSA_PRODUCT: ProductDetailInfo = {
 };
 
 /** Build rich specifications and descriptions for any product item */
-function buildProductDetail(
+export function buildProductDetail(
   id: string,
   title: string,
   category: string,
   image: string,
   customDesc?: string,
-  quoteCat?: string
+  quoteCat?: string,
+  customLongDesc?: string | string[],
+  secondaryImages?: string[]
 ): ProductDetailInfo {
   const catSlug = slugify(category);
   const fallbackThumbs =
@@ -132,11 +135,12 @@ function buildProductDetail(
       "/images/grid_backpack.jpg",
     ];
 
-  // Guarantee 3 unique thumbnail items
+  // If secondary images are provided, map them directly into thumbnails
+  const validSecs = (secondaryImages || []).filter(Boolean);
   const thumbs = [
-    image || fallbackThumbs[0],
-    fallbackThumbs[1] || "/images/grid_leather_hide.jpg",
-    fallbackThumbs[2] || "/images/grid_backpack.jpg",
+    validSecs[0] || image || fallbackThumbs[0],
+    validSecs[1] || fallbackThumbs[1] || "/images/grid_leather_hide.jpg",
+    validSecs[2] || fallbackThumbs[2] || "/images/grid_backpack.jpg",
   ];
 
   const cleanDesc = customDesc ? customDesc.trim().replace(/\.+$/, "") : "";
@@ -145,13 +149,25 @@ function buildProductDetail(
     ? `${cleanDesc}.`
     : `Artisan-engineered ${title} customized to your brand's specifications with premium materials, precision stitching, and direct factory pricing.`;
 
-  const longDesc = [
-    cleanDesc
-      ? `Handcrafted with masterful engineering and artisan precision. Our ${title} is purpose-built for international luxury standards, athletic performance, and everyday durability, featuring ${cleanDesc.toLowerCase()}.`
-      : `Handcrafted with masterful engineering and artisan precision. Our ${title} is optimized for luxury brand standards, rigorous athletic performance, and long-term durability.`,
-    `Designed for high-definition corporate identity integration, featuring advanced stitching, reinforced seams, and custom brand detailing tailored to your exact tech pack specifications.`,
-    `Manufactured in our Sialkot facility with direct factory pricing, comprehensive sample development, and multi-stage in-line quality control conforming to OEKO-TEX® and Sialkot Chamber standards.`,
-  ];
+  let longDesc: string[] = [];
+  if (Array.isArray(customLongDesc) && customLongDesc.length > 0) {
+    longDesc = customLongDesc.filter((p) => p && p.trim().length > 0);
+  } else if (typeof customLongDesc === "string" && customLongDesc.trim()) {
+    longDesc = customLongDesc
+      .split(/\n\s*\n|\n/)
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0);
+  }
+
+  if (longDesc.length === 0) {
+    longDesc = [
+      cleanDesc
+        ? `Handcrafted with masterful engineering and artisan precision. Our ${title} is purpose-built for international luxury standards, athletic performance, and everyday durability, featuring ${cleanDesc.toLowerCase()}.`
+        : `Handcrafted with masterful engineering and artisan precision. Our ${title} is optimized for luxury brand standards, rigorous athletic performance, and long-term durability.`,
+      `Designed for high-definition corporate identity integration, featuring advanced stitching, reinforced seams, and custom brand detailing tailored to your exact tech pack specifications.`,
+      `Manufactured in our Sialkot facility with direct factory pricing, comprehensive sample development, and multi-stage in-line quality control conforming to OEKO-TEX® and Sialkot Chamber standards.`,
+    ];
+  }
 
   return {
     id,
@@ -164,10 +180,11 @@ function buildProductDetail(
     shortDescription: shortDesc,
     longDescription: longDesc,
     description1: longDesc[0],
-    description2: longDesc[1],
-    description3: longDesc[2],
+    description2: longDesc[1] || "",
+    description3: longDesc[2] || "",
     mainImage: image || "/images/grid_leather_hide.jpg",
     thumbnails: thumbs,
+    secondaryImages: validSecs,
     quoteCategory: quoteCat || category,
   };
 }

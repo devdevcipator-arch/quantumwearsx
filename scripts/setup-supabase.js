@@ -29,8 +29,13 @@ CREATE TABLE IF NOT EXISTS public.products (
     updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Ensure description and subcategory columns exist on products
+-- Ensure description, subcategory, long_description and secondary images exist on products
 ALTER TABLE public.products ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS long_description TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS secondary_image_1 TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS secondary_image_2 TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS secondary_image_3 TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS secondary_images TEXT[];
 ALTER TABLE public.products ADD COLUMN IF NOT EXISTS subcategory TEXT;
 ALTER TABLE public.products ADD COLUMN IF NOT EXISTS subcategory_id UUID;
 

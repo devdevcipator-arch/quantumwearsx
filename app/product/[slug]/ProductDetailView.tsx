@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import Navbar from "@/app/components/Navbar";
@@ -8,7 +8,8 @@ import SmoothScroll from "@/app/components/SmoothScroll";
 import ScrollProgress from "@/app/components/ScrollProgress";
 import RevealObserver from "@/app/components/RevealObserver";
 import Footer from "@/app/components/Footer";
-import { ProductDetailInfo } from "@/lib/product-details";
+import { ProductDetailInfo, buildProductDetail } from "@/lib/product-details";
+import { supabase } from "@/lib/supabase";
 
 interface ProductDetailViewProps {
   product: ProductDetailInfo;
@@ -23,10 +24,78 @@ const customizationOptions = [
   "Custom Hardware & Zippers",
 ];
 
-export default function ProductDetailView({ product }: ProductDetailViewProps) {
+export default function ProductDetailView({ product: initialProduct }: ProductDetailViewProps) {
   const reduce = useReducedMotion();
-  const [activeImage, setActiveImage] = useState<string>(product.mainImage);
+  const [product, setProduct] = useState<ProductDetailInfo>(initialProduct);
+  const [activeImage, setActiveImage] = useState<string>(initialProduct.mainImage);
   const [activeThumbIdx, setActiveThumbIdx] = useState<number>(0);
+
+  // Sync latest product images & descriptions from admin cache or Supabase
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("qw_admin_products");
+      if (raw) {
+        const list = JSON.parse(raw);
+        const match = list.find(
+          (p: any) =>
+            p.id === initialProduct.id ||
+            p.title?.toLowerCase().trim() === initialProduct.title.toLowerCase().trim()
+        );
+        if (match) {
+          const secs = [
+            match.secondary_image_1,
+            match.secondary_image_2,
+            match.secondary_image_3,
+          ].filter(Boolean);
+          const updated = buildProductDetail(
+            match.id || initialProduct.id,
+            match.title || initialProduct.title,
+            match.category || initialProduct.category,
+            match.image || initialProduct.mainImage,
+            match.description || initialProduct.shortDescription,
+            match.category || initialProduct.quoteCategory,
+            match.long_description || initialProduct.longDescription,
+            secs.length > 0 ? secs : initialProduct.thumbnails
+          );
+          setProduct(updated);
+          setActiveImage(updated.mainImage);
+        }
+      }
+    } catch {}
+
+    async function syncFromDb() {
+      try {
+        const { data } = await supabase
+          .from("products")
+          .select("*")
+          .eq("title", initialProduct.title)
+          .maybeSingle();
+
+        if (data) {
+          const secs = [
+            data.secondary_image_1,
+            data.secondary_image_2,
+            data.secondary_image_3,
+          ].filter(Boolean);
+
+          const updated = buildProductDetail(
+            data.id,
+            data.title,
+            data.category,
+            data.image || initialProduct.mainImage,
+            data.description,
+            data.category,
+            data.long_description,
+            secs.length > 0 ? secs : initialProduct.thumbnails
+          );
+          setProduct(updated);
+          setActiveImage(updated.mainImage);
+        }
+      } catch {}
+    }
+
+    syncFromDb();
+  }, [initialProduct]);
 
   // Quote Form State
   const [contactName, setContactName] = useState("");

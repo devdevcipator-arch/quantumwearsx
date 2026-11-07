@@ -4,10 +4,15 @@ export interface ProductItem {
   id: string;
   title: string;
   description: string;
+  long_description?: string;
   category: string;
   subcategory?: string;
   subcategory_id?: string | null;
   image: string;
+  secondary_image_1?: string;
+  secondary_image_2?: string;
+  secondary_image_3?: string;
+  secondary_images?: string[];
   category_id?: string | null;
   created_at?: string;
   updated_at?: string;
@@ -97,19 +102,115 @@ export function setStoredSubcategory(id: string, title: string, subcategory: str
   } catch {}
 }
 
-// Helpers to transparently persist subcategory inside product description
+export interface ProductExtras {
+  long_description?: string;
+  secondary_image_1?: string;
+  secondary_image_2?: string;
+  secondary_image_3?: string;
+  secondary_images?: string[];
+}
+
+export function getStoredProductExtrasMap(): Record<string, ProductExtras> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem("qw_product_extras");
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function setStoredProductExtras(
+  id: string,
+  title: string,
+  extras: ProductExtras
+) {
+  if (typeof window === "undefined" || !extras) return;
+  try {
+    const map = getStoredProductExtrasMap();
+    if (id) map[id] = { ...(map[id] || {}), ...extras };
+    if (title) {
+      const k = title.toLowerCase().trim();
+      map[k] = { ...(map[k] || {}), ...extras };
+    }
+    localStorage.setItem("qw_product_extras", JSON.stringify(map));
+  } catch {}
+}
+
+// Helpers to transparently persist subcategory & extras inside product description
 // ensuring zero data loss across devices even before database schema migrations
+export function extractMetaFromDescription(desc: string): {
+  cleanDescription: string;
+  subcategory: string;
+  extras: ProductExtras;
+} {
+  if (!desc) {
+    return {
+      cleanDescription: "",
+      subcategory: "",
+      extras: {},
+    };
+  }
+  const subMatch = desc.match(/<!--subcategory:([^>]+)-->/);
+  const subcategory = subMatch ? subMatch[1].trim() : "";
+
+  let extras: ProductExtras = {};
+  const metaMatch = desc.match(/<!--qw_meta:([^>]+)-->/);
+  if (metaMatch) {
+    try {
+      extras = JSON.parse(decodeURIComponent(metaMatch[1]));
+    } catch {}
+  }
+
+  const cleanDescription = desc
+    .replace(/<!--subcategory:[^>]*-->/g, "")
+    .replace(/<!--qw_meta:[^>]*-->/g, "")
+    .trim();
+
+  return { cleanDescription, subcategory, extras };
+}
+
+export function encodeMetaInDescription(
+  desc: string,
+  sub?: string,
+  extras?: ProductExtras
+): string {
+  const clean = (desc || "")
+    .replace(/<!--subcategory:[^>]*-->/g, "")
+    .replace(/<!--qw_meta:[^>]*-->/g, "")
+    .trim();
+
+  const parts = [clean];
+  if (sub) {
+    parts.push(`<!--subcategory:${sub}-->`);
+  }
+  if (
+    extras &&
+    (extras.long_description ||
+      extras.secondary_image_1 ||
+      extras.secondary_image_2 ||
+      extras.secondary_image_3)
+  ) {
+    try {
+      const payload: ProductExtras = {};
+      if (extras.long_description) payload.long_description = extras.long_description;
+      if (extras.secondary_image_1) payload.secondary_image_1 = extras.secondary_image_1;
+      if (extras.secondary_image_2) payload.secondary_image_2 = extras.secondary_image_2;
+      if (extras.secondary_image_3) payload.secondary_image_3 = extras.secondary_image_3;
+      parts.push(`<!--qw_meta:${encodeURIComponent(JSON.stringify(payload))}-->`);
+    } catch {}
+  }
+
+  return parts.filter(Boolean).join("\n");
+}
+
 export function extractSubcategoryFromDescription(desc: string): { cleanDescription: string; subcategory: string } {
-  if (!desc) return { cleanDescription: "", subcategory: "" };
-  const match = desc.match(/<!--subcategory:([^>]+)-->/);
-  const subcategory = match ? match[1].trim() : "";
-  const cleanDescription = desc.replace(/<!--subcategory:[^>]*-->/g, "").trim();
+  const { cleanDescription, subcategory } = extractMetaFromDescription(desc);
   return { cleanDescription, subcategory };
 }
 
 export function encodeSubcategoryInDescription(desc: string, sub: string): string {
-  const clean = (desc || "").replace(/<!--subcategory:[^>]*-->/g, "").trim();
-  return sub ? `${clean}\n<!--subcategory:${sub}-->` : clean;
+  return encodeMetaInDescription(desc, sub);
 }
 
 // Helper to infer subcategory from product title/category if not explicitly set
@@ -394,10 +495,20 @@ export async function fetchProductsFromDb(): Promise<ProductItem[]> {
   }
 
   const localMap = getStoredSubcategoryMap();
+  const extrasMap = getStoredProductExtrasMap();
 
   return (data || []).map((row) => {
-    const { cleanDescription, subcategory: descSub } = extractSubcategoryFromDescription(row.description || "");
-    const localSub = localMap[row.id] || localMap[(row.title || "").toLowerCase().trim()] || "";
+    const { cleanDescription, subcategory: descSub, extras: descExtras } =
+      extractMetaFromDescription(row.description || "");
+    const localSub =
+      localMap[row.id] ||
+      localMap[(row.title || "").toLowerCase().trim()] ||
+      "";
+    const localExtras =
+      extrasMap[row.id] ||
+      extrasMap[(row.title || "").toLowerCase().trim()] ||
+      {};
+
     const resolvedSub =
       row.subcategory ||
       descSub ||
@@ -405,19 +516,64 @@ export async function fetchProductsFromDb(): Promise<ProductItem[]> {
       inferSubcategory(row.title, row.category) ||
       "";
 
+    const resolvedLongDesc =
+      row.long_description ||
+      descExtras.long_description ||
+      localExtras.long_description ||
+      "";
+
+    const resolvedSec1 =
+      row.secondary_image_1 ||
+      descExtras.secondary_image_1 ||
+      localExtras.secondary_image_1 ||
+      "";
+
+    const resolvedSec2 =
+      row.secondary_image_2 ||
+      descExtras.secondary_image_2 ||
+      localExtras.secondary_image_2 ||
+      "";
+
+    const resolvedSec3 =
+      row.secondary_image_3 ||
+      descExtras.secondary_image_3 ||
+      localExtras.secondary_image_3 ||
+      "";
+
+    const resolvedSecImages =
+      row.secondary_images ||
+      [resolvedSec1, resolvedSec2, resolvedSec3].filter(Boolean);
+
     // Keep cached in localMap
     if (resolvedSub && typeof window !== "undefined") {
       setStoredSubcategory(row.id, row.title, resolvedSub);
+    }
+    if (
+      (resolvedLongDesc || resolvedSec1 || resolvedSec2 || resolvedSec3) &&
+      typeof window !== "undefined"
+    ) {
+      setStoredProductExtras(row.id, row.title, {
+        long_description: resolvedLongDesc,
+        secondary_image_1: resolvedSec1,
+        secondary_image_2: resolvedSec2,
+        secondary_image_3: resolvedSec3,
+        secondary_images: resolvedSecImages,
+      });
     }
 
     return {
       id: row.id,
       title: row.title,
       description: cleanDescription || row.description || "",
+      long_description: resolvedLongDesc,
       category: row.category,
       subcategory: resolvedSub,
       subcategory_id: row.subcategory_id || null,
       image: row.image || "/images/triptych_leather_stitch.jpg",
+      secondary_image_1: resolvedSec1,
+      secondary_image_2: resolvedSec2,
+      secondary_image_3: resolvedSec3,
+      secondary_images: resolvedSecImages,
       category_id: row.category_id,
       created_at: row.created_at,
       updated_at: row.updated_at,
@@ -428,12 +584,23 @@ export async function fetchProductsFromDb(): Promise<ProductItem[]> {
 export async function addProductToDb(product: {
   title: string;
   description: string;
+  long_description?: string;
   category: string;
   subcategory?: string;
   image: string;
+  secondary_image_1?: string;
+  secondary_image_2?: string;
+  secondary_image_3?: string;
+  secondary_images?: string[];
 }): Promise<ProductItem> {
   const chosenSub = product.subcategory || inferSubcategory(product.title, product.category);
-  const encodedDesc = encodeSubcategoryInDescription(product.description, chosenSub);
+  const extras: ProductExtras = {
+    long_description: product.long_description || "",
+    secondary_image_1: product.secondary_image_1 || "",
+    secondary_image_2: product.secondary_image_2 || "",
+    secondary_image_3: product.secondary_image_3 || "",
+  };
+  const encodedDesc = encodeMetaInDescription(product.description, chosenSub, extras);
 
   // Find category ID if exists
   const { data: catData } = await supabase
@@ -462,55 +629,76 @@ export async function addProductToDb(product: {
     subcategory: chosenSub,
     subcategory_id: subcategoryId,
     image: product.image,
+    long_description: product.long_description || null,
+    secondary_image_1: product.secondary_image_1 || null,
+    secondary_image_2: product.secondary_image_2 || null,
+    secondary_image_3: product.secondary_image_3 || null,
+    secondary_images: product.secondary_images || [
+      product.secondary_image_1,
+      product.secondary_image_2,
+      product.secondary_image_3,
+    ].filter(Boolean) as string[],
   };
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("products")
     .insert([insertPayload])
     .select()
     .single();
 
   if (error) {
-    // If subcategory column doesn't exist yet, retry without subcategory columns
-    if (error.message?.includes("subcategory")) {
-      delete insertPayload.subcategory;
-      delete insertPayload.subcategory_id;
-      const { data: retryData, error: retryErr } = await supabase
+    // If DB columns do not exist yet, strip them iteratively and retry
+    if (
+      error.message?.includes("long_description") ||
+      error.message?.includes("secondary_image") ||
+      error.message?.includes("subcategory")
+    ) {
+      delete insertPayload.long_description;
+      delete insertPayload.secondary_image_1;
+      delete insertPayload.secondary_image_2;
+      delete insertPayload.secondary_image_3;
+      delete insertPayload.secondary_images;
+      if (error.message?.includes("subcategory")) {
+        delete insertPayload.subcategory;
+        delete insertPayload.subcategory_id;
+      }
+
+      const retryRes = await supabase
         .from("products")
         .insert([insertPayload])
         .select()
         .single();
-      if (retryErr) throw retryErr;
-
-      setStoredSubcategory(retryData.id, retryData.title, chosenSub);
-      const { cleanDescription } = extractSubcategoryFromDescription(retryData.description || "");
-
-      return {
-        id: retryData.id,
-        title: retryData.title,
-        description: cleanDescription || product.description,
-        category: retryData.category,
-        subcategory: chosenSub,
-        subcategory_id: null,
-        image: retryData.image || "/images/triptych_leather_stitch.jpg",
-        category_id: retryData.category_id,
-      };
+      data = retryRes.data;
+      error = retryRes.error;
     }
+  }
+
+  if (error) {
     console.error("Error inserting product into Supabase:", error);
     throw error;
   }
 
   setStoredSubcategory(data.id, data.title, chosenSub);
-  const { cleanDescription } = extractSubcategoryFromDescription(data.description || "");
+  setStoredProductExtras(data.id, data.title, extras);
+
+  const { cleanDescription } = extractMetaFromDescription(data.description || "");
 
   return {
     id: data.id,
     title: data.title,
     description: cleanDescription || product.description,
+    long_description: data.long_description || product.long_description || "",
     category: data.category,
     subcategory: data.subcategory || chosenSub,
     subcategory_id: data.subcategory_id || null,
     image: data.image || "/images/triptych_leather_stitch.jpg",
+    secondary_image_1: data.secondary_image_1 || product.secondary_image_1 || "",
+    secondary_image_2: data.secondary_image_2 || product.secondary_image_2 || "",
+    secondary_image_3: data.secondary_image_3 || product.secondary_image_3 || "",
+    secondary_images:
+      data.secondary_images ||
+      product.secondary_images ||
+      [product.secondary_image_1, product.secondary_image_2, product.secondary_image_3].filter(Boolean),
     category_id: data.category_id,
   };
 }
@@ -525,14 +713,35 @@ export async function updateProductInDb(
 
   if (updates.title !== undefined) payload.title = updates.title;
 
-  if (updates.subcategory !== undefined || updates.description !== undefined) {
+  const extras: ProductExtras = {};
+  if (updates.long_description !== undefined) {
+    extras.long_description = updates.long_description;
+    payload.long_description = updates.long_description;
+  }
+  if (updates.secondary_image_1 !== undefined) {
+    extras.secondary_image_1 = updates.secondary_image_1;
+    payload.secondary_image_1 = updates.secondary_image_1;
+  }
+  if (updates.secondary_image_2 !== undefined) {
+    extras.secondary_image_2 = updates.secondary_image_2;
+    payload.secondary_image_2 = updates.secondary_image_2;
+  }
+  if (updates.secondary_image_3 !== undefined) {
+    extras.secondary_image_3 = updates.secondary_image_3;
+    payload.secondary_image_3 = updates.secondary_image_3;
+  }
+  if (updates.secondary_images !== undefined) {
+    payload.secondary_images = updates.secondary_images;
+  }
+
+  if (
+    updates.subcategory !== undefined ||
+    updates.description !== undefined ||
+    Object.keys(extras).length > 0
+  ) {
     const rawDesc = updates.description !== undefined ? updates.description : "";
     const rawSub = updates.subcategory !== undefined ? updates.subcategory : "";
-    if (rawSub) {
-      payload.description = encodeSubcategoryInDescription(rawDesc, rawSub);
-    } else if (updates.description !== undefined) {
-      payload.description = updates.description;
-    }
+    payload.description = encodeMetaInDescription(rawDesc, rawSub, extras);
   }
 
   if (updates.category !== undefined) {
@@ -572,18 +781,31 @@ export async function updateProductInDb(
     .select()
     .single();
 
-  if (error && error.message?.includes("subcategory")) {
-    // Retry without subcategory fields if columns not yet present in schema
-    delete payload.subcategory;
-    delete payload.subcategory_id;
-    const res = await supabase
-      .from("products")
-      .update(payload)
-      .eq("id", id)
-      .select()
-      .single();
-    data = res.data;
-    error = res.error;
+  if (error) {
+    // If DB columns do not exist yet, strip them iteratively and retry
+    if (
+      error.message?.includes("long_description") ||
+      error.message?.includes("secondary_image") ||
+      error.message?.includes("subcategory")
+    ) {
+      delete payload.long_description;
+      delete payload.secondary_image_1;
+      delete payload.secondary_image_2;
+      delete payload.secondary_image_3;
+      delete payload.secondary_images;
+      if (error.message?.includes("subcategory")) {
+        delete payload.subcategory;
+        delete payload.subcategory_id;
+      }
+      const res = await supabase
+        .from("products")
+        .update(payload)
+        .eq("id", id)
+        .select()
+        .single();
+      data = res.data;
+      error = res.error;
+    }
   }
 
   if (error) {
@@ -594,17 +816,37 @@ export async function updateProductInDb(
   if (updates.subcategory) {
     setStoredSubcategory(id, data.title || updates.title || "", updates.subcategory);
   }
+  if (Object.keys(extras).length > 0) {
+    setStoredProductExtras(id, data.title || updates.title || "", extras);
+  }
 
-  const { cleanDescription, subcategory: descSub } = extractSubcategoryFromDescription(data.description || "");
+  const { cleanDescription, subcategory: descSub, extras: descExtras } =
+    extractMetaFromDescription(data.description || "");
 
   return {
     id: data.id,
     title: data.title,
     description: cleanDescription || data.description || "",
+    long_description:
+      data.long_description || updates.long_description || descExtras.long_description || "",
     category: data.category,
     subcategory: data.subcategory || descSub || updates.subcategory || "",
     subcategory_id: data.subcategory_id || null,
     image: data.image,
+    secondary_image_1:
+      data.secondary_image_1 || updates.secondary_image_1 || descExtras.secondary_image_1 || "",
+    secondary_image_2:
+      data.secondary_image_2 || updates.secondary_image_2 || descExtras.secondary_image_2 || "",
+    secondary_image_3:
+      data.secondary_image_3 || updates.secondary_image_3 || descExtras.secondary_image_3 || "",
+    secondary_images:
+      data.secondary_images ||
+      updates.secondary_images ||
+      [
+        data.secondary_image_1 || updates.secondary_image_1 || descExtras.secondary_image_1,
+        data.secondary_image_2 || updates.secondary_image_2 || descExtras.secondary_image_2,
+        data.secondary_image_3 || updates.secondary_image_3 || descExtras.secondary_image_3,
+      ].filter(Boolean),
     category_id: data.category_id,
   };
 }

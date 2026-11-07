@@ -22,6 +22,7 @@ import {
   deleteSubcategoryFromDb,
   uploadProductImage,
   setStoredSubcategory,
+  setStoredProductExtras,
 } from "@/lib/products-service";
 
 export type { ProductItem, SubcategoryItem };
@@ -50,6 +51,9 @@ export default function AdminProductsPage() {
   const [isDbLoading, setIsDbLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedSecFile1, setSelectedSecFile1] = useState<File | null>(null);
+  const [selectedSecFile2, setSelectedSecFile2] = useState<File | null>(null);
+  const [selectedSecFile3, setSelectedSecFile3] = useState<File | null>(null);
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -68,18 +72,29 @@ export default function AdminProductsPage() {
   const [editingSubcatId, setEditingSubcatId] = useState<string | null>(null);
   const [editingSubcatValue, setEditingSubcatValue] = useState("");
 
-  // File input refs for uploading images
+  // File input refs for uploading primary and 3 secondary images
   const addFileInputRef = useRef<HTMLInputElement>(null);
+  const addSecFileRef1 = useRef<HTMLInputElement>(null);
+  const addSecFileRef2 = useRef<HTMLInputElement>(null);
+  const addSecFileRef3 = useRef<HTMLInputElement>(null);
+
   const editFileInputRef = useRef<HTMLInputElement>(null);
+  const editSecFileRef1 = useRef<HTMLInputElement>(null);
+  const editSecFileRef2 = useRef<HTMLInputElement>(null);
+  const editSecFileRef3 = useRef<HTMLInputElement>(null);
 
   // Form states for Add/Edit
   const [activeProduct, setActiveProduct] = useState<ProductItem | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    long_description: "",
     category: "",
     subcategory: "",
     image: "/images/triptych_leather_stitch.jpg",
+    secondary_image_1: "",
+    secondary_image_2: "",
+    secondary_image_3: "",
   });
 
   // Load from Supabase on mount (with localStorage cache fallback)
@@ -172,13 +187,50 @@ export default function AdminProductsPage() {
     } catch {}
   };
 
-  // Image upload handler
+  // Primary image upload handler
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
       const previewUrl = URL.createObjectURL(file);
       setFormData((prev) => ({ ...prev, image: previewUrl }));
+    }
+  };
+
+  // Secondary images (3 slots) upload handler
+  const handleSecImageUpload = (slot: 1 | 2 | 3, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      if (slot === 1) {
+        setSelectedSecFile1(file);
+        setFormData((prev) => ({ ...prev, secondary_image_1: previewUrl }));
+      } else if (slot === 2) {
+        setSelectedSecFile2(file);
+        setFormData((prev) => ({ ...prev, secondary_image_2: previewUrl }));
+      } else if (slot === 3) {
+        setSelectedSecFile3(file);
+        setFormData((prev) => ({ ...prev, secondary_image_3: previewUrl }));
+      }
+    }
+  };
+
+  const handleRemoveSecImage = (slot: 1 | 2 | 3) => {
+    if (slot === 1) {
+      setSelectedSecFile1(null);
+      setFormData((prev) => ({ ...prev, secondary_image_1: "" }));
+      if (addSecFileRef1.current) addSecFileRef1.current.value = "";
+      if (editSecFileRef1.current) editSecFileRef1.current.value = "";
+    } else if (slot === 2) {
+      setSelectedSecFile2(null);
+      setFormData((prev) => ({ ...prev, secondary_image_2: "" }));
+      if (addSecFileRef2.current) addSecFileRef2.current.value = "";
+      if (editSecFileRef2.current) editSecFileRef2.current.value = "";
+    } else if (slot === 3) {
+      setSelectedSecFile3(null);
+      setFormData((prev) => ({ ...prev, secondary_image_3: "" }));
+      if (addSecFileRef3.current) addSecFileRef3.current.value = "";
+      if (editSecFileRef3.current) editSecFileRef3.current.value = "";
     }
   };
 
@@ -214,6 +266,9 @@ export default function AdminProductsPage() {
   // Handlers for Add
   const handleOpenAdd = () => {
     setSelectedFile(null);
+    setSelectedSecFile1(null);
+    setSelectedSecFile2(null);
+    setSelectedSecFile3(null);
     const initialCat = categories[0] || "Activewear";
     const matchingSubs = subcategories.filter(
       (s) => s.category.toLowerCase() === initialCat.toLowerCase()
@@ -221,9 +276,13 @@ export default function AdminProductsPage() {
     setFormData({
       title: "",
       description: "",
+      long_description: "",
       category: initialCat,
       subcategory: matchingSubs[0]?.name || "",
       image: "/images/triptych_leather_stitch.jpg",
+      secondary_image_1: "",
+      secondary_image_2: "",
+      secondary_image_3: "",
     });
     setIsAddModalOpen(true);
   };
@@ -234,6 +293,9 @@ export default function AdminProductsPage() {
 
     setIsSaving(true);
     let finalImageUrl = formData.image || "/images/triptych_leather_stitch.jpg";
+    let finalSec1 = formData.secondary_image_1 || "";
+    let finalSec2 = formData.secondary_image_2 || "";
+    let finalSec3 = formData.secondary_image_3 || "";
 
     try {
       if (selectedFile) {
@@ -244,20 +306,51 @@ export default function AdminProductsPage() {
         }
       }
 
+      if (selectedSecFile1) {
+        try {
+          finalSec1 = await uploadProductImage(selectedSecFile1);
+        } catch (uploadErr) {
+          console.warn("Secondary image 1 upload failed:", uploadErr);
+        }
+      }
+
+      if (selectedSecFile2) {
+        try {
+          finalSec2 = await uploadProductImage(selectedSecFile2);
+        } catch (uploadErr) {
+          console.warn("Secondary image 2 upload failed:", uploadErr);
+        }
+      }
+
+      if (selectedSecFile3) {
+        try {
+          finalSec3 = await uploadProductImage(selectedSecFile3);
+        } catch (uploadErr) {
+          console.warn("Secondary image 3 upload failed:", uploadErr);
+        }
+      }
+
       const category = formData.category || (categories[0] || "Activewear");
       const subcategory = formData.subcategory || "";
       const description =
         formData.description.trim() ||
         `${subcategory || category} · Premium handcrafted specification`;
+      const longDescription = formData.long_description.trim();
+      const secImages = [finalSec1, finalSec2, finalSec3].filter(Boolean);
 
       let savedProd: ProductItem;
       try {
         savedProd = await addProductToDb({
           title: formData.title.trim(),
           description,
+          long_description: longDescription,
           category,
           subcategory,
           image: finalImageUrl,
+          secondary_image_1: finalSec1,
+          secondary_image_2: finalSec2,
+          secondary_image_3: finalSec3,
+          secondary_images: secImages,
         });
       } catch (dbErr) {
         console.warn("DB insert fallback to local:", dbErr);
@@ -265,16 +358,32 @@ export default function AdminProductsPage() {
           id: `prod-${Date.now()}`,
           title: formData.title.trim(),
           description,
+          long_description: longDescription,
           category,
           subcategory,
           image: finalImageUrl,
+          secondary_image_1: finalSec1,
+          secondary_image_2: finalSec2,
+          secondary_image_3: finalSec3,
+          secondary_images: secImages,
         };
       }
 
       setStoredSubcategory(savedProd.id, savedProd.title, subcategory);
+      setStoredProductExtras(savedProd.id, savedProd.title, {
+        long_description: longDescription,
+        secondary_image_1: finalSec1,
+        secondary_image_2: finalSec2,
+        secondary_image_3: finalSec3,
+        secondary_images: secImages,
+      });
+
       saveProducts([savedProd, ...products]);
       setIsAddModalOpen(false);
       setSelectedFile(null);
+      setSelectedSecFile1(null);
+      setSelectedSecFile2(null);
+      setSelectedSecFile3(null);
     } finally {
       setIsSaving(false);
     }
@@ -283,13 +392,20 @@ export default function AdminProductsPage() {
   // Handlers for Edit
   const handleOpenEdit = (prod: ProductItem) => {
     setSelectedFile(null);
+    setSelectedSecFile1(null);
+    setSelectedSecFile2(null);
+    setSelectedSecFile3(null);
     setActiveProduct(prod);
     setFormData({
       title: prod.title,
       description: prod.description,
+      long_description: prod.long_description || "",
       category: prod.category,
       subcategory: prod.subcategory || "",
       image: prod.image,
+      secondary_image_1: prod.secondary_image_1 || (prod.secondary_images?.[0] || ""),
+      secondary_image_2: prod.secondary_image_2 || (prod.secondary_images?.[1] || ""),
+      secondary_image_3: prod.secondary_image_3 || (prod.secondary_images?.[2] || ""),
     });
     setIsEditModalOpen(true);
   };
@@ -300,6 +416,9 @@ export default function AdminProductsPage() {
 
     setIsSaving(true);
     let finalImageUrl = formData.image || activeProduct.image;
+    let finalSec1 = formData.secondary_image_1 || activeProduct.secondary_image_1 || "";
+    let finalSec2 = formData.secondary_image_2 || activeProduct.secondary_image_2 || "";
+    let finalSec3 = formData.secondary_image_3 || activeProduct.secondary_image_3 || "";
 
     try {
       if (selectedFile) {
@@ -310,19 +429,50 @@ export default function AdminProductsPage() {
         }
       }
 
+      if (selectedSecFile1) {
+        try {
+          finalSec1 = await uploadProductImage(selectedSecFile1);
+        } catch (uploadErr) {
+          console.warn("Secondary image 1 upload failed:", uploadErr);
+        }
+      }
+
+      if (selectedSecFile2) {
+        try {
+          finalSec2 = await uploadProductImage(selectedSecFile2);
+        } catch (uploadErr) {
+          console.warn("Secondary image 2 upload failed:", uploadErr);
+        }
+      }
+
+      if (selectedSecFile3) {
+        try {
+          finalSec3 = await uploadProductImage(selectedSecFile3);
+        } catch (uploadErr) {
+          console.warn("Secondary image 3 upload failed:", uploadErr);
+        }
+      }
+
       const category = formData.category || activeProduct.category;
       const subcategory = formData.subcategory || "";
       const description =
         formData.description.trim() ||
         `${subcategory || category} · Premium handcrafted specification`;
+      const longDescription = formData.long_description.trim();
+      const secImages = [finalSec1, finalSec2, finalSec3].filter(Boolean);
 
       try {
         await updateProductInDb(activeProduct.id, {
           title: formData.title.trim(),
           description,
+          long_description: longDescription,
           category,
           subcategory,
           image: finalImageUrl,
+          secondary_image_1: finalSec1,
+          secondary_image_2: finalSec2,
+          secondary_image_3: finalSec3,
+          secondary_images: secImages,
         });
       } catch (dbErr) {
         console.warn("DB update fallback to local:", dbErr);
@@ -334,18 +484,34 @@ export default function AdminProductsPage() {
               ...p,
               title: formData.title.trim(),
               description,
+              long_description: longDescription,
               category,
               subcategory,
               image: finalImageUrl,
+              secondary_image_1: finalSec1,
+              secondary_image_2: finalSec2,
+              secondary_image_3: finalSec3,
+              secondary_images: secImages,
             }
           : p
       );
 
       setStoredSubcategory(activeProduct.id, formData.title.trim(), subcategory);
+      setStoredProductExtras(activeProduct.id, formData.title.trim(), {
+        long_description: longDescription,
+        secondary_image_1: finalSec1,
+        secondary_image_2: finalSec2,
+        secondary_image_3: finalSec3,
+        secondary_images: secImages,
+      });
+
       saveProducts(updated);
       setIsEditModalOpen(false);
       setActiveProduct(null);
       setSelectedFile(null);
+      setSelectedSecFile1(null);
+      setSelectedSecFile2(null);
+      setSelectedSecFile3(null);
     } finally {
       setIsSaving(false);
     }
@@ -923,9 +1089,9 @@ export default function AdminProductsPage() {
             </div>
 
             <form onSubmit={handleSaveAdd}>
-              {/* Field 1: PRODUCT IMAGE */}
+              {/* Field 1: PRIMARY PRODUCT IMAGE */}
               <div className="add-product-form-group">
-                <label className="add-product-label">PRODUCT IMAGE</label>
+                <label className="add-product-label">PRIMARY SHOWCASE IMAGE</label>
                 <div className="add-product-image-container">
                   <img
                     src={formData.image || "/images/triptych_leather_stitch.jpg"}
@@ -953,8 +1119,160 @@ export default function AdminProductsPage() {
                     >
                       <path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z" />
                     </svg>
-                    <span>UPLOAD IMAGE</span>
+                    <span>UPLOAD PRIMARY IMAGE</span>
                   </button>
+                </div>
+              </div>
+
+              {/* Field 1b: 3 SECONDARY GALLERY IMAGES */}
+              <div className="add-product-form-group">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <label className="add-product-label" style={{ marginBottom: 0 }}>
+                    SECONDARY IMAGES (3 GALLERY VIEWS)
+                  </label>
+                  <span style={{ fontSize: "11px", color: "#8a8a9e" }}>
+                    Thumbnails in product detail switcher
+                  </span>
+                </div>
+                <div className="add-product-secondary-images-grid">
+                  {/* Slot 1 */}
+                  <div
+                    className={`add-product-sec-card ${formData.secondary_image_1 ? "has-image" : ""}`}
+                    onClick={() => addSecFileRef1.current?.click()}
+                  >
+                    <span className="add-product-sec-badge">VIEW 1</span>
+                    {formData.secondary_image_1 ? (
+                      <>
+                        <img
+                          src={formData.secondary_image_1}
+                          alt="Secondary view 1"
+                          className="add-product-sec-preview"
+                        />
+                        <div className="add-product-sec-overlay">
+                          <button
+                            type="button"
+                            className="add-product-sec-remove"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveSecImage(1);
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="add-product-sec-placeholder">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span>Upload View 1</span>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={addSecFileRef1}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleSecImageUpload(1, e)}
+                    />
+                  </div>
+
+                  {/* Slot 2 */}
+                  <div
+                    className={`add-product-sec-card ${formData.secondary_image_2 ? "has-image" : ""}`}
+                    onClick={() => addSecFileRef2.current?.click()}
+                  >
+                    <span className="add-product-sec-badge">VIEW 2</span>
+                    {formData.secondary_image_2 ? (
+                      <>
+                        <img
+                          src={formData.secondary_image_2}
+                          alt="Secondary view 2"
+                          className="add-product-sec-preview"
+                        />
+                        <div className="add-product-sec-overlay">
+                          <button
+                            type="button"
+                            className="add-product-sec-remove"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveSecImage(2);
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="add-product-sec-placeholder">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span>Upload View 2</span>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={addSecFileRef2}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleSecImageUpload(2, e)}
+                    />
+                  </div>
+
+                  {/* Slot 3 */}
+                  <div
+                    className={`add-product-sec-card ${formData.secondary_image_3 ? "has-image" : ""}`}
+                    onClick={() => addSecFileRef3.current?.click()}
+                  >
+                    <span className="add-product-sec-badge">VIEW 3</span>
+                    {formData.secondary_image_3 ? (
+                      <>
+                        <img
+                          src={formData.secondary_image_3}
+                          alt="Secondary view 3"
+                          className="add-product-sec-preview"
+                        />
+                        <div className="add-product-sec-overlay">
+                          <button
+                            type="button"
+                            className="add-product-sec-remove"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveSecImage(3);
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="add-product-sec-placeholder">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span>Upload View 3</span>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={addSecFileRef3}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleSecImageUpload(3, e)}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -973,16 +1291,59 @@ export default function AdminProductsPage() {
                 />
               </div>
 
-              {/* Field 3: DESCRIPTION */}
+              {/* Field 3a: SHORT DESCRIPTION (UNDER PRODUCT TITLE) */}
               <div className="add-product-form-group">
-                <label className="add-product-label">DESCRIPTION</label>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <label className="add-product-label" style={{ marginBottom: 0 }}>
+                    SHORT DESCRIPTION
+                  </label>
+                  <span style={{ fontSize: "11px", color: "#8a8a9e" }}>
+                    Shown directly underneath product title
+                  </span>
+                </div>
                 <textarea
-                  rows={3}
-                  placeholder="Enter product description or specifications"
+                  rows={2}
+                  placeholder="Enter concise 1-2 sentence overview for the product header"
                   className="add-product-textarea"
                   value={formData.description}
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Field 3b: LONG DESCRIPTION (PRODUCT OVERVIEW & SPECIFICATIONS) */}
+              <div className="add-product-form-group">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <label className="add-product-label" style={{ marginBottom: 0 }}>
+                    LONG DESCRIPTION
+                  </label>
+                  <span style={{ fontSize: "11px", color: "#8a8a9e" }}>
+                    Overview &amp; specs (separate paragraphs with blank lines)
+                  </span>
+                </div>
+                <textarea
+                  rows={5}
+                  placeholder="Enter comprehensive paragraphs detailing engineering, materials, private label branding, and Sialkot manufacturing QA..."
+                  className="add-product-textarea"
+                  style={{ minHeight: "110px", lineHeight: "1.5" }}
+                  value={formData.long_description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, long_description: e.target.value })
                   }
                 />
               </div>
@@ -1120,9 +1481,9 @@ export default function AdminProductsPage() {
             </div>
 
             <form onSubmit={handleSaveEdit}>
-              {/* Field 1: PRODUCT IMAGE */}
+              {/* Field 1: PRIMARY PRODUCT IMAGE */}
               <div className="add-product-form-group">
-                <label className="add-product-label">PRODUCT IMAGE</label>
+                <label className="add-product-label">PRIMARY SHOWCASE IMAGE</label>
                 <div className="add-product-image-container">
                   <img
                     src={formData.image || "/images/triptych_leather_stitch.jpg"}
@@ -1150,8 +1511,160 @@ export default function AdminProductsPage() {
                     >
                       <path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z" />
                     </svg>
-                    <span>UPLOAD IMAGE</span>
+                    <span>UPLOAD PRIMARY IMAGE</span>
                   </button>
+                </div>
+              </div>
+
+              {/* Field 1b: 3 SECONDARY GALLERY IMAGES */}
+              <div className="add-product-form-group">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <label className="add-product-label" style={{ marginBottom: 0 }}>
+                    SECONDARY IMAGES (3 GALLERY VIEWS)
+                  </label>
+                  <span style={{ fontSize: "11px", color: "#8a8a9e" }}>
+                    Thumbnails in product detail switcher
+                  </span>
+                </div>
+                <div className="add-product-secondary-images-grid">
+                  {/* Slot 1 */}
+                  <div
+                    className={`add-product-sec-card ${formData.secondary_image_1 ? "has-image" : ""}`}
+                    onClick={() => editSecFileRef1.current?.click()}
+                  >
+                    <span className="add-product-sec-badge">VIEW 1</span>
+                    {formData.secondary_image_1 ? (
+                      <>
+                        <img
+                          src={formData.secondary_image_1}
+                          alt="Secondary view 1"
+                          className="add-product-sec-preview"
+                        />
+                        <div className="add-product-sec-overlay">
+                          <button
+                            type="button"
+                            className="add-product-sec-remove"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveSecImage(1);
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="add-product-sec-placeholder">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span>Upload View 1</span>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={editSecFileRef1}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleSecImageUpload(1, e)}
+                    />
+                  </div>
+
+                  {/* Slot 2 */}
+                  <div
+                    className={`add-product-sec-card ${formData.secondary_image_2 ? "has-image" : ""}`}
+                    onClick={() => editSecFileRef2.current?.click()}
+                  >
+                    <span className="add-product-sec-badge">VIEW 2</span>
+                    {formData.secondary_image_2 ? (
+                      <>
+                        <img
+                          src={formData.secondary_image_2}
+                          alt="Secondary view 2"
+                          className="add-product-sec-preview"
+                        />
+                        <div className="add-product-sec-overlay">
+                          <button
+                            type="button"
+                            className="add-product-sec-remove"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveSecImage(2);
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="add-product-sec-placeholder">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span>Upload View 2</span>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={editSecFileRef2}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleSecImageUpload(2, e)}
+                    />
+                  </div>
+
+                  {/* Slot 3 */}
+                  <div
+                    className={`add-product-sec-card ${formData.secondary_image_3 ? "has-image" : ""}`}
+                    onClick={() => editSecFileRef3.current?.click()}
+                  >
+                    <span className="add-product-sec-badge">VIEW 3</span>
+                    {formData.secondary_image_3 ? (
+                      <>
+                        <img
+                          src={formData.secondary_image_3}
+                          alt="Secondary view 3"
+                          className="add-product-sec-preview"
+                        />
+                        <div className="add-product-sec-overlay">
+                          <button
+                            type="button"
+                            className="add-product-sec-remove"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveSecImage(3);
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="add-product-sec-placeholder">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span>Upload View 3</span>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={editSecFileRef3}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleSecImageUpload(3, e)}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -1170,16 +1683,59 @@ export default function AdminProductsPage() {
                 />
               </div>
 
-              {/* Field 3: DESCRIPTION */}
+              {/* Field 3a: SHORT DESCRIPTION (UNDER PRODUCT TITLE) */}
               <div className="add-product-form-group">
-                <label className="add-product-label">DESCRIPTION</label>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <label className="add-product-label" style={{ marginBottom: 0 }}>
+                    SHORT DESCRIPTION
+                  </label>
+                  <span style={{ fontSize: "11px", color: "#8a8a9e" }}>
+                    Shown directly underneath product title
+                  </span>
+                </div>
                 <textarea
-                  rows={3}
-                  placeholder="Enter product description or specifications"
+                  rows={2}
+                  placeholder="Enter concise 1-2 sentence overview for the product header"
                   className="add-product-textarea"
                   value={formData.description}
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Field 3b: LONG DESCRIPTION (PRODUCT OVERVIEW & SPECIFICATIONS) */}
+              <div className="add-product-form-group">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <label className="add-product-label" style={{ marginBottom: 0 }}>
+                    LONG DESCRIPTION
+                  </label>
+                  <span style={{ fontSize: "11px", color: "#8a8a9e" }}>
+                    Overview &amp; specs (separate paragraphs with blank lines)
+                  </span>
+                </div>
+                <textarea
+                  rows={5}
+                  placeholder="Enter comprehensive paragraphs detailing engineering, materials, private label branding, and Sialkot manufacturing QA..."
+                  className="add-product-textarea"
+                  style={{ minHeight: "110px", lineHeight: "1.5" }}
+                  value={formData.long_description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, long_description: e.target.value })
                   }
                 />
               </div>
