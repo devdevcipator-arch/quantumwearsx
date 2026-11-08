@@ -54,6 +54,8 @@ export default function AdminProductsPage() {
   const [selectedSecFile1, setSelectedSecFile1] = useState<File | null>(null);
   const [selectedSecFile2, setSelectedSecFile2] = useState<File | null>(null);
   const [selectedSecFile3, setSelectedSecFile3] = useState<File | null>(null);
+  const [selectedFeatFile1, setSelectedFeatFile1] = useState<File | null>(null);
+  const [selectedFeatFile2, setSelectedFeatFile2] = useState<File | null>(null);
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -72,16 +74,20 @@ export default function AdminProductsPage() {
   const [editingSubcatId, setEditingSubcatId] = useState<string | null>(null);
   const [editingSubcatValue, setEditingSubcatValue] = useState("");
 
-  // File input refs for uploading primary and 3 secondary images
+  // File input refs for uploading primary, 3 secondary images, and 2 section showcase images
   const addFileInputRef = useRef<HTMLInputElement>(null);
   const addSecFileRef1 = useRef<HTMLInputElement>(null);
   const addSecFileRef2 = useRef<HTMLInputElement>(null);
   const addSecFileRef3 = useRef<HTMLInputElement>(null);
+  const addFeatFileRef1 = useRef<HTMLInputElement>(null);
+  const addFeatFileRef2 = useRef<HTMLInputElement>(null);
 
   const editFileInputRef = useRef<HTMLInputElement>(null);
   const editSecFileRef1 = useRef<HTMLInputElement>(null);
   const editSecFileRef2 = useRef<HTMLInputElement>(null);
   const editSecFileRef3 = useRef<HTMLInputElement>(null);
+  const editFeatFileRef1 = useRef<HTMLInputElement>(null);
+  const editFeatFileRef2 = useRef<HTMLInputElement>(null);
 
   // Form states for Add/Edit
   const [activeProduct, setActiveProduct] = useState<ProductItem | null>(null);
@@ -95,6 +101,8 @@ export default function AdminProductsPage() {
     secondary_image_1: "",
     secondary_image_2: "",
     secondary_image_3: "",
+    feature_image_1: "",
+    feature_image_2: "",
   });
 
   // Load from Supabase on mount (with localStorage cache fallback)
@@ -245,6 +253,35 @@ export default function AdminProductsPage() {
     }
   };
 
+  // Feature/Section images (2 columns above quote section) upload handler
+  const handleFeatImageUpload = (slot: 1 | 2, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      if (slot === 1) {
+        setSelectedFeatFile1(file);
+        setFormData((prev) => ({ ...prev, feature_image_1: previewUrl }));
+      } else if (slot === 2) {
+        setSelectedFeatFile2(file);
+        setFormData((prev) => ({ ...prev, feature_image_2: previewUrl }));
+      }
+    }
+  };
+
+  const handleRemoveFeatImage = (slot: 1 | 2) => {
+    if (slot === 1) {
+      setSelectedFeatFile1(null);
+      setFormData((prev) => ({ ...prev, feature_image_1: "" }));
+      if (addFeatFileRef1.current) addFeatFileRef1.current.value = "";
+      if (editFeatFileRef1.current) editFeatFileRef1.current.value = "";
+    } else if (slot === 2) {
+      setSelectedFeatFile2(null);
+      setFormData((prev) => ({ ...prev, feature_image_2: "" }));
+      if (addFeatFileRef2.current) addFeatFileRef2.current.value = "";
+      if (editFeatFileRef2.current) editFeatFileRef2.current.value = "";
+    }
+  };
+
   // Handle category change in forms to sync default subcategory
   const handleCategoryChange = (newCat: string) => {
     const matchingSubs = subcategories.filter(
@@ -280,6 +317,8 @@ export default function AdminProductsPage() {
     setSelectedSecFile1(null);
     setSelectedSecFile2(null);
     setSelectedSecFile3(null);
+    setSelectedFeatFile1(null);
+    setSelectedFeatFile2(null);
     const initialCat = categories[0] || "Activewear";
     const matchingSubs = subcategories.filter(
       (s) => s.category.toLowerCase() === initialCat.toLowerCase()
@@ -294,6 +333,8 @@ export default function AdminProductsPage() {
       secondary_image_1: "",
       secondary_image_2: "",
       secondary_image_3: "",
+      feature_image_1: "",
+      feature_image_2: "",
     });
     setIsAddModalOpen(true);
   };
@@ -307,6 +348,8 @@ export default function AdminProductsPage() {
     let finalSec1 = formData.secondary_image_1 || "";
     let finalSec2 = formData.secondary_image_2 || "";
     let finalSec3 = formData.secondary_image_3 || "";
+    let finalFeat1 = formData.feature_image_1 || "";
+    let finalFeat2 = formData.feature_image_2 || "";
 
     try {
       if (selectedFile) {
@@ -341,6 +384,22 @@ export default function AdminProductsPage() {
         }
       }
 
+      if (selectedFeatFile1) {
+        try {
+          finalFeat1 = await uploadProductImage(selectedFeatFile1);
+        } catch (uploadErr) {
+          console.warn("Feature image 1 upload failed:", uploadErr);
+        }
+      }
+
+      if (selectedFeatFile2) {
+        try {
+          finalFeat2 = await uploadProductImage(selectedFeatFile2);
+        } catch (uploadErr) {
+          console.warn("Feature image 2 upload failed:", uploadErr);
+        }
+      }
+
       const category = formData.category || (categories[0] || "Activewear");
       const subcategory = formData.subcategory || "";
       const description =
@@ -362,6 +421,8 @@ export default function AdminProductsPage() {
           secondary_image_2: finalSec2,
           secondary_image_3: finalSec3,
           secondary_images: secImages,
+          feature_image_1: finalFeat1,
+          feature_image_2: finalFeat2,
         });
       } catch (dbErr) {
         console.warn("DB insert fallback to local:", dbErr);
@@ -377,6 +438,8 @@ export default function AdminProductsPage() {
           secondary_image_2: finalSec2,
           secondary_image_3: finalSec3,
           secondary_images: secImages,
+          feature_image_1: finalFeat1,
+          feature_image_2: finalFeat2,
         };
       }
 
@@ -387,6 +450,8 @@ export default function AdminProductsPage() {
         secondary_image_2: finalSec2,
         secondary_image_3: finalSec3,
         secondary_images: secImages,
+        feature_image_1: finalFeat1,
+        feature_image_2: finalFeat2,
       });
 
       saveProducts([savedProd, ...products]);
@@ -395,6 +460,8 @@ export default function AdminProductsPage() {
       setSelectedSecFile1(null);
       setSelectedSecFile2(null);
       setSelectedSecFile3(null);
+      setSelectedFeatFile1(null);
+      setSelectedFeatFile2(null);
     } finally {
       setIsSaving(false);
     }
@@ -406,6 +473,8 @@ export default function AdminProductsPage() {
     setSelectedSecFile1(null);
     setSelectedSecFile2(null);
     setSelectedSecFile3(null);
+    setSelectedFeatFile1(null);
+    setSelectedFeatFile2(null);
     setActiveProduct(prod);
     setFormData({
       title: prod.title,
@@ -417,6 +486,8 @@ export default function AdminProductsPage() {
       secondary_image_1: prod.secondary_image_1 || (prod.secondary_images?.[0] || ""),
       secondary_image_2: prod.secondary_image_2 || (prod.secondary_images?.[1] || ""),
       secondary_image_3: prod.secondary_image_3 || (prod.secondary_images?.[2] || ""),
+      feature_image_1: prod.feature_image_1 || "",
+      feature_image_2: prod.feature_image_2 || "",
     });
     setIsEditModalOpen(true);
   };
@@ -430,6 +501,8 @@ export default function AdminProductsPage() {
     let finalSec1 = formData.secondary_image_1 || activeProduct.secondary_image_1 || "";
     let finalSec2 = formData.secondary_image_2 || activeProduct.secondary_image_2 || "";
     let finalSec3 = formData.secondary_image_3 || activeProduct.secondary_image_3 || "";
+    let finalFeat1 = formData.feature_image_1 || activeProduct.feature_image_1 || "";
+    let finalFeat2 = formData.feature_image_2 || activeProduct.feature_image_2 || "";
 
     try {
       if (selectedFile) {
@@ -464,6 +537,22 @@ export default function AdminProductsPage() {
         }
       }
 
+      if (selectedFeatFile1) {
+        try {
+          finalFeat1 = await uploadProductImage(selectedFeatFile1);
+        } catch (uploadErr) {
+          console.warn("Feature image 1 upload failed:", uploadErr);
+        }
+      }
+
+      if (selectedFeatFile2) {
+        try {
+          finalFeat2 = await uploadProductImage(selectedFeatFile2);
+        } catch (uploadErr) {
+          console.warn("Feature image 2 upload failed:", uploadErr);
+        }
+      }
+
       const category = formData.category || activeProduct.category;
       const subcategory = formData.subcategory || "";
       const description =
@@ -484,6 +573,8 @@ export default function AdminProductsPage() {
           secondary_image_2: finalSec2,
           secondary_image_3: finalSec3,
           secondary_images: secImages,
+          feature_image_1: finalFeat1,
+          feature_image_2: finalFeat2,
         });
       } catch (dbErr) {
         console.warn("DB update fallback to local:", dbErr);
@@ -503,6 +594,8 @@ export default function AdminProductsPage() {
               secondary_image_2: finalSec2,
               secondary_image_3: finalSec3,
               secondary_images: secImages,
+              feature_image_1: finalFeat1,
+              feature_image_2: finalFeat2,
             }
           : p
       );
@@ -514,6 +607,8 @@ export default function AdminProductsPage() {
         secondary_image_2: finalSec2,
         secondary_image_3: finalSec3,
         secondary_images: secImages,
+        feature_image_1: finalFeat1,
+        feature_image_2: finalFeat2,
       });
 
       saveProducts(updated);
@@ -523,6 +618,8 @@ export default function AdminProductsPage() {
       setSelectedSecFile1(null);
       setSelectedSecFile2(null);
       setSelectedSecFile3(null);
+      setSelectedFeatFile1(null);
+      setSelectedFeatFile2(null);
     } finally {
       setIsSaving(false);
     }
@@ -1287,6 +1384,114 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
+              {/* Field 1c: SECTION SHOWCASE IMAGES (2 COLUMNS ABOVE QUOTE SECTION) */}
+              <div className="add-product-form-group">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <label className="add-product-label" style={{ marginBottom: 0 }}>
+                    SECTION SHOWCASE IMAGES (2-COLUMN DISPLAY ABOVE QUOTE)
+                  </label>
+                  <span style={{ fontSize: "11px", color: "#8a8a9e" }}>
+                    Shown side-by-side above quote form
+                  </span>
+                </div>
+                <div className="add-product-feature-images-grid">
+                  {/* Section Image Column 1 */}
+                  <div
+                    className={`add-product-feat-card ${formData.feature_image_1 ? "has-image" : ""}`}
+                    onClick={() => addFeatFileRef1.current?.click()}
+                  >
+                    <span className="add-product-feat-badge">COLUMN 1</span>
+                    {formData.feature_image_1 ? (
+                      <>
+                        <img
+                          src={formData.feature_image_1}
+                          alt="Section image 1"
+                          className="add-product-feat-preview"
+                        />
+                        <div className="add-product-feat-overlay">
+                          <button
+                            type="button"
+                            className="add-product-sec-remove"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveFeatImage(1);
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="add-product-feat-placeholder">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span>Upload Column 1 Image</span>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={addFeatFileRef1}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleFeatImageUpload(1, e)}
+                    />
+                  </div>
+
+                  {/* Section Image Column 2 */}
+                  <div
+                    className={`add-product-feat-card ${formData.feature_image_2 ? "has-image" : ""}`}
+                    onClick={() => addFeatFileRef2.current?.click()}
+                  >
+                    <span className="add-product-feat-badge">COLUMN 2</span>
+                    {formData.feature_image_2 ? (
+                      <>
+                        <img
+                          src={formData.feature_image_2}
+                          alt="Section image 2"
+                          className="add-product-feat-preview"
+                        />
+                        <div className="add-product-feat-overlay">
+                          <button
+                            type="button"
+                            className="add-product-sec-remove"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveFeatImage(2);
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="add-product-feat-placeholder">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span>Upload Column 2 Image</span>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={addFeatFileRef2}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleFeatImageUpload(2, e)}
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Field 2: PRODUCT NAME */}
               <div className="add-product-form-group">
                 <label className="add-product-label">PRODUCT NAME</label>
@@ -1674,6 +1879,114 @@ export default function AdminProductsPage() {
                       accept="image/*"
                       style={{ display: "none" }}
                       onChange={(e) => handleSecImageUpload(3, e)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Field 1c: SECTION SHOWCASE IMAGES (2 COLUMNS ABOVE QUOTE SECTION) */}
+              <div className="add-product-form-group">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <label className="add-product-label" style={{ marginBottom: 0 }}>
+                    SECTION SHOWCASE IMAGES (2-COLUMN DISPLAY ABOVE QUOTE)
+                  </label>
+                  <span style={{ fontSize: "11px", color: "#8a8a9e" }}>
+                    Shown side-by-side above quote form
+                  </span>
+                </div>
+                <div className="add-product-feature-images-grid">
+                  {/* Section Image Column 1 */}
+                  <div
+                    className={`add-product-feat-card ${formData.feature_image_1 ? "has-image" : ""}`}
+                    onClick={() => editFeatFileRef1.current?.click()}
+                  >
+                    <span className="add-product-feat-badge">COLUMN 1</span>
+                    {formData.feature_image_1 ? (
+                      <>
+                        <img
+                          src={formData.feature_image_1}
+                          alt="Section image 1"
+                          className="add-product-feat-preview"
+                        />
+                        <div className="add-product-feat-overlay">
+                          <button
+                            type="button"
+                            className="add-product-sec-remove"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveFeatImage(1);
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="add-product-feat-placeholder">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span>Upload Column 1 Image</span>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={editFeatFileRef1}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleFeatImageUpload(1, e)}
+                    />
+                  </div>
+
+                  {/* Section Image Column 2 */}
+                  <div
+                    className={`add-product-feat-card ${formData.feature_image_2 ? "has-image" : ""}`}
+                    onClick={() => editFeatFileRef2.current?.click()}
+                  >
+                    <span className="add-product-feat-badge">COLUMN 2</span>
+                    {formData.feature_image_2 ? (
+                      <>
+                        <img
+                          src={formData.feature_image_2}
+                          alt="Section image 2"
+                          className="add-product-feat-preview"
+                        />
+                        <div className="add-product-feat-overlay">
+                          <button
+                            type="button"
+                            className="add-product-sec-remove"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveFeatImage(2);
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="add-product-feat-placeholder">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span>Upload Column 2 Image</span>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={editFeatFileRef2}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleFeatImageUpload(2, e)}
                     />
                   </div>
                 </div>

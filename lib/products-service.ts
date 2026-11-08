@@ -13,6 +13,8 @@ export interface ProductItem {
   secondary_image_2?: string;
   secondary_image_3?: string;
   secondary_images?: string[];
+  feature_image_1?: string;
+  feature_image_2?: string;
   category_id?: string | null;
   created_at?: string;
   updated_at?: string;
@@ -108,6 +110,8 @@ export interface ProductExtras {
   secondary_image_2?: string;
   secondary_image_3?: string;
   secondary_images?: string[];
+  feature_image_1?: string;
+  feature_image_2?: string;
 }
 
 export function getStoredProductExtrasMap(): Record<string, ProductExtras> {
@@ -544,12 +548,29 @@ export async function fetchProductsFromDb(): Promise<ProductItem[]> {
       row.secondary_images ||
       [resolvedSec1, resolvedSec2, resolvedSec3].filter(Boolean);
 
+    const resolvedFeat1 =
+      row.feature_image_1 ||
+      descExtras.feature_image_1 ||
+      localExtras.feature_image_1 ||
+      "";
+
+    const resolvedFeat2 =
+      row.feature_image_2 ||
+      descExtras.feature_image_2 ||
+      localExtras.feature_image_2 ||
+      "";
+
     // Keep cached in localMap
     if (resolvedSub && typeof window !== "undefined") {
       setStoredSubcategory(row.id, row.title, resolvedSub);
     }
     if (
-      (resolvedLongDesc || resolvedSec1 || resolvedSec2 || resolvedSec3) &&
+      (resolvedLongDesc ||
+        resolvedSec1 ||
+        resolvedSec2 ||
+        resolvedSec3 ||
+        resolvedFeat1 ||
+        resolvedFeat2) &&
       typeof window !== "undefined"
     ) {
       setStoredProductExtras(row.id, row.title, {
@@ -558,6 +579,8 @@ export async function fetchProductsFromDb(): Promise<ProductItem[]> {
         secondary_image_2: resolvedSec2,
         secondary_image_3: resolvedSec3,
         secondary_images: resolvedSecImages,
+        feature_image_1: resolvedFeat1,
+        feature_image_2: resolvedFeat2,
       });
     }
 
@@ -574,6 +597,8 @@ export async function fetchProductsFromDb(): Promise<ProductItem[]> {
       secondary_image_2: resolvedSec2,
       secondary_image_3: resolvedSec3,
       secondary_images: resolvedSecImages,
+      feature_image_1: resolvedFeat1,
+      feature_image_2: resolvedFeat2,
       category_id: row.category_id,
       created_at: row.created_at,
       updated_at: row.updated_at,
@@ -592,6 +617,8 @@ export async function addProductToDb(product: {
   secondary_image_2?: string;
   secondary_image_3?: string;
   secondary_images?: string[];
+  feature_image_1?: string;
+  feature_image_2?: string;
 }): Promise<ProductItem> {
   const chosenSub = product.subcategory || inferSubcategory(product.title, product.category);
   const extras: ProductExtras = {
@@ -599,6 +626,8 @@ export async function addProductToDb(product: {
     secondary_image_1: product.secondary_image_1 || "",
     secondary_image_2: product.secondary_image_2 || "",
     secondary_image_3: product.secondary_image_3 || "",
+    feature_image_1: product.feature_image_1 || "",
+    feature_image_2: product.feature_image_2 || "",
   };
   const encodedDesc = encodeMetaInDescription(product.description, chosenSub, extras);
 
@@ -638,6 +667,8 @@ export async function addProductToDb(product: {
       product.secondary_image_2,
       product.secondary_image_3,
     ].filter(Boolean) as string[],
+    feature_image_1: product.feature_image_1 || null,
+    feature_image_2: product.feature_image_2 || null,
   };
 
   let { data, error } = await supabase
@@ -653,6 +684,8 @@ export async function addProductToDb(product: {
     delete insertPayload.secondary_image_2;
     delete insertPayload.secondary_image_3;
     delete insertPayload.secondary_images;
+    delete insertPayload.feature_image_1;
+    delete insertPayload.feature_image_2;
     delete insertPayload.subcategory;
     delete insertPayload.subcategory_id;
 
@@ -691,6 +724,8 @@ export async function addProductToDb(product: {
       data.secondary_images ||
       product.secondary_images ||
       [product.secondary_image_1, product.secondary_image_2, product.secondary_image_3].filter(Boolean),
+    feature_image_1: data.feature_image_1 || product.feature_image_1 || "",
+    feature_image_2: data.feature_image_2 || product.feature_image_2 || "",
     category_id: data.category_id,
   };
 }
@@ -724,6 +759,14 @@ export async function updateProductInDb(
   }
   if (updates.secondary_images !== undefined) {
     payload.secondary_images = updates.secondary_images;
+  }
+  if (updates.feature_image_1 !== undefined) {
+    extras.feature_image_1 = updates.feature_image_1;
+    payload.feature_image_1 = updates.feature_image_1;
+  }
+  if (updates.feature_image_2 !== undefined) {
+    extras.feature_image_2 = updates.feature_image_2;
+    payload.feature_image_2 = updates.feature_image_2;
   }
 
   if (
@@ -780,6 +823,8 @@ export async function updateProductInDb(
     delete payload.secondary_image_2;
     delete payload.secondary_image_3;
     delete payload.secondary_images;
+    delete payload.feature_image_1;
+    delete payload.feature_image_2;
     delete payload.subcategory;
     delete payload.subcategory_id;
 
@@ -832,6 +877,10 @@ export async function updateProductInDb(
         data.secondary_image_2 || updates.secondary_image_2 || descExtras.secondary_image_2,
         data.secondary_image_3 || updates.secondary_image_3 || descExtras.secondary_image_3,
       ].filter(Boolean),
+    feature_image_1:
+      data.feature_image_1 || updates.feature_image_1 || descExtras.feature_image_1 || "",
+    feature_image_2:
+      data.feature_image_2 || updates.feature_image_2 || descExtras.feature_image_2 || "",
     category_id: data.category_id,
   };
 }

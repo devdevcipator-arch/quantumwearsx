@@ -39,6 +39,8 @@ ALTER TABLE public.products ADD COLUMN IF NOT EXISTS secondary_image_1 TEXT;
 ALTER TABLE public.products ADD COLUMN IF NOT EXISTS secondary_image_2 TEXT;
 ALTER TABLE public.products ADD COLUMN IF NOT EXISTS secondary_image_3 TEXT;
 ALTER TABLE public.products ADD COLUMN IF NOT EXISTS secondary_images TEXT[];
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS feature_image_1 TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS feature_image_2 TEXT;
 
 -- 5. Add helpful documentation comments to columns
 COMMENT ON COLUMN public.products.long_description IS 'Detailed multi-paragraph product overview and manufacturing specifications';
@@ -46,6 +48,8 @@ COMMENT ON COLUMN public.products.secondary_image_1 IS 'First secondary gallery 
 COMMENT ON COLUMN public.products.secondary_image_2 IS 'Second secondary gallery thumbnail image';
 COMMENT ON COLUMN public.products.secondary_image_3 IS 'Third secondary gallery thumbnail image';
 COMMENT ON COLUMN public.products.secondary_images IS 'Array of all secondary gallery images for thumbnail switcher';
+COMMENT ON COLUMN public.products.feature_image_1 IS 'First column section image displayed directly above quote section';
+COMMENT ON COLUMN public.products.feature_image_2 IS 'Second column section image displayed directly above quote section';
 COMMENT ON COLUMN public.products.subcategory IS 'Associated subcategory name';
 COMMENT ON COLUMN public.products.subcategory_id IS 'Foreign key reference to subcategories table';
 

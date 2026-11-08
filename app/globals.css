@@ -4203,6 +4203,95 @@ input[type="search"]::-webkit-search-results-decoration {
   transform: scale(1.05);
 }
 
+/* Section Showcase Images (2 Columns Above Quote) in Admin */
+.add-product-feature-images-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.add-product-feat-card {
+  position: relative;
+  background: #09090d;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.add-product-feat-card:hover {
+  border-color: rgba(209, 0, 20, 0.6);
+  background: #0e0e16;
+  transform: translateY(-2px);
+}
+
+.add-product-feat-card.has-image {
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.add-product-feat-card.has-image:hover {
+  border-color: var(--accent-red);
+}
+
+.add-product-feat-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.add-product-feat-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.add-product-feat-card:hover .add-product-feat-overlay {
+  opacity: 1;
+}
+
+.add-product-feat-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #727284;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: center;
+  padding: 12px;
+}
+
+.add-product-feat-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  background: rgba(209, 0, 20, 0.9);
+  color: #ffffff;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
 .add-product-modal-header {
   padding-bottom: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
@@ -5425,6 +5514,84 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 /* ==========================================================
+   2-COLUMN SECTION SHOWCASE IMAGES (ABOVE QUOTE SECTION)
+   ========================================================== */
+.product-view-sections-row {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+.product-view-section-col {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-view-section-card {
+  position: relative;
+  min-height: 420px;
+  height: 420px;
+  border-radius: 22px;
+  border: 1px solid rgba(209, 0, 20, 0.42);
+  background: #09090e;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.product-view-section-card:hover {
+  border-color: rgba(209, 0, 20, 0.75);
+  box-shadow: 0 24px 70px rgba(209, 0, 20, 0.16);
+  transform: translateY(-3px);
+}
+
+.product-view-section-badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 4;
+  background: rgba(209, 0, 20, 0.92);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(209, 0, 20, 0.4);
+}
+
+.product-view-section-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.product-view-section-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-view-section-card:hover .product-view-section-img {
+  transform: scale(1.04);
+}
+
+.product-view-section-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(9, 9, 14, 0.2) 0%, rgba(9, 9, 14, 0) 35%, rgba(9, 9, 14, 0.65) 100%);
+  pointer-events: none;
+}
+
+/* ==========================================================
    DEDICATED REQUEST QUOTE SECTION BENEATH THE PRODUCT VIEW
    ========================================================== */
 .product-view-quote-section {
@@ -5729,6 +5896,15 @@ input[type="search"]::-webkit-search-results-decoration {
     min-height: 440px;
     height: 440px;
   }
+  .product-view-sections-row {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-top: 36px;
+  }
+  .product-view-section-card {
+    min-height: 360px;
+    height: 360px;
+  }
   .product-quote-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -5751,6 +5927,14 @@ input[type="search"]::-webkit-search-results-decoration {
     left: 16px;
     font-size: 10.5px;
     padding: 6px 14px;
+  }
+  .product-view-section-card {
+    min-height: 280px;
+    height: 280px;
+    border-radius: 16px;
+  }
+  .add-product-feature-images-grid {
+    grid-template-columns: 1fr;
   }
   .product-view-thumb-card {
     height: 96px;

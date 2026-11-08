@@ -16,6 +16,8 @@ export interface ProductDetailInfo {
   mainImage: string;
   thumbnails: string[];
   secondaryImages?: string[];
+  featureImage1?: string;
+  featureImage2?: string;
   quoteCategory: string;
   graphicWord?: string;
   specs?: {
@@ -84,6 +86,34 @@ const CATEGORY_THUMBNAILS: Record<string, string[]> = {
   ],
 };
 
+// Category fallback 2-column showcase images (above quote section)
+const CATEGORY_FEATURE_IMAGES: Record<string, [string, string]> = {
+  "leather-products": [
+    "/images/triptych_leather_stitch.jpg",
+    "/images/grid_leather_hide.jpg",
+  ],
+  "activewear": [
+    "/images/hero_factory_sewing.jpg",
+    "/images/triptych_embroidery.jpg",
+  ],
+  "sportswear": [
+    "/images/grid_tracksuit.jpg",
+    "/images/triptych_embroidery.jpg",
+  ],
+  "streetwear": [
+    "/images/triptych_brand_tag.jpg",
+    "/images/hero_factory_sewing.jpg",
+  ],
+  "safety-wear": [
+    "/images/grid_tactical_vest.jpg",
+    "/images/grid_workwear.jpg",
+  ],
+  "custom-bags": [
+    "/images/grid_backpack.jpg",
+    "/images/triptych_brand_tag.jpg",
+  ],
+};
+
 // Featured showcase product matching the user's design reference exactly
 const CSSA_PRODUCT: ProductDetailInfo = {
   id: "prod-cssa-master",
@@ -113,6 +143,8 @@ const CSSA_PRODUCT: ProductDetailInfo = {
     "/images/grid_leather_hide.jpg",
     "/images/grid_backpack.jpg",
   ],
+  featureImage1: "/images/triptych_leather_stitch.jpg",
+  featureImage2: "/images/grid_leather_hide.jpg",
   quoteCategory: "Leather Products",
 };
 
@@ -125,7 +157,9 @@ export function buildProductDetail(
   customDesc?: string,
   quoteCat?: string,
   customLongDesc?: string | string[],
-  secondaryImages?: string[]
+  secondaryImages?: string[],
+  featureImage1?: string,
+  featureImage2?: string
 ): ProductDetailInfo {
   const catSlug = slugify(category);
   const fallbackThumbs =
@@ -134,6 +168,13 @@ export function buildProductDetail(
       "/images/grid_leather_hide.jpg",
       "/images/grid_backpack.jpg",
     ];
+
+  const catFeatures = CATEGORY_FEATURE_IMAGES[catSlug] || [
+    "/images/triptych_leather_stitch.jpg",
+    "/images/hero_factory_sewing.jpg",
+  ];
+  const finalFeat1 = featureImage1 || catFeatures[0];
+  const finalFeat2 = featureImage2 || catFeatures[1];
 
   // If secondary images are provided, map them directly into thumbnails
   const validSecs = (secondaryImages || []).filter(Boolean);
@@ -185,6 +226,8 @@ export function buildProductDetail(
     mainImage: image || "/images/grid_leather_hide.jpg",
     thumbnails: thumbs,
     secondaryImages: validSecs,
+    featureImage1: finalFeat1,
+    featureImage2: finalFeat2,
     quoteCategory: quoteCat || category,
   };
 }

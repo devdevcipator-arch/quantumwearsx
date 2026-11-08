@@ -59,6 +59,14 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
             match.secondary_image_2 || extras.secondary_image_2,
             match.secondary_image_3 || extras.secondary_image_3,
           ].filter(Boolean);
+          const feat1 =
+            match.feature_image_1 ||
+            extras.feature_image_1 ||
+            initialProduct.featureImage1;
+          const feat2 =
+            match.feature_image_2 ||
+            extras.feature_image_2 ||
+            initialProduct.featureImage2;
           const updated = buildProductDetail(
             match.id || initialProduct.id,
             match.title || initialProduct.title,
@@ -67,7 +75,9 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
             cleanDescription || initialProduct.shortDescription,
             match.category || initialProduct.quoteCategory,
             longDesc,
-            secs.length > 0 ? secs : initialProduct.thumbnails
+            secs.length > 0 ? secs : initialProduct.thumbnails,
+            feat1,
+            feat2
           );
           setProduct(updated);
           setActiveImage(updated.mainImage);
@@ -113,6 +123,14 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
               match.secondary_image_2 || extras.secondary_image_2,
               match.secondary_image_3 || extras.secondary_image_3,
             ].filter(Boolean);
+            const feat1 =
+              match.feature_image_1 ||
+              extras.feature_image_1 ||
+              initialProduct.featureImage1;
+            const feat2 =
+              match.feature_image_2 ||
+              extras.feature_image_2 ||
+              initialProduct.featureImage2;
 
             const updated = buildProductDetail(
               match.id,
@@ -122,7 +140,9 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
               cleanDescription || initialProduct.shortDescription,
               match.category || initialProduct.quoteCategory,
               longDesc,
-              secs.length > 0 ? secs : initialProduct.thumbnails
+              secs.length > 0 ? secs : initialProduct.thumbnails,
+              feat1,
+              feat2
             );
             setProduct(updated);
             setActiveImage(updated.mainImage);
@@ -315,6 +335,45 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                 ))}
               </div>
             </motion.div>
+          </div>
+
+          {/* ================= 2-COLUMN SECTION IMAGES (ABOVE QUOTE SECTION) ================= */}
+          <div className="product-view-sections-row" aria-label="Product Showcase and Factory Specifications">
+            {/* Column 1: Section Image 1 */}
+            <div className="product-view-section-col">
+              <div className="product-view-section-card">
+                <div className="product-view-section-badge">
+                  <span>PRODUCTION DETAIL</span>
+                </div>
+                <div className="product-view-section-media">
+                  <img
+                    src={product.featureImage1 || "/images/hero_factory_sewing.jpg"}
+                    alt={`${product.title} craftsmanship and production details`}
+                    className="product-view-section-img"
+                    loading="lazy"
+                  />
+                  <div className="product-view-section-gradient" />
+                </div>
+              </div>
+            </div>
+
+            {/* Column 2: Section Image 2 */}
+            <div className="product-view-section-col">
+              <div className="product-view-section-card">
+                <div className="product-view-section-badge">
+                  <span>FACTORY SPECIFICATION</span>
+                </div>
+                <div className="product-view-section-media">
+                  <img
+                    src={product.featureImage2 || "/images/triptych_embroidery.jpg"}
+                    alt={`${product.title} material and factory specifications`}
+                    className="product-view-section-img"
+                    loading="lazy"
+                  />
+                  <div className="product-view-section-gradient" />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* ================= REQUEST QUOTE SECTION BENEATH THE TWO SECTIONS ================= */}
