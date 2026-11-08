@@ -48,8 +48,8 @@ COMMENT ON COLUMN public.products.secondary_image_1 IS 'First secondary gallery 
 COMMENT ON COLUMN public.products.secondary_image_2 IS 'Second secondary gallery thumbnail image';
 COMMENT ON COLUMN public.products.secondary_image_3 IS 'Third secondary gallery thumbnail image';
 COMMENT ON COLUMN public.products.secondary_images IS 'Array of all secondary gallery images for thumbnail switcher';
-COMMENT ON COLUMN public.products.feature_image_1 IS 'First column section image displayed directly above quote section';
-COMMENT ON COLUMN public.products.feature_image_2 IS 'Second column section image displayed directly above quote section';
+COMMENT ON COLUMN public.products.feature_image_1 IS 'Left column Color Chart image displayed directly above quote section';
+COMMENT ON COLUMN public.products.feature_image_2 IS 'Right column Size Chart image displayed directly above quote section';
 COMMENT ON COLUMN public.products.subcategory IS 'Associated subcategory name';
 COMMENT ON COLUMN public.products.subcategory_id IS 'Foreign key reference to subcategories table';
 

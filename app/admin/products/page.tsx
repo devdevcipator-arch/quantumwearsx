@@ -1384,7 +1384,7 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              {/* Field 1c: SECTION SHOWCASE IMAGES (2 COLUMNS ABOVE QUOTE SECTION) */}
+              {/* Field 1c: SECTION SHOWCASE IMAGES: COLOR CHART & SIZE CHART */}
               <div className="add-product-form-group">
                 <div
                   style={{
@@ -1395,24 +1395,24 @@ export default function AdminProductsPage() {
                   }}
                 >
                   <label className="add-product-label" style={{ marginBottom: 0 }}>
-                    SECTION SHOWCASE IMAGES (2-COLUMN DISPLAY ABOVE QUOTE)
+                    COLOR CHART &amp; SIZE CHART (2 COLUMNS ABOVE QUOTE)
                   </label>
                   <span style={{ fontSize: "11px", color: "#8a8a9e" }}>
-                    Shown side-by-side above quote form
+                    Left: Color Chart · Right: Size Chart
                   </span>
                 </div>
                 <div className="add-product-feature-images-grid">
-                  {/* Section Image Column 1 */}
+                  {/* Left Column: Color Chart */}
                   <div
                     className={`add-product-feat-card ${formData.feature_image_1 ? "has-image" : ""}`}
                     onClick={() => addFeatFileRef1.current?.click()}
                   >
-                    <span className="add-product-feat-badge">COLUMN 1</span>
+                    <span className="add-product-feat-badge">COLOR CHART</span>
                     {formData.feature_image_1 ? (
                       <>
                         <img
                           src={formData.feature_image_1}
-                          alt="Section image 1"
+                          alt="Color Chart preview"
                           className="add-product-feat-preview"
                         />
                         <div className="add-product-feat-overlay">
@@ -1434,7 +1434,7 @@ export default function AdminProductsPage() {
                           <line x1="12" y1="5" x2="12" y2="19" />
                           <line x1="5" y1="12" x2="19" y2="12" />
                         </svg>
-                        <span>Upload Column 1 Image</span>
+                        <span>Upload Color Chart</span>
                       </div>
                     )}
                     <input
@@ -1446,17 +1446,17 @@ export default function AdminProductsPage() {
                     />
                   </div>
 
-                  {/* Section Image Column 2 */}
+                  {/* Right Column: Size Chart */}
                   <div
                     className={`add-product-feat-card ${formData.feature_image_2 ? "has-image" : ""}`}
                     onClick={() => addFeatFileRef2.current?.click()}
                   >
-                    <span className="add-product-feat-badge">COLUMN 2</span>
+                    <span className="add-product-feat-badge">SIZE CHART</span>
                     {formData.feature_image_2 ? (
                       <>
                         <img
                           src={formData.feature_image_2}
-                          alt="Section image 2"
+                          alt="Size Chart preview"
                           className="add-product-feat-preview"
                         />
                         <div className="add-product-feat-overlay">
@@ -1478,7 +1478,7 @@ export default function AdminProductsPage() {
                           <line x1="12" y1="5" x2="12" y2="19" />
                           <line x1="5" y1="12" x2="19" y2="12" />
                         </svg>
-                        <span>Upload Column 2 Image</span>
+                        <span>Upload Size Chart</span>
                       </div>
                     )}
                     <input
@@ -1884,7 +1884,7 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              {/* Field 1c: SECTION SHOWCASE IMAGES (2 COLUMNS ABOVE QUOTE SECTION) */}
+              {/* Field 1c: SECTION SHOWCASE IMAGES: COLOR CHART & SIZE CHART */}
               <div className="add-product-form-group">
                 <div
                   style={{
@@ -1895,24 +1895,24 @@ export default function AdminProductsPage() {
                   }}
                 >
                   <label className="add-product-label" style={{ marginBottom: 0 }}>
-                    SECTION SHOWCASE IMAGES (2-COLUMN DISPLAY ABOVE QUOTE)
+                    COLOR CHART &amp; SIZE CHART (2 COLUMNS ABOVE QUOTE)
                   </label>
                   <span style={{ fontSize: "11px", color: "#8a8a9e" }}>
-                    Shown side-by-side above quote form
+                    Left: Color Chart · Right: Size Chart
                   </span>
                 </div>
                 <div className="add-product-feature-images-grid">
-                  {/* Section Image Column 1 */}
+                  {/* Left Column: Color Chart */}
                   <div
                     className={`add-product-feat-card ${formData.feature_image_1 ? "has-image" : ""}`}
                     onClick={() => editFeatFileRef1.current?.click()}
                   >
-                    <span className="add-product-feat-badge">COLUMN 1</span>
+                    <span className="add-product-feat-badge">COLOR CHART</span>
                     {formData.feature_image_1 ? (
                       <>
                         <img
                           src={formData.feature_image_1}
-                          alt="Section image 1"
+                          alt="Color Chart preview"
                           className="add-product-feat-preview"
                         />
                         <div className="add-product-feat-overlay">
@@ -1934,7 +1934,7 @@ export default function AdminProductsPage() {
                           <line x1="12" y1="5" x2="12" y2="19" />
                           <line x1="5" y1="12" x2="19" y2="12" />
                         </svg>
-                        <span>Upload Column 1 Image</span>
+                        <span>Upload Color Chart</span>
                       </div>
                     )}
                     <input
@@ -1946,17 +1946,17 @@ export default function AdminProductsPage() {
                     />
                   </div>
 
-                  {/* Section Image Column 2 */}
+                  {/* Right Column: Size Chart */}
                   <div
                     className={`add-product-feat-card ${formData.feature_image_2 ? "has-image" : ""}`}
                     onClick={() => editFeatFileRef2.current?.click()}
                   >
-                    <span className="add-product-feat-badge">COLUMN 2</span>
+                    <span className="add-product-feat-badge">SIZE CHART</span>
                     {formData.feature_image_2 ? (
                       <>
                         <img
                           src={formData.feature_image_2}
-                          alt="Section image 2"
+                          alt="Size Chart preview"
                           className="add-product-feat-preview"
                         />
                         <div className="add-product-feat-overlay">
@@ -1978,7 +1978,7 @@ export default function AdminProductsPage() {
                           <line x1="12" y1="5" x2="12" y2="19" />
                           <line x1="5" y1="12" x2="19" y2="12" />
                         </svg>
-                        <span>Upload Column 2 Image</span>
+                        <span>Upload Size Chart</span>
                       </div>
                     )}
                     <input

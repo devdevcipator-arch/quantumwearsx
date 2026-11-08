@@ -337,18 +337,22 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
             </motion.div>
           </div>
 
-          {/* ================= 2-COLUMN SECTION IMAGES (ABOVE QUOTE SECTION) ================= */}
-          <div className="product-view-sections-row" aria-label="Product Showcase and Factory Specifications">
-            {/* Column 1: Section Image 1 */}
+          {/* ================= 2-COLUMN SECTION IMAGES: COLOR CHART & SIZE CHART ================= */}
+          <div className="product-view-sections-row" aria-label="Color Chart and Size Chart">
+            {/* Left Column: Color Chart */}
             <div className="product-view-section-col">
+              <div className="product-view-section-header-bar">
+                <span className="product-view-section-title">COLOR CHART</span>
+                <span className="product-view-section-subtitle">Pantone & Custom Shades</span>
+              </div>
               <div className="product-view-section-card">
                 <div className="product-view-section-badge">
-                  <span>PRODUCTION DETAIL</span>
+                  <span>COLOR CHART</span>
                 </div>
                 <div className="product-view-section-media">
                   <img
                     src={product.featureImage1 || "/images/hero_factory_sewing.jpg"}
-                    alt={`${product.title} craftsmanship and production details`}
+                    alt={`${product.title} color chart`}
                     className="product-view-section-img"
                     loading="lazy"
                   />
@@ -357,16 +361,20 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
               </div>
             </div>
 
-            {/* Column 2: Section Image 2 */}
+            {/* Right Column: Size Chart */}
             <div className="product-view-section-col">
+              <div className="product-view-section-header-bar">
+                <span className="product-view-section-title">SIZE CHART</span>
+                <span className="product-view-section-subtitle">Measurement & Fit Guide</span>
+              </div>
               <div className="product-view-section-card">
                 <div className="product-view-section-badge">
-                  <span>FACTORY SPECIFICATION</span>
+                  <span>SIZE CHART</span>
                 </div>
                 <div className="product-view-section-media">
                   <img
                     src={product.featureImage2 || "/images/triptych_embroidery.jpg"}
-                    alt={`${product.title} material and factory specifications`}
+                    alt={`${product.title} size chart`}
                     className="product-view-section-img"
                     loading="lazy"
                   />
