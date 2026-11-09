@@ -4203,44 +4203,142 @@ input[type="search"]::-webkit-search-results-decoration {
   transform: scale(1.05);
 }
 
-/* Section Showcase Images (2 Columns Above Quote) in Admin */
-.add-product-feature-images-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+/* Two Dedicated Picture Uploaders: Color Chart & Size Chart (Admin Modal) */
+.add-product-charts-section {
+  background: rgba(14, 14, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-top: 6px;
 }
 
-.add-product-feat-card {
-  position: relative;
-  background: #09090d;
-  border: 1px dashed rgba(255, 255, 255, 0.16);
+.add-product-charts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.add-product-simultaneous-btn {
+  background: linear-gradient(135deg, rgba(209, 0, 20, 0.95) 0%, rgba(145, 0, 12, 0.98) 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 100, 100, 0.4);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  box-shadow: 0 4px 16px rgba(209, 0, 20, 0.4);
+}
+
+.add-product-simultaneous-btn:hover {
+  background: linear-gradient(135deg, #ff2233 0%, #bd0010 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 20px rgba(209, 0, 20, 0.55);
+}
+
+.add-product-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.add-product-chart-card {
+  background: #09090e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  height: 140px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.add-product-chart-card:hover {
+  border-color: rgba(209, 0, 20, 0.45);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+}
+
+.add-product-chart-card-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
+  min-height: 24px;
+}
+
+.add-product-chart-tag {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #e2e2ec;
+}
+
+.add-product-chart-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-red);
+  box-shadow: 0 0 8px rgba(209, 0, 20, 0.8);
+}
+
+.add-product-chart-remove-btn {
+  background: rgba(209, 0, 20, 0.16);
+  color: #ff5566;
+  border: 1px solid rgba(209, 0, 20, 0.38);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-product-chart-remove-btn:hover {
+  background: rgba(209, 0, 20, 0.9);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.add-product-chart-dropzone {
+  position: relative;
+  height: 180px;
+  border: 1.5px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: #050508;
   overflow: hidden;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.22s ease;
 }
 
-.add-product-feat-card:hover {
-  border-color: rgba(209, 0, 20, 0.6);
-  background: #0e0e16;
-  transform: translateY(-2px);
+.add-product-chart-dropzone:hover {
+  border-color: rgba(209, 0, 20, 0.7);
+  background: #0d0d14;
 }
 
-.add-product-feat-card.has-image {
+.add-product-chart-dropzone.has-image {
   border-style: solid;
   border-color: rgba(255, 255, 255, 0.18);
 }
 
-.add-product-feat-card.has-image:hover {
+.add-product-chart-dropzone.has-image:hover {
   border-color: var(--accent-red);
 }
 
-.add-product-feat-preview {
+.add-product-chart-img-preview {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -4248,48 +4346,73 @@ input[type="search"]::-webkit-search-results-decoration {
   object-fit: cover;
 }
 
-.add-product-feat-overlay {
+.add-product-chart-hover-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.65);
   opacity: 0;
-  transition: opacity 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: opacity 0.2s ease;
   z-index: 2;
 }
 
-.add-product-feat-card:hover .add-product-feat-overlay {
+.add-product-chart-dropzone:hover .add-product-chart-hover-overlay {
   opacity: 1;
 }
 
-.add-product-feat-placeholder {
+.add-product-chart-change-pill {
+  background: rgba(209, 0, 20, 0.95);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+
+.add-product-chart-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: #727284;
-  font-size: 11.5px;
-  font-weight: 600;
   text-align: center;
-  padding: 12px;
+  padding: 16px;
 }
 
-.add-product-feat-badge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  z-index: 3;
-  background: rgba(209, 0, 20, 0.9);
-  color: #ffffff;
-  font-size: 9.5px;
+.add-product-chart-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a0a0b2;
+  transition: all 0.2s ease;
+}
+
+.add-product-chart-dropzone:hover .add-product-chart-icon-wrap {
+  background: rgba(209, 0, 20, 0.15);
+  border-color: rgba(209, 0, 20, 0.4);
+  color: #ff3344;
+  transform: scale(1.08);
+}
+
+.add-product-chart-title {
+  font-size: 13px;
   font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  color: #f0f0f8;
+}
+
+.add-product-chart-sub {
+  font-size: 11px;
+  color: #727284;
 }
 
 .add-product-modal-header {
@@ -5957,8 +6080,16 @@ input[type="search"]::-webkit-search-results-decoration {
     height: 280px;
     border-radius: 16px;
   }
-  .add-product-feature-images-grid {
+  .add-product-charts-grid {
     grid-template-columns: 1fr;
+  }
+  .add-product-charts-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .add-product-simultaneous-btn {
+    width: 100%;
+    justify-content: center;
   }
   .product-view-thumb-card {
     height: 96px;

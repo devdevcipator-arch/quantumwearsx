@@ -23,6 +23,8 @@ import {
   uploadProductImage,
   setStoredSubcategory,
   setStoredProductExtras,
+  getStoredProductExtrasMap,
+  extractMetaFromDescription,
 } from "@/lib/products-service";
 
 export type { ProductItem, SubcategoryItem };
@@ -81,6 +83,7 @@ export default function AdminProductsPage() {
   const addSecFileRef3 = useRef<HTMLInputElement>(null);
   const addFeatFileRef1 = useRef<HTMLInputElement>(null);
   const addFeatFileRef2 = useRef<HTMLInputElement>(null);
+  const addFeatDualFileRef = useRef<HTMLInputElement>(null);
 
   const editFileInputRef = useRef<HTMLInputElement>(null);
   const editSecFileRef1 = useRef<HTMLInputElement>(null);
@@ -88,6 +91,7 @@ export default function AdminProductsPage() {
   const editSecFileRef3 = useRef<HTMLInputElement>(null);
   const editFeatFileRef1 = useRef<HTMLInputElement>(null);
   const editFeatFileRef2 = useRef<HTMLInputElement>(null);
+  const editFeatDualFileRef = useRef<HTMLInputElement>(null);
 
   // Form states for Add/Edit
   const [activeProduct, setActiveProduct] = useState<ProductItem | null>(null);
@@ -253,7 +257,7 @@ export default function AdminProductsPage() {
     }
   };
 
-  // Feature/Section images (2 columns above quote section) upload handler
+  // Feature/Section images (Color Chart & Size Chart) upload handler
   const handleFeatImageUpload = (slot: 1 | 2, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -268,17 +272,41 @@ export default function AdminProductsPage() {
     }
   };
 
+  // Simultaneous dual uploader handler for both Color Chart & Size Chart
+  const handleSimultaneousFeatUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    if (files[0]) {
+      const file1 = files[0];
+      setSelectedFeatFile1(file1);
+      const url1 = URL.createObjectURL(file1);
+      setFormData((prev) => ({ ...prev, feature_image_1: url1 }));
+    }
+
+    if (files[1]) {
+      const file2 = files[1];
+      setSelectedFeatFile2(file2);
+      const url2 = URL.createObjectURL(file2);
+      setFormData((prev) => ({ ...prev, feature_image_2: url2 }));
+    }
+  };
+
   const handleRemoveFeatImage = (slot: 1 | 2) => {
     if (slot === 1) {
       setSelectedFeatFile1(null);
       setFormData((prev) => ({ ...prev, feature_image_1: "" }));
       if (addFeatFileRef1.current) addFeatFileRef1.current.value = "";
       if (editFeatFileRef1.current) editFeatFileRef1.current.value = "";
+      if (addFeatDualFileRef.current) addFeatDualFileRef.current.value = "";
+      if (editFeatDualFileRef.current) editFeatDualFileRef.current.value = "";
     } else if (slot === 2) {
       setSelectedFeatFile2(null);
       setFormData((prev) => ({ ...prev, feature_image_2: "" }));
       if (addFeatFileRef2.current) addFeatFileRef2.current.value = "";
       if (editFeatFileRef2.current) editFeatFileRef2.current.value = "";
+      if (addFeatDualFileRef.current) addFeatDualFileRef.current.value = "";
+      if (editFeatDualFileRef.current) editFeatDualFileRef.current.value = "";
     }
   };
 
@@ -476,18 +504,34 @@ export default function AdminProductsPage() {
     setSelectedFeatFile1(null);
     setSelectedFeatFile2(null);
     setActiveProduct(prod);
+
+    const metaDesc = extractMetaFromDescription(prod.description || "");
+    const extrasMap = getStoredProductExtrasMap();
+    const storedExtra = extrasMap[prod.id] || extrasMap[prod.title?.toLowerCase()?.trim()] || {};
+
+    const feat1 =
+      prod.feature_image_1 ||
+      metaDesc.extras?.feature_image_1 ||
+      storedExtra.feature_image_1 ||
+      "";
+    const feat2 =
+      prod.feature_image_2 ||
+      metaDesc.extras?.feature_image_2 ||
+      storedExtra.feature_image_2 ||
+      "";
+
     setFormData({
       title: prod.title,
-      description: prod.description,
-      long_description: prod.long_description || "",
+      description: metaDesc.cleanDescription || prod.description,
+      long_description: prod.long_description || metaDesc.extras?.long_description || storedExtra.long_description || "",
       category: prod.category,
-      subcategory: prod.subcategory || "",
+      subcategory: prod.subcategory || metaDesc.subcategory || "",
       image: prod.image,
-      secondary_image_1: prod.secondary_image_1 || (prod.secondary_images?.[0] || ""),
-      secondary_image_2: prod.secondary_image_2 || (prod.secondary_images?.[1] || ""),
-      secondary_image_3: prod.secondary_image_3 || (prod.secondary_images?.[2] || ""),
-      feature_image_1: prod.feature_image_1 || "",
-      feature_image_2: prod.feature_image_2 || "",
+      secondary_image_1: prod.secondary_image_1 || (prod.secondary_images?.[0] || metaDesc.extras?.secondary_image_1 || storedExtra.secondary_image_1 || ""),
+      secondary_image_2: prod.secondary_image_2 || (prod.secondary_images?.[1] || metaDesc.extras?.secondary_image_2 || storedExtra.secondary_image_2 || ""),
+      secondary_image_3: prod.secondary_image_3 || (prod.secondary_images?.[2] || metaDesc.extras?.secondary_image_3 || storedExtra.secondary_image_3 || ""),
+      feature_image_1: feat1,
+      feature_image_2: feat2,
     });
     setIsEditModalOpen(true);
   };
@@ -1384,110 +1428,163 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              {/* Field 1c: SECTION SHOWCASE IMAGES: COLOR CHART & SIZE CHART */}
-              <div className="add-product-form-group">
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <label className="add-product-label" style={{ marginBottom: 0 }}>
-                    COLOR CHART &amp; SIZE CHART (2 COLUMNS ABOVE QUOTE)
-                  </label>
-                  <span style={{ fontSize: "11px", color: "#8a8a9e" }}>
-                    Left: Color Chart · Right: Size Chart
-                  </span>
-                </div>
-                <div className="add-product-feature-images-grid">
-                  {/* Left Column: Color Chart */}
-                  <div
-                    className={`add-product-feat-card ${formData.feature_image_1 ? "has-image" : ""}`}
-                    onClick={() => addFeatFileRef1.current?.click()}
+              {/* Field 1c: TWO DEDICATED PICTURE UPLOADERS: COLOR CHART & SIZE CHART */}
+              <div className="add-product-form-group add-product-charts-section">
+                <div className="add-product-charts-header">
+                  <div>
+                    <label className="add-product-label" style={{ marginBottom: "2px" }}>
+                      COLOR CHART &amp; SIZE CHART PICTURE UPLOADERS
+                    </label>
+                    <p style={{ fontSize: "11.5px", color: "#8a8a9e", margin: 0 }}>
+                      Upload custom images for the two sections displayed above the quote form.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="add-product-simultaneous-btn"
+                    onClick={() => addFeatDualFileRef.current?.click()}
+                    title="Select 2 images from your computer at once"
                   >
-                    <span className="add-product-feat-badge">COLOR CHART</span>
-                    {formData.feature_image_1 ? (
-                      <>
-                        <img
-                          src={formData.feature_image_1}
-                          alt="Color Chart preview"
-                          className="add-product-feat-preview"
-                        />
-                        <div className="add-product-feat-overlay">
-                          <button
-                            type="button"
-                            className="add-product-sec-remove"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveFeatImage(1);
-                            }}
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="add-product-feat-placeholder">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        <span>Upload Color Chart</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <span>UPLOAD BOTH SIMULTANEOUSLY</span>
+                  </button>
+                  <input
+                    type="file"
+                    ref={addFeatDualFileRef}
+                    accept="image/*"
+                    multiple
+                    style={{ display: "none" }}
+                    onChange={handleSimultaneousFeatUpload}
+                  />
+                </div>
+
+                <div className="add-product-charts-grid">
+                  {/* Uploader 1: COLOR CHART */}
+                  <div className="add-product-chart-card">
+                    <div className="add-product-chart-card-header">
+                      <div className="add-product-chart-tag">
+                        <span className="add-product-chart-dot red" />
+                        <span>COLOR CHART (LEFT SECTION)</span>
                       </div>
-                    )}
-                    <input
-                      type="file"
-                      ref={addFeatFileRef1}
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      onChange={(e) => handleFeatImageUpload(1, e)}
-                    />
+                      {formData.feature_image_1 && (
+                        <button
+                          type="button"
+                          className="add-product-chart-remove-btn"
+                          onClick={() => handleRemoveFeatImage(1)}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+
+                    <div
+                      className={`add-product-chart-dropzone ${formData.feature_image_1 ? "has-image" : ""}`}
+                      onClick={() => addFeatFileRef1.current?.click()}
+                    >
+                      {formData.feature_image_1 ? (
+                        <>
+                          <img
+                            src={formData.feature_image_1}
+                            alt="Color Chart Preview"
+                            className="add-product-chart-img-preview"
+                          />
+                          <div className="add-product-chart-hover-overlay">
+                            <span className="add-product-chart-change-pill">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                <circle cx="12" cy="13" r="4" />
+                              </svg>
+                              Change Color Chart Image
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="add-product-chart-empty">
+                          <div className="add-product-chart-icon-wrap">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                              <circle cx="8.5" cy="8.5" r="1.5" />
+                              <polyline points="21 15 16 10 5 21" />
+                            </svg>
+                          </div>
+                          <span className="add-product-chart-title">Upload Color Chart</span>
+                          <span className="add-product-chart-sub">Click to browse or drop image</span>
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        ref={addFeatFileRef1}
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => handleFeatImageUpload(1, e)}
+                      />
+                    </div>
                   </div>
 
-                  {/* Right Column: Size Chart */}
-                  <div
-                    className={`add-product-feat-card ${formData.feature_image_2 ? "has-image" : ""}`}
-                    onClick={() => addFeatFileRef2.current?.click()}
-                  >
-                    <span className="add-product-feat-badge">SIZE CHART</span>
-                    {formData.feature_image_2 ? (
-                      <>
-                        <img
-                          src={formData.feature_image_2}
-                          alt="Size Chart preview"
-                          className="add-product-feat-preview"
-                        />
-                        <div className="add-product-feat-overlay">
-                          <button
-                            type="button"
-                            className="add-product-sec-remove"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveFeatImage(2);
-                            }}
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="add-product-feat-placeholder">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        <span>Upload Size Chart</span>
+                  {/* Uploader 2: SIZE CHART */}
+                  <div className="add-product-chart-card">
+                    <div className="add-product-chart-card-header">
+                      <div className="add-product-chart-tag">
+                        <span className="add-product-chart-dot red" />
+                        <span>SIZE CHART (RIGHT SECTION)</span>
                       </div>
-                    )}
-                    <input
-                      type="file"
-                      ref={addFeatFileRef2}
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      onChange={(e) => handleFeatImageUpload(2, e)}
-                    />
+                      {formData.feature_image_2 && (
+                        <button
+                          type="button"
+                          className="add-product-chart-remove-btn"
+                          onClick={() => handleRemoveFeatImage(2)}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+
+                    <div
+                      className={`add-product-chart-dropzone ${formData.feature_image_2 ? "has-image" : ""}`}
+                      onClick={() => addFeatFileRef2.current?.click()}
+                    >
+                      {formData.feature_image_2 ? (
+                        <>
+                          <img
+                            src={formData.feature_image_2}
+                            alt="Size Chart Preview"
+                            className="add-product-chart-img-preview"
+                          />
+                          <div className="add-product-chart-hover-overlay">
+                            <span className="add-product-chart-change-pill">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                <circle cx="12" cy="13" r="4" />
+                              </svg>
+                              Change Size Chart Image
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="add-product-chart-empty">
+                          <div className="add-product-chart-icon-wrap">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                              <circle cx="8.5" cy="8.5" r="1.5" />
+                              <polyline points="21 15 16 10 5 21" />
+                            </svg>
+                          </div>
+                          <span className="add-product-chart-title">Upload Size Chart</span>
+                          <span className="add-product-chart-sub">Click to browse or drop image</span>
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        ref={addFeatFileRef2}
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => handleFeatImageUpload(2, e)}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1884,110 +1981,163 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              {/* Field 1c: SECTION SHOWCASE IMAGES: COLOR CHART & SIZE CHART */}
-              <div className="add-product-form-group">
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <label className="add-product-label" style={{ marginBottom: 0 }}>
-                    COLOR CHART &amp; SIZE CHART (2 COLUMNS ABOVE QUOTE)
-                  </label>
-                  <span style={{ fontSize: "11px", color: "#8a8a9e" }}>
-                    Left: Color Chart · Right: Size Chart
-                  </span>
-                </div>
-                <div className="add-product-feature-images-grid">
-                  {/* Left Column: Color Chart */}
-                  <div
-                    className={`add-product-feat-card ${formData.feature_image_1 ? "has-image" : ""}`}
-                    onClick={() => editFeatFileRef1.current?.click()}
+              {/* Field 1c: TWO DEDICATED PICTURE UPLOADERS: COLOR CHART & SIZE CHART */}
+              <div className="add-product-form-group add-product-charts-section">
+                <div className="add-product-charts-header">
+                  <div>
+                    <label className="add-product-label" style={{ marginBottom: "2px" }}>
+                      COLOR CHART &amp; SIZE CHART PICTURE UPLOADERS
+                    </label>
+                    <p style={{ fontSize: "11.5px", color: "#8a8a9e", margin: 0 }}>
+                      Upload custom images for the two sections displayed above the quote form.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="add-product-simultaneous-btn"
+                    onClick={() => editFeatDualFileRef.current?.click()}
+                    title="Select 2 images from your computer at once"
                   >
-                    <span className="add-product-feat-badge">COLOR CHART</span>
-                    {formData.feature_image_1 ? (
-                      <>
-                        <img
-                          src={formData.feature_image_1}
-                          alt="Color Chart preview"
-                          className="add-product-feat-preview"
-                        />
-                        <div className="add-product-feat-overlay">
-                          <button
-                            type="button"
-                            className="add-product-sec-remove"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveFeatImage(1);
-                            }}
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="add-product-feat-placeholder">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        <span>Upload Color Chart</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <span>UPLOAD BOTH SIMULTANEOUSLY</span>
+                  </button>
+                  <input
+                    type="file"
+                    ref={editFeatDualFileRef}
+                    accept="image/*"
+                    multiple
+                    style={{ display: "none" }}
+                    onChange={handleSimultaneousFeatUpload}
+                  />
+                </div>
+
+                <div className="add-product-charts-grid">
+                  {/* Uploader 1: COLOR CHART */}
+                  <div className="add-product-chart-card">
+                    <div className="add-product-chart-card-header">
+                      <div className="add-product-chart-tag">
+                        <span className="add-product-chart-dot red" />
+                        <span>COLOR CHART (LEFT SECTION)</span>
                       </div>
-                    )}
-                    <input
-                      type="file"
-                      ref={editFeatFileRef1}
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      onChange={(e) => handleFeatImageUpload(1, e)}
-                    />
+                      {formData.feature_image_1 && (
+                        <button
+                          type="button"
+                          className="add-product-chart-remove-btn"
+                          onClick={() => handleRemoveFeatImage(1)}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+
+                    <div
+                      className={`add-product-chart-dropzone ${formData.feature_image_1 ? "has-image" : ""}`}
+                      onClick={() => editFeatFileRef1.current?.click()}
+                    >
+                      {formData.feature_image_1 ? (
+                        <>
+                          <img
+                            src={formData.feature_image_1}
+                            alt="Color Chart Preview"
+                            className="add-product-chart-img-preview"
+                          />
+                          <div className="add-product-chart-hover-overlay">
+                            <span className="add-product-chart-change-pill">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                <circle cx="12" cy="13" r="4" />
+                              </svg>
+                              Change Color Chart Image
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="add-product-chart-empty">
+                          <div className="add-product-chart-icon-wrap">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                              <circle cx="8.5" cy="8.5" r="1.5" />
+                              <polyline points="21 15 16 10 5 21" />
+                            </svg>
+                          </div>
+                          <span className="add-product-chart-title">Upload Color Chart</span>
+                          <span className="add-product-chart-sub">Click to browse or drop image</span>
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        ref={editFeatFileRef1}
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => handleFeatImageUpload(1, e)}
+                      />
+                    </div>
                   </div>
 
-                  {/* Right Column: Size Chart */}
-                  <div
-                    className={`add-product-feat-card ${formData.feature_image_2 ? "has-image" : ""}`}
-                    onClick={() => editFeatFileRef2.current?.click()}
-                  >
-                    <span className="add-product-feat-badge">SIZE CHART</span>
-                    {formData.feature_image_2 ? (
-                      <>
-                        <img
-                          src={formData.feature_image_2}
-                          alt="Size Chart preview"
-                          className="add-product-feat-preview"
-                        />
-                        <div className="add-product-feat-overlay">
-                          <button
-                            type="button"
-                            className="add-product-sec-remove"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveFeatImage(2);
-                            }}
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="add-product-feat-placeholder">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        <span>Upload Size Chart</span>
+                  {/* Uploader 2: SIZE CHART */}
+                  <div className="add-product-chart-card">
+                    <div className="add-product-chart-card-header">
+                      <div className="add-product-chart-tag">
+                        <span className="add-product-chart-dot red" />
+                        <span>SIZE CHART (RIGHT SECTION)</span>
                       </div>
-                    )}
-                    <input
-                      type="file"
-                      ref={editFeatFileRef2}
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      onChange={(e) => handleFeatImageUpload(2, e)}
-                    />
+                      {formData.feature_image_2 && (
+                        <button
+                          type="button"
+                          className="add-product-chart-remove-btn"
+                          onClick={() => handleRemoveFeatImage(2)}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+
+                    <div
+                      className={`add-product-chart-dropzone ${formData.feature_image_2 ? "has-image" : ""}`}
+                      onClick={() => editFeatFileRef2.current?.click()}
+                    >
+                      {formData.feature_image_2 ? (
+                        <>
+                          <img
+                            src={formData.feature_image_2}
+                            alt="Size Chart Preview"
+                            className="add-product-chart-img-preview"
+                          />
+                          <div className="add-product-chart-hover-overlay">
+                            <span className="add-product-chart-change-pill">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                <circle cx="12" cy="13" r="4" />
+                              </svg>
+                              Change Size Chart Image
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="add-product-chart-empty">
+                          <div className="add-product-chart-icon-wrap">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                              <circle cx="8.5" cy="8.5" r="1.5" />
+                              <polyline points="21 15 16 10 5 21" />
+                            </svg>
+                          </div>
+                          <span className="add-product-chart-title">Upload Size Chart</span>
+                          <span className="add-product-chart-sub">Click to browse or drop image</span>
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        ref={editFeatFileRef2}
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => handleFeatImageUpload(2, e)}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
