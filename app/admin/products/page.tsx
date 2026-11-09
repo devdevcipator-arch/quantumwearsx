@@ -947,7 +947,7 @@ export default function AdminProductsPage() {
   return (
     <div className="admin-layout-root">
       {/* ================= GLOBAL ADMIN HEADER WITH PLATFORM LOGO ON LEFT ================= */}
-      <header className="admin-global-header" aria-label="Admin Portal Navigation">
+      <header className="admin-global-header" aria-label="Admin Portal Header">
         {/* Left Side: Platform Logo & Title */}
         <div className="admin-header-left">
           <Link href="/" className="admin-header-brand" aria-label="QuantumWearX Home">
@@ -963,38 +963,19 @@ export default function AdminProductsPage() {
           <div className="admin-header-divider" />
           <span className="admin-header-portal-badge">ADMIN PORTAL</span>
         </div>
+      </header>
 
-        {/* Right Side: Quick Links, DB Status & Profile */}
-        <div className="admin-header-right">
-          <Link
-            href="/"
-            target="_blank"
-            className="admin-header-quick-link"
-            title="Open Live Website in a new tab"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-            <span>Live Store</span>
-          </Link>
-
-          <Link
-            href="/products"
-            target="_blank"
-            className="admin-header-quick-link"
-            title="Open Public Products Catalog in a new tab"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7" />
-              <rect x="14" y="3" width="7" height="7" />
-              <rect x="14" y="14" width="7" height="7" />
-              <rect x="3" y="14" width="7" height="7" />
-            </svg>
-            <span>Catalog</span>
-          </Link>
-
-          <div className="admin-header-status-wrap">
+      {/* Main Content Area */}
+      <main className="admin-main-content">
+        {/* Top Header */}
+        <div className="admin-top-bar">
+          <div>
+            <h1 className="admin-page-title">Product Management</h1>
+            <p className="admin-page-subtitle">
+              Manage your catalog products, subcategories, color charts, and size specifications
+            </p>
+          </div>
+          <div>
             {isSaving ? (
               <div className="admin-db-status syncing">
                 <span className="admin-db-dot" />
@@ -1011,24 +992,6 @@ export default function AdminProductsPage() {
                 <span>Connecting to Supabase...</span>
               </div>
             ) : null}
-          </div>
-
-          <div className="admin-header-user-pill">
-            <div className="admin-header-avatar">A</div>
-            <span className="admin-header-user-role">Administrator</span>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <main className="admin-main-content">
-        {/* Top Header */}
-        <div className="admin-top-bar">
-          <div>
-            <h1 className="admin-page-title">Product Management</h1>
-            <p className="admin-page-subtitle">
-              Manage your catalog products, subcategories, color charts, and size specifications
-            </p>
           </div>
         </div>
 
