@@ -221,8 +221,8 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
       </div>
     </header>
 
-      {/* Floating WhatsApp Contact Group (bottom-right) */}
-      <FloatingWhatsApp onOpenQuote={onOpenQuote} />
+      {/* Floating WhatsApp Button (bottom-right) */}
+      <FloatingWhatsApp />
     </>
   );
 }
