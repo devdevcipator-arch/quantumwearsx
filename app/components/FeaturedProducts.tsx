@@ -142,13 +142,15 @@ export default function FeaturedProducts({
                     {item.description}
                   </p>
                 )}
-                <Link
-                  href={getProductUrl(item)}
-                  className="product-quote-btn w-full py-2.5 text-[11px] sm:text-xs font-bold tracking-wider rounded mt-auto flex items-center justify-center min-h-[44px]"
-                  style={{ display: "flex", textAlign: "center", textDecoration: "none" }}
-                >
-                  DETAIL
-                </Link>
+                <div className="mt-auto pt-2 w-full">
+                  <Link
+                    href={getProductUrl(item)}
+                    className="product-quote-btn w-full h-9 sm:h-10 py-2 sm:py-2.5 px-3 rounded-md bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all duration-150 text-[11px] sm:text-xs font-bold uppercase tracking-widest flex items-center justify-center relative before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-[''] shadow-sm"
+                    style={{ textDecoration: "none" }}
+                  >
+                    DETAIL
+                  </Link>
+                </div>
               </div>
             </div>
           ))}
