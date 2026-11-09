@@ -6,6 +6,7 @@ import {
   ProductItem,
   SubcategoryItem,
   DEFAULT_PRODUCTS,
+  DEFAULT_SUBCATEGORIES,
   fetchProductsFromDb,
   fetchCategoriesFromDb,
   fetchSubcategoriesFromDb,
@@ -46,6 +47,7 @@ export default function AdminProductsPage() {
   const [subcategories, setSubcategories] = useState<SubcategoryItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTab, setSelectedTab] = useState("All Products");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("All");
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
 
   // Supabase & Cloud status
@@ -322,22 +324,104 @@ export default function AdminProductsPage() {
     }));
   };
 
-  // Filter products by tab & search query
+  // Memoized available subcategories for the active category tab
+  const availableSubcategories = useMemo(() => {
+    const list: string[] = [];
+    const seen = new Set<string>();
+
+    const addSub = (name?: string) => {
+      if (!name) return;
+      const trimmed = name.trim();
+      const lower = trimmed.toLowerCase();
+      if (!lower || lower === "all" || lower.startsWith("all ")) return;
+      if (!seen.has(lower)) {
+        seen.add(lower);
+        list.push(trimmed);
+      }
+    };
+
+    if (selectedTab === "All Products") {
+      // 1. All subcategories from the subcategories state
+      subcategories.forEach((s) => addSub(s.name));
+      // 2. From DEFAULT_SUBCATEGORIES
+      Object.values(DEFAULT_SUBCATEGORIES).forEach((subs) => {
+        subs.forEach((s) => addSub(s));
+      });
+      // 3. From products
+      products.forEach((p) => addSub(p.subcategory));
+      return list;
+    }
+
+    // A specific category tab is selected
+    const catLower = selectedTab.toLowerCase().trim();
+
+    // 1. From subcategories state matching category
+    subcategories
+      .filter((s) => s.category.toLowerCase().trim() === catLower)
+      .forEach((s) => addSub(s.name));
+
+    // 2. From DEFAULT_SUBCATEGORIES for this category
+    const defaultSubs = DEFAULT_SUBCATEGORIES[selectedTab] || [];
+    defaultSubs.forEach((s) => addSub(s));
+
+    // 3. From existing products in this category
+    products
+      .filter((p) => p.category.toLowerCase().trim() === catLower)
+      .forEach((p) => addSub(p.subcategory));
+
+    return list;
+  }, [selectedTab, subcategories, products]);
+
+  // Products count matching current category tab (before subcategory filter)
+  const categoryProductsCount = useMemo(() => {
+    const catLower = selectedTab.toLowerCase().trim();
+    return products.filter((prod) => {
+      return (
+        selectedTab === "All Products" ||
+        prod.category.toLowerCase().trim() === catLower
+      );
+    }).length;
+  }, [products, selectedTab]);
+
+  // Product count for a given subcategory within current category
+  const getSubcategoryCount = (subName: string) => {
+    const catLower = selectedTab.toLowerCase().trim();
+    const subLower = subName.toLowerCase().trim();
+    return products.filter((prod) => {
+      const matchCat =
+        selectedTab === "All Products" ||
+        prod.category.toLowerCase().trim() === catLower;
+      const matchSub = (prod.subcategory || "").toLowerCase().trim() === subLower;
+      return matchCat && matchSub;
+    }).length;
+  };
+
+  // Filter products by tab, subcategory & search query
   const filteredProducts = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
+    const catLower = selectedTab.toLowerCase().trim();
+    const subLower = selectedSubcategory.toLowerCase().trim();
+
     return products.filter((prod) => {
+      const prodCat = prod.category.toLowerCase().trim();
+      const prodSub = (prod.subcategory || "").toLowerCase().trim();
+
       const matchesTab =
-        selectedTab === "All Products" ||
-        prod.category.toLowerCase() === selectedTab.toLowerCase();
+        selectedTab === "All Products" || prodCat === catLower;
+
+      const matchesSub =
+        selectedSubcategory === "All" || prodSub === subLower;
+
       const matchesSearch =
         !q ||
         prod.title.toLowerCase().includes(q) ||
         prod.description.toLowerCase().includes(q) ||
-        prod.category.toLowerCase().includes(q) ||
-        (prod.subcategory && prod.subcategory.toLowerCase().includes(q));
-      return matchesTab && matchesSearch;
+        prodCat.includes(q) ||
+        prodSub.includes(q);
+
+      return matchesTab && matchesSub && matchesSearch;
     });
-  }, [products, selectedTab, searchQuery]);
+  }, [products, selectedTab, selectedSubcategory, searchQuery]);
 
   // Handlers for Add
   const handleOpenAdd = () => {
@@ -922,6 +1006,7 @@ export default function AdminProductsPage() {
       saveSubcategories(draftSubcategories);
       if (!draftCategories.includes(selectedTab) && selectedTab !== "All Products") {
         setSelectedTab("All Products");
+        setSelectedSubcategory("All");
       }
       setIsManageCatsModalOpen(false);
     } finally {
@@ -1102,7 +1187,10 @@ export default function AdminProductsPage() {
             className={`admin-tab-btn ${
               selectedTab === "All Products" ? "active" : ""
             }`}
-            onClick={() => setSelectedTab("All Products")}
+            onClick={() => {
+              setSelectedTab("All Products");
+              setSelectedSubcategory("All");
+            }}
           >
             All Products
           </button>
@@ -1113,7 +1201,10 @@ export default function AdminProductsPage() {
               className={`admin-tab-btn ${
                 selectedTab === cat ? "active" : ""
               }`}
-              onClick={() => setSelectedTab(cat)}
+              onClick={() => {
+                setSelectedTab(cat);
+                setSelectedSubcategory("All");
+              }}
             >
               {cat}
             </button>
@@ -1145,6 +1236,7 @@ export default function AdminProductsPage() {
                       }`}
                       onClick={() => {
                         setSelectedTab(cat);
+                        setSelectedSubcategory("All");
                         setMoreDropdownOpen(false);
                       }}
                     >
@@ -1158,11 +1250,125 @@ export default function AdminProductsPage() {
           )}
         </div>
 
+        {/* Subcategory Filter Toolbar & Form Selector */}
+        <div className="admin-subcat-filter-container" aria-label="Subcategory filters">
+          <div className="admin-subcat-header-row">
+            <div className="admin-subcat-left-meta">
+              <div className="admin-subcat-icon-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                </svg>
+                <span>FILTER SUBCATEGORY</span>
+              </div>
+              {selectedSubcategory !== "All" && (
+                <div className="admin-subcat-active-pill">
+                  <span>Filtered: <strong>{selectedSubcategory}</strong></span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSubcategory("All")}
+                    className="admin-subcat-reset-btn"
+                    title="Clear subcategory filter"
+                    aria-label="Clear subcategory filter"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Form Dropdown Selector */}
+            <div className="admin-subcat-dropdown-control">
+              <label htmlFor="admin-subcat-select" className="admin-subcat-select-label">
+                Select Subcategory:
+              </label>
+              <div className="admin-subcat-select-box">
+                <select
+                  id="admin-subcat-select"
+                  className="admin-subcat-select-input"
+                  value={selectedSubcategory}
+                  onChange={(e) => setSelectedSubcategory(e.target.value)}
+                  aria-label="Filter products by subcategory dropdown"
+                >
+                  <option value="All">
+                    All Subcategories ({categoryProductsCount})
+                  </option>
+                  {availableSubcategories.map((sub) => {
+                    const count = getSubcategoryCount(sub);
+                    return (
+                      <option key={sub} value={sub}>
+                        {sub} ({count})
+                      </option>
+                    );
+                  })}
+                </select>
+                <svg
+                  className="admin-subcat-select-chevron"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Subcategory Visual Chip / Pill Buttons (Horizontal Scrollable Strip) */}
+          {availableSubcategories.length > 0 && (
+            <div className="admin-subcat-pills-row" role="tablist" aria-label="Subcategory pills">
+              <button
+                type="button"
+                className={`admin-subcat-chip ${selectedSubcategory === "All" ? "active" : ""}`}
+                onClick={() => setSelectedSubcategory("All")}
+              >
+                <span>All {selectedTab !== "All Products" ? selectedTab : "Subcategories"}</span>
+                <span className="admin-subcat-chip-count">{categoryProductsCount}</span>
+              </button>
+              {availableSubcategories.map((sub) => {
+                const count = getSubcategoryCount(sub);
+                const isActive = selectedSubcategory.toLowerCase() === sub.toLowerCase();
+                return (
+                  <button
+                    key={sub}
+                    type="button"
+                    className={`admin-subcat-chip ${isActive ? "active" : ""}`}
+                    onClick={() => setSelectedSubcategory(isActive ? "All" : sub)}
+                  >
+                    <span>{sub}</span>
+                    <span className={`admin-subcat-chip-count ${count > 0 ? "has-count" : "zero"}`}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         {/* Product Cards List */}
         <div className="admin-products-list">
           {filteredProducts.length === 0 ? (
             <div className="admin-empty-state">
-              <p>No products found matching &ldquo;{searchQuery}&rdquo;</p>
+              <p>
+                {searchQuery
+                  ? `No products found matching "${searchQuery}"`
+                  : selectedSubcategory !== "All"
+                  ? `No products found in "${selectedTab} > ${selectedSubcategory}"`
+                  : `No products found in "${selectedTab}"`}
+              </p>
+              {selectedSubcategory !== "All" && (
+                <button
+                  type="button"
+                  className="admin-btn-secondary"
+                  style={{ marginTop: "12px", fontSize: "12.5px", padding: "6px 16px" }}
+                  onClick={() => setSelectedSubcategory("All")}
+                >
+                  Show all in {selectedTab}
+                </button>
+              )}
             </div>
           ) : (
             filteredProducts.map((prod) => (
