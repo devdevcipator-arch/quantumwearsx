@@ -2571,31 +2571,12 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 @media (max-width: 768px) {
-  .nav-links {
-    display: none;
-  }
-  .nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  .nav-links,
   .nav-actions .nav-quote-btn {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 14px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    min-height: 40px;
-    border-radius: 6px;
-    white-space: nowrap;
-  }
-  .nav-actions .nav-quote-btn .cta-btn-arrow {
-    display: none;
+    display: none !important;
   }
   .mobile-menu-btn {
-    display: flex;
+    display: flex !important;
   }
   .hero-section {
     padding-top: 90px;
@@ -2616,24 +2597,24 @@ input[type="search"]::-webkit-search-results-decoration {
     margin-bottom: 24px;
   }
   .hero-buttons {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    width: 100%;
-    max-width: 440px;
-    gap: 10px;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 360px !important;
+    gap: 12px !important;
   }
   .hero-buttons .btn-primary-red,
   .hero-buttons .btn-secondary-outline {
     width: 100% !important;
-    min-height: 46px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 12px 8px;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    white-space: nowrap;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 14px 20px !important;
+    font-size: 12px !important;
+    letter-spacing: 0.08em !important;
+    border-radius: 8px !important;
   }
   .triptych-section {
     padding: 0 0 40px;
@@ -2924,21 +2905,6 @@ input[type="search"]::-webkit-search-results-decoration {
     padding: 20px 14px;
     margin: 8px;
     width: calc(100% - 16px);
-  }
-}
-
-@media (max-width: 360px) {
-  .hero-buttons {
-    grid-template-columns: 1fr !important;
-    gap: 8px;
-  }
-  .hero-buttons .btn-primary-red,
-  .hero-buttons .btn-secondary-outline {
-    white-space: normal;
-  }
-  .nav-actions .nav-quote-btn {
-    padding: 6px 10px;
-    font-size: 10px;
   }
 }
 
