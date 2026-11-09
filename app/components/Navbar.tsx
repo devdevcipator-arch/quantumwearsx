@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import FloatingWhatsApp from "./FloatingWhatsApp";
 
 interface NavbarProps {
   onOpenQuote?: () => void;
@@ -35,7 +36,8 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
   };
 
   return (
-    <header className={`site-nav ${scrolled ? "scrolled" : ""}`}>
+    <>
+      <header className={`site-nav ${scrolled ? "scrolled" : ""}`}>
       {/* Top Horizontal Sliding Bar */}
       <div className="top-sliding-bar" aria-label="Free shipping announcement">
         <div className="top-sliding-track">
@@ -218,5 +220,9 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
         )}
       </div>
     </header>
+
+      {/* Floating WhatsApp Contact Group (bottom-right) */}
+      <FloatingWhatsApp onOpenQuote={onOpenQuote} />
+    </>
   );
 }
