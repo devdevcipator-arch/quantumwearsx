@@ -170,22 +170,7 @@ export default function FeaturedProducts({
         >
           <Link
             href="/products"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "10px",
-              background: "#12121a",
-              border: "1px solid rgba(255, 255, 255, 0.15)",
-              color: "#ffffff",
-              padding: "16px 36px",
-              borderRadius: "9999px",
-              fontSize: "13px",
-              fontWeight: 800,
-              letterSpacing: "0.8px",
-              textTransform: "uppercase",
-              transition: "all 0.25s ease",
-            }}
-            className="hover:border-white hover:bg-white hover:text-black"
+            className="featured-catalog-link"
           >
             <span>Explore Complete Catalog</span>
             <span style={{ fontSize: "15px" }}>→</span>

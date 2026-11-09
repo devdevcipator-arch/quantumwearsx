@@ -31,7 +31,8 @@ export default function Hero({ onOpenQuote }: HeroProps) {
     target: sectionRef,
     offset: ["start start", "end start"],
   });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0px", "70px"]);
+  // Range keeps the oversized wrapper from exposing edges during parallax
+  const bgY = useTransform(scrollYProgress, [0, 1], ["-20px", "60px"]);
 
   return (
     <section id="home" className="hero-section" ref={sectionRef}>
