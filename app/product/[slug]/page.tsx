@@ -19,10 +19,9 @@ export function generateStaticParams() {
   return slugs.map((slug) => ({ slug }));
 }
 
-// Always render fresh DB content on the server so the first paint already
-// matches the real product — no "content swap after mount" that briefly
-// shifts/breaks the layout.
-export const dynamic = "force-dynamic";
+// Pre-render static pages and revalidate on edge CDN every 60s for instant page transitions
+export const revalidate = 60;
+export const dynamicParams = true;
 
 /**
  * Look up the live product row from Supabase matching this slug, using the

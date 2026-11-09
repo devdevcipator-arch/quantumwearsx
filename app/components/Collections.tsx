@@ -108,6 +108,15 @@ export default function Collections({
     onSelectCategory?.(category);
   };
 
+  const handlePrefetch = (category: string) => {
+    const href = getHref ? getHref(category) : undefined;
+    if (href) {
+      try {
+        router.prefetch(href);
+      } catch {}
+    }
+  };
+
   const animLeft = reduce
     ? {}
     : {
@@ -185,6 +194,7 @@ export default function Collections({
               className="bento-tall-card"
               role="button"
               tabIndex={0}
+              onMouseEnter={() => handlePrefetch("Sportswear")}
               onClick={() => select("Sportswear")}
               onKeyDown={(e) => e.key === "Enter" && select("Sportswear")}
               aria-label="View Sportswear Collection"
@@ -211,6 +221,7 @@ export default function Collections({
                   className="bento-square-card"
                   role="button"
                   tabIndex={0}
+                  onMouseEnter={() => handlePrefetch("Leather Goods")}
                   onClick={() => select("Leather Goods")}
                   onKeyDown={(e) => e.key === "Enter" && select("Leather Goods")}
                   aria-label="View Leather Goods Collection"
@@ -234,6 +245,7 @@ export default function Collections({
                   className="bento-square-card"
                   role="button"
                   tabIndex={0}
+                  onMouseEnter={() => handlePrefetch("Activewear & Tracksuits")}
                   onClick={() => select("Activewear & Tracksuits")}
                   onKeyDown={(e) => e.key === "Enter" && select("Activewear & Tracksuits")}
                   aria-label="View Activewear Collection"
@@ -258,6 +270,7 @@ export default function Collections({
                 className="bento-wide-card"
                 role="button"
                 tabIndex={0}
+                onMouseEnter={() => handlePrefetch("Workwear & Uniforms")}
                 onClick={() => select("Workwear & Uniforms")}
                 onKeyDown={(e) => e.key === "Enter" && select("Workwear & Uniforms")}
                 aria-label="View Workwear & Uniforms Collection"
@@ -285,6 +298,7 @@ export default function Collections({
               className="bento-medium-card"
               role="button"
               tabIndex={0}
+              onMouseEnter={() => handlePrefetch("Leather Jackets")}
               onClick={() => select("Leather Jackets")}
               onKeyDown={(e) => e.key === "Enter" && select("Leather Jackets")}
               aria-label="View Leather Jackets Collection"
@@ -308,6 +322,7 @@ export default function Collections({
               className="bento-medium-card"
               role="button"
               tabIndex={0}
+              onMouseEnter={() => handlePrefetch("Custom Bags")}
               onClick={() => select("Custom Bags")}
               onKeyDown={(e) => e.key === "Enter" && select("Custom Bags")}
               aria-label="View Custom Bags Collection"

@@ -1,9 +1,8 @@
 import HomeClient from "./HomeClient";
 import { fetchProductsFromDb, ProductItem } from "@/lib/products-service";
 
-// Server-render the live Supabase data so the first paint already matches
-// the final content — no placeholder → cached → live swap on refresh.
-export const dynamic = "force-dynamic";
+// Revalidate on edge CDN every 60 seconds for instant page loads & prefetching
+export const revalidate = 60;
 
 export default async function Home() {
   let initialProducts: ProductItem[] | undefined;

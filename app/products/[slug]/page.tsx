@@ -15,9 +15,8 @@ import { convertProductsForCategory } from "@/lib/catalog-convert";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://quantumwearx.com";
 
-// Server-render the live DB content so the first paint == final content —
-// no stale-cache → live-data swap on every refresh.
-export const dynamic = "force-dynamic";
+// Revalidate on edge CDN every 60 seconds for instant page loads & prefetching
+export const revalidate = 60;
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
