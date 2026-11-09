@@ -72,7 +72,7 @@ export default function CallToAction({ onOpenQuote }: CallToActionProps) {
           </button>
 
           <a
-            href="https://wa.me/15550194821?text=Hi%20QuantumWear%20X%2C%20I%20would%20like%20to%20discuss%20custom%20manufacturing%20and%20production."
+            href="https://wa.me/923143351255?text=Hi%20QuantumWear%20X%2C%20I%20would%20like%20to%20discuss%20custom%20manufacturing%20and%20production."
             target="_blank"
             rel="noopener noreferrer"
             className="cta-whatsapp-pill-button"

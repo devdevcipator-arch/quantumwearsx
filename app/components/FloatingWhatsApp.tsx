@@ -1,6 +1,6 @@
 "use client";
 
-const WHATSAPP_NUMBER = "15550194821";
+const WHATSAPP_NUMBER = "923143351255";
 const WHATSAPP_MESSAGE = encodeURIComponent(
   "Hi QuantumWear X, I would like to discuss a custom manufacturing inquiry."
 );

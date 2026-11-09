@@ -94,7 +94,7 @@ export default function Footer() {
                 Global Supply Chain & Logistics Hub
               </p>
               <p>
-                <strong>Phone:</strong> +1 (555) 019-4821
+                <strong>Phone:</strong> +92 314 3351255
               </p>
               <p>
                 <strong>Email:</strong>{" "}
