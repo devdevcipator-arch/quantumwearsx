@@ -15,6 +15,8 @@ export interface ProductItem {
   secondary_images?: string[];
   feature_image_1?: string;
   feature_image_2?: string;
+  color_chart_image?: string;
+  size_chart_image?: string;
   category_id?: string | null;
   created_at?: string;
   updated_at?: string;
@@ -112,6 +114,8 @@ export interface ProductExtras {
   secondary_images?: string[];
   feature_image_1?: string;
   feature_image_2?: string;
+  color_chart_image?: string;
+  size_chart_image?: string;
 }
 
 export function getStoredProductExtrasMap(): Record<string, ProductExtras> {
@@ -193,7 +197,11 @@ export function encodeMetaInDescription(
     (extras.long_description ||
       extras.secondary_image_1 ||
       extras.secondary_image_2 ||
-      extras.secondary_image_3)
+      extras.secondary_image_3 ||
+      extras.feature_image_1 ||
+      extras.feature_image_2 ||
+      extras.color_chart_image ||
+      extras.size_chart_image)
   ) {
     try {
       const payload: ProductExtras = {};
@@ -201,6 +209,10 @@ export function encodeMetaInDescription(
       if (extras.secondary_image_1) payload.secondary_image_1 = extras.secondary_image_1;
       if (extras.secondary_image_2) payload.secondary_image_2 = extras.secondary_image_2;
       if (extras.secondary_image_3) payload.secondary_image_3 = extras.secondary_image_3;
+      if (extras.feature_image_1) payload.feature_image_1 = extras.feature_image_1;
+      if (extras.feature_image_2) payload.feature_image_2 = extras.feature_image_2;
+      if (extras.color_chart_image) payload.color_chart_image = extras.color_chart_image;
+      if (extras.size_chart_image) payload.size_chart_image = extras.size_chart_image;
       parts.push(`<!--qw_meta:${encodeURIComponent(JSON.stringify(payload))}-->`);
     } catch {}
   }
@@ -619,6 +631,8 @@ export async function addProductToDb(product: {
   secondary_images?: string[];
   feature_image_1?: string;
   feature_image_2?: string;
+  color_chart_image?: string;
+  size_chart_image?: string;
 }): Promise<ProductItem> {
   const chosenSub = product.subcategory || inferSubcategory(product.title, product.category);
   const extras: ProductExtras = {
@@ -650,6 +664,9 @@ export async function addProductToDb(product: {
     subcategoryId = subData?.id || null;
   }
 
+  const feat1 = product.feature_image_1 || product.color_chart_image || null;
+  const feat2 = product.feature_image_2 || product.size_chart_image || null;
+
   const insertPayload: any = {
     title: product.title,
     description: encodedDesc,
@@ -667,8 +684,10 @@ export async function addProductToDb(product: {
       product.secondary_image_2,
       product.secondary_image_3,
     ].filter(Boolean) as string[],
-    feature_image_1: product.feature_image_1 || null,
-    feature_image_2: product.feature_image_2 || null,
+    feature_image_1: feat1,
+    feature_image_2: feat2,
+    color_chart_image: feat1,
+    size_chart_image: feat2,
   };
 
   let { data, error } = await supabase
@@ -678,14 +697,28 @@ export async function addProductToDb(product: {
     .single();
 
   if (error) {
-    // If any DB column does not exist in schema cache, strip unmigrated columns and retry with core verified columns
+    // Attempt 1: strip chart columns if not yet created in Supabase schema
+    delete insertPayload.feature_image_1;
+    delete insertPayload.feature_image_2;
+    delete insertPayload.color_chart_image;
+    delete insertPayload.size_chart_image;
+
+    const retryRes = await supabase
+      .from("products")
+      .insert([insertPayload])
+      .select()
+      .single();
+    data = retryRes.data;
+    error = retryRes.error;
+  }
+
+  if (error) {
+    // Attempt 2: strip all non-core columns
     delete insertPayload.long_description;
     delete insertPayload.secondary_image_1;
     delete insertPayload.secondary_image_2;
     delete insertPayload.secondary_image_3;
     delete insertPayload.secondary_images;
-    delete insertPayload.feature_image_1;
-    delete insertPayload.feature_image_2;
     delete insertPayload.subcategory;
     delete insertPayload.subcategory_id;
 
@@ -760,13 +793,19 @@ export async function updateProductInDb(
   if (updates.secondary_images !== undefined) {
     payload.secondary_images = updates.secondary_images;
   }
-  if (updates.feature_image_1 !== undefined) {
-    extras.feature_image_1 = updates.feature_image_1;
-    payload.feature_image_1 = updates.feature_image_1;
+  if (updates.feature_image_1 !== undefined || updates.color_chart_image !== undefined) {
+    const val = updates.feature_image_1 || updates.color_chart_image || "";
+    extras.feature_image_1 = val;
+    extras.color_chart_image = val;
+    payload.feature_image_1 = val;
+    payload.color_chart_image = val;
   }
-  if (updates.feature_image_2 !== undefined) {
-    extras.feature_image_2 = updates.feature_image_2;
-    payload.feature_image_2 = updates.feature_image_2;
+  if (updates.feature_image_2 !== undefined || updates.size_chart_image !== undefined) {
+    const val = updates.feature_image_2 || updates.size_chart_image || "";
+    extras.feature_image_2 = val;
+    extras.size_chart_image = val;
+    payload.feature_image_2 = val;
+    payload.size_chart_image = val;
   }
 
   if (
@@ -817,14 +856,29 @@ export async function updateProductInDb(
     .single();
 
   if (error) {
-    // If any DB column does not exist in schema cache, strip unmigrated columns and retry with core verified columns
+    // Attempt 1: strip chart columns if not yet created in Supabase schema
+    delete payload.feature_image_1;
+    delete payload.feature_image_2;
+    delete payload.color_chart_image;
+    delete payload.size_chart_image;
+
+    const res = await supabase
+      .from("products")
+      .update(payload)
+      .eq("id", id)
+      .select()
+      .single();
+    data = res.data;
+    error = res.error;
+  }
+
+  if (error) {
+    // Attempt 2: strip all non-core columns
     delete payload.long_description;
     delete payload.secondary_image_1;
     delete payload.secondary_image_2;
     delete payload.secondary_image_3;
     delete payload.secondary_images;
-    delete payload.feature_image_1;
-    delete payload.feature_image_2;
     delete payload.subcategory;
     delete payload.subcategory_id;
 
