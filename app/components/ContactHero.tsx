@@ -61,8 +61,8 @@ export default function ContactHero() {
             </div>
             <div>
               <p className="contact-info-label">Production HQ</p>
-              <a href="tel:+923143351255" className="contact-info-value">
-                +92 314 3351255
+              <a href="tel:+923314092799" className="contact-info-value">
+                +92 331 4092799
               </a>
             </div>
           </div>

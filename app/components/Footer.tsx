@@ -6,8 +6,8 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="site-footer" id="site-footer">
-      <div className="footer-container">
+    <footer className="site-footer w-full" id="site-footer">
+      <div className="footer-container px-4 sm:px-8 max-w-[1360px] mx-auto w-full">
         <div className="footer-columns">
           {/* Column 1: Brand info */}
           <div className="footer-brand-col" data-reveal="reveal-up">
@@ -21,12 +21,12 @@ export default function Footer() {
               Your trusted global manufacturing partner for custom athletic apparel,
               fine leather goods, streetwear, and tactical bags. Established in 2020 in Sialkot, Pakistan.
             </p>
-            <div className="footer-socials">
+            <div className="footer-socials flex items-center gap-3">
               <a
                 href="https://linkedin.com"
                 target="_blank"
                 rel="noreferrer"
-                className="social-icon-btn"
+                className="social-icon-btn min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full"
                 aria-label="LinkedIn"
               >
                 in
@@ -35,7 +35,7 @@ export default function Footer() {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noreferrer"
-                className="social-icon-btn"
+                className="social-icon-btn min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full"
                 aria-label="Instagram"
               >
                 📷
@@ -44,7 +44,7 @@ export default function Footer() {
                 href="https://facebook.com"
                 target="_blank"
                 rel="noreferrer"
-                className="social-icon-btn"
+                className="social-icon-btn min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full"
                 aria-label="Facebook"
               >
                 f
@@ -57,27 +57,27 @@ export default function Footer() {
             <h3 className="footer-heading">COMPANY</h3>
             <ul className="footer-links-list">
               <li>
-                <Link href="/" className="footer-link">
+                <Link href="/" className="footer-link inline-flex items-center min-h-[36px] py-1 text-xs sm:text-sm">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="footer-link">
+                <Link href="/products" className="footer-link inline-flex items-center min-h-[36px] py-1 text-xs sm:text-sm">
                   Products
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="footer-link">
+                <Link href="/about" className="footer-link inline-flex items-center min-h-[36px] py-1 text-xs sm:text-sm">
                   About us
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="footer-link">
+                <Link href="/contact" className="footer-link inline-flex items-center min-h-[36px] py-1 text-xs sm:text-sm">
                   Contact us
                 </Link>
               </li>
               <li>
-                <Link href="/#craftsmanship" className="footer-link">
+                <Link href="/#craftsmanship" className="footer-link inline-flex items-center min-h-[36px] py-1 text-xs sm:text-sm">
                   Craftsmanship
                 </Link>
               </li>
@@ -94,7 +94,7 @@ export default function Footer() {
                 Global Supply Chain & Logistics Hub
               </p>
               <p>
-                <strong>Phone:</strong> +92 314 3351255
+                <strong>Phone:</strong> +92 331 4092799
               </p>
               <p>
                 <strong>Email:</strong>{" "}
@@ -113,9 +113,9 @@ export default function Footer() {
         </div>
 
         {/* Footer bottom bar */}
-        <div className="footer-bottom-bar">
+        <div className="footer-bottom-bar flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs text-neutral-400 pt-6">
           <p>© {currentYear} QuantumWearX Inc. All Rights Reserved. ISO 9001:2015 Certified</p>
-          <div className="footer-legal-links">
+          <div className="footer-legal-links flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs">
             <a href="#privacy">Privacy Policy</a>
             <span>·</span>
             <a href="#terms">Terms of Manufacturing</a>

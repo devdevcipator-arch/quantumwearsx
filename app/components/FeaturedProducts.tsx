@@ -20,31 +20,28 @@ export default function FeaturedProducts({
   onOpenQuote,
   initialProducts,
 }: FeaturedProductsProps) {
+  const hasServerData = !!(initialProducts && initialProducts.length > 0);
   const [products, setProducts] = useState<ProductItem[]>(
-    initialProducts && initialProducts.length > 0
-      ? initialProducts
-      : DEFAULT_PRODUCTS
+    hasServerData ? initialProducts : DEFAULT_PRODUCTS
   );
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // With server-provided (truth) data, don't wholesale-replace from the
-    // admin localStorage cache — that was the source of the visible swap on
-    // refresh. Local-only products are merged in the DB-fetch step below.
-    const hasServerData = initialProducts && initialProducts.length > 0;
+    // Server already provided fresh featured data (ISR). Skip client DB/local
+    // refetch+merge+setState here — that re-render during scroll caused jank
+    // near this section. Only hydrate from cache/fetch when server data absent.
+    if (hasServerData) return;
 
-    if (!hasServerData) {
-      try {
-        const cached = localStorage.getItem("qw_admin_products");
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setProducts(parsed.slice(0, 6));
-          }
+    try {
+      const cached = localStorage.getItem("qw_admin_products");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setProducts(parsed.slice(0, 6));
         }
-      } catch {}
-    }
+      }
+    } catch {}
 
+    let cancelled = false;
     async function loadProducts() {
       try {
         const liveProducts = await fetchProductsFromDb();
@@ -67,39 +64,43 @@ export default function FeaturedProducts({
           ...(liveProducts || []),
         ];
 
-        if (merged && merged.length > 0) {
-          setProducts(merged.slice(0, 6)); // Top 6 featured
+        if (!cancelled && merged.length > 0) {
+          setProducts(merged.slice(0, 6));
         }
       } catch (err) {
         console.warn("FeaturedProducts fallback to defaults:", err);
-      } finally {
-        setLoading(false);
       }
     }
     loadProducts();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [hasServerData]);
 
   return (
     <section
       id="featured-products"
-      className="products-showcase-section"
+      className="products-showcase-section w-full overflow-hidden"
       aria-label="Featured Manufactured Products"
-      style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)", padding: "100px 0" }}
+      style={{
+        borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+        padding: "clamp(48px, 7vw, 96px) 0",
+      }}
     >
-      <div className="products-showcase-container">
+      <div className="products-showcase-container px-3 sm:px-6 lg:px-8 max-w-[1360px] mx-auto w-full">
         {/* Section Header */}
-        <div className="products-header-block" data-reveal="reveal-up">
-          <div className="products-eyebrow-container">
+        <div className="products-header-block mb-8 sm:mb-14" data-reveal="reveal-up">
+          <div className="products-eyebrow-container mb-3 sm:mb-4">
             <span className="products-eyebrow-dash" />
             <span className="products-eyebrow-text">Live Manufacturing Catalog</span>
           </div>
-          <h2 className="products-heading">
+          <h2 className="products-heading text-3xl sm:text-5xl lg:text-6xl font-black mb-3 sm:mb-5">
             FEATURED
             <br />
             PRODUCTS
           </h2>
           <p
-            className="products-subtext"
+            className="products-subtext text-xs sm:text-sm lg:text-base text-[#a6a6b5] leading-relaxed max-w-xl"
             data-reveal="reveal-up"
             style={{ "--reveal-delay": "120ms" } as CSSProperties}
           >
@@ -109,37 +110,31 @@ export default function FeaturedProducts({
           </p>
         </div>
 
-        {/* Dynamic Products Grid */}
-        <div className="products-grid">
+        {/* Dynamic Products Grid - Strict 2-Column Mobile Grid */}
+        <div className="products-grid grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-5 w-full">
           {products.map((item, index) => (
             <div
               key={item.id || item.title}
-              className="product-card"
+              className="product-card rounded-lg sm:rounded-xl overflow-hidden flex flex-col w-full bg-[var(--bg-card)] border border-[var(--border-subtle)]"
               data-reveal="reveal-up"
               style={{ "--reveal-delay": `${(index % 3) * 110}ms` } as CSSProperties}
             >
-              <div className="product-card-media">
+              <div className="product-card-media aspect-[4/5] sm:aspect-[5/4] w-full relative overflow-hidden">
                 <img
                   src={item.image}
                   alt={`${item.title} - QuantumWear X custom manufactured product`}
-                  className="product-card-image"
+                  className="product-card-image w-full h-full object-cover"
                   loading="lazy"
+                  decoding="async"
                 />
-                <span className="product-tag">{item.category.toUpperCase()}</span>
+                <span className="product-tag text-[8px] sm:text-[9.5px] py-0.5 px-1.5 sm:py-1 sm:px-2 rounded top-1.5 left-1.5 sm:top-3 sm:left-3">{item.category.toUpperCase()}</span>
               </div>
-              <div className="product-card-body">
-                <h3 className="product-card-title">{item.title}</h3>
+              <div className="product-card-body p-2 sm:p-3.5 lg:p-5 flex flex-col flex-1 justify-between gap-1.5 sm:gap-2.5 min-w-0">
+                <h3 className="product-card-title text-[11.5px] sm:text-sm lg:text-base font-bold text-white line-clamp-2 leading-snug">{item.title}</h3>
                 {item.description && (
                   <p
+                    className="product-card-desc text-[10px] sm:text-xs text-[#a6a6b5] line-clamp-2 my-0.5 sm:my-1 leading-snug"
                     style={{
-                      color: "#a6a6b5",
-                      fontSize: "13.5px",
-                      lineHeight: "1.55",
-                      margin: "8px 0 16px",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
                       overflowWrap: "break-word",
                       wordBreak: "break-word",
                     }}
@@ -149,8 +144,8 @@ export default function FeaturedProducts({
                 )}
                 <Link
                   href={getProductUrl(item)}
-                  className="product-quote-btn"
-                  style={{ display: "block", textAlign: "center", textDecoration: "none" }}
+                  className="product-quote-btn w-full py-2.5 text-[11px] sm:text-xs font-bold tracking-wider rounded mt-auto flex items-center justify-center min-h-[44px]"
+                  style={{ display: "flex", textAlign: "center", textDecoration: "none" }}
                 >
                   DETAIL
                 </Link>
@@ -161,16 +156,12 @@ export default function FeaturedProducts({
 
         {/* View Full Catalog Link Button */}
         <div
-          style={{
-            marginTop: "60px",
-            display: "flex",
-            justifyContent: "center",
-          }}
+          className="mt-8 sm:mt-12 lg:mt-14 flex justify-center w-full px-3 sm:px-4"
           data-reveal="reveal-up"
         >
           <Link
             href="/products"
-            className="featured-catalog-link"
+            className="featured-catalog-link w-full max-w-xs sm:w-auto text-center justify-center py-3.5 px-6 min-h-[48px] flex items-center gap-2 text-xs sm:text-sm font-bold tracking-wider"
           >
             <span>Explore Complete Catalog</span>
             <span style={{ fontSize: "15px" }}>→</span>

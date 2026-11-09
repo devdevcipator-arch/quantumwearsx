@@ -25,19 +25,19 @@ const faqs = [
 
 export default function Faq() {
   return (
-    <section id="faq" className="faq-section" aria-label="Frequently Asked Questions">
-      <div className="faq-container">
+    <section id="faq" className="faq-section w-full py-12 sm:py-16 lg:py-24" aria-label="Frequently Asked Questions">
+      <div className="faq-container px-4 sm:px-6 lg:px-8 max-w-[1360px] mx-auto w-full">
         <div className="faq-heading-block" data-reveal="reveal-up">
-          <span className="faq-eyebrow">Common Inquiries</span>
-          <h2 className="faq-title">FAQ Section</h2>
+          <span className="faq-eyebrow">{`Common Inquiries`}</span>
+          <h2 className="faq-title text-2xl sm:text-4xl md:text-5xl font-black tracking-tight">FAQ Section</h2>
           <div className="faq-title-bar" />
         </div>
 
         <div className="faq-list">
           {faqs.map((faq) => (
-            <div className="faq-item" key={faq.question} data-reveal="reveal-up">
-              <h3 className="faq-question">{faq.question}</h3>
-              <p className="faq-answer">{faq.answer}</p>
+            <div className="faq-item py-4 sm:py-6" key={faq.question} data-reveal="reveal-up">
+              <h3 className="faq-question text-base sm:text-lg font-bold text-white mb-2">{faq.question}</h3>
+              <p className="faq-answer text-xs sm:text-sm text-[#a6a6b5] leading-relaxed">{faq.answer}</p>
             </div>
           ))}
         </div>

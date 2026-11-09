@@ -54,7 +54,7 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
       {/* Complete Product Range Bento Grid */}
       <Collections onSelectCategory={(cat) => handleOpenQuote(cat)} />
 
-      {/* Live Featured Manufactured Products from Supabase DB */}
+      {/* Live Featured Manufactured Products from Supabase DB (Strict 2-Column Mobile Grid) */}
       <FeaturedProducts
         initialProducts={initialProducts}
         onOpenQuote={(cat) => handleOpenQuote(cat)}

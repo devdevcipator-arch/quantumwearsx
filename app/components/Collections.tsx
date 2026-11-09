@@ -15,7 +15,7 @@ interface CollectionsProps {
   description?: string;
 }
 
-const viewportConfig = { once: true, amount: 0.15 };
+const viewportConfig = { once: true, amount: 0.01, margin: "200px 0px" };
 
 // Left-side cards slide in smoothly from the left screen border
 const slideFromLeft = {
@@ -120,7 +120,7 @@ export default function Collections({
   const animLeft = reduce
     ? {}
     : {
-        initial: "hidden",
+        initial: false,
         whileInView: "show",
         viewport: viewportConfig,
         variants: slideFromLeft,
@@ -129,7 +129,7 @@ export default function Collections({
   const animRight = reduce
     ? {}
     : {
-        initial: "hidden",
+        initial: false,
         whileInView: "show",
         viewport: viewportConfig,
         variants: slideFromRight,
@@ -138,7 +138,7 @@ export default function Collections({
   const animRightSubtle = reduce
     ? {}
     : {
-        initial: "hidden",
+        initial: false,
         whileInView: "show",
         viewport: viewportConfig,
         variants: slideFromRightSubtle,
@@ -147,7 +147,7 @@ export default function Collections({
   const animLeftBottom = reduce
     ? {}
     : {
-        initial: "hidden",
+        initial: false,
         whileInView: "show",
         viewport: viewportConfig,
         variants: slideFromLeftBottom,
@@ -156,27 +156,20 @@ export default function Collections({
   const animRightBottom = reduce
     ? {}
     : {
-        initial: "hidden",
+        initial: false,
         whileInView: "show",
         viewport: viewportConfig,
         variants: slideFromRightBottom,
       };
 
   return (
-    <section id="products" className="collections-section" aria-label={title}>
-      <div className="collections-header" data-reveal="reveal-up">
+    <section id="products" className="collections-section w-full overflow-hidden" aria-label={title}>
+      <div className="collections-header px-4 sm:px-6 max-w-4xl mx-auto" data-reveal="reveal-up">
         <span className="collections-eyebrow">{eyebrow}</span>
-        <h2 className="collections-title">{title}</h2>
+        <h2 className="collections-title text-2xl sm:text-4xl md:text-5xl font-black tracking-tight">{title}</h2>
         {description && (
           <p
-            className="collections-desc"
-            style={{
-              maxWidth: "720px",
-              margin: "14px auto 0",
-              color: "var(--text-gray)",
-              fontSize: "15px",
-              lineHeight: "1.65",
-            }}
+            className="collections-desc text-xs sm:text-sm md:text-base text-[var(--text-gray)] leading-relaxed mt-3 sm:mt-4 mx-auto max-w-2xl"
           >
             {description}
           </p>
@@ -184,7 +177,7 @@ export default function Collections({
         <div className="collections-title-bar" />
       </div>
 
-      <div className="collections-container">
+      <div className="collections-container px-3 sm:px-6 lg:px-8 max-w-[1360px] mx-auto w-full">
         <div className="bento-layout">
           {/* Top Section: Left tall card + Right 2x2 cluster */}
           <div className="bento-top-row">

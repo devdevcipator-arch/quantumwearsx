@@ -57,7 +57,7 @@ export default function RevealObserver() {
               // A higher threshold (e.g. 0.15) permanently hides tall sections
               // whose 15% height never fits inside the viewport.
               threshold: 0,
-              rootMargin: "0px 0px -40px 0px",
+              rootMargin: "150px 0px 100px 0px",
             }
           )
         : null;
@@ -97,18 +97,21 @@ export default function RevealObserver() {
         return;
       }
 
-      // Stagger: sibling [data-reveal] elements come in one after another,
-      // 120ms apart (applied via the CSS --reveal-delay variable).
-      const parent = el.parentElement;
-      if (parent) {
-        const siblings = Array.from(
-          parent.querySelectorAll<HTMLElement>(":scope > [data-reveal]")
-        );
-        const index = siblings.indexOf(el);
-        const delay = index >= 0 ? index * 120 : 0;
-        el.style.setProperty("--reveal-delay", `${delay}ms`);
-      } else {
-        el.style.setProperty("--reveal-delay", "0ms");
+      // Stagger: sibling [data-reveal] elements come in one after another.
+      // Respect an explicit inline --reveal-delay (e.g. grid items use column
+      // stagger) to avoid clobbering author intent and creating long cascades.
+      if (!el.style.getPropertyValue("--reveal-delay")) {
+        const parent = el.parentElement;
+        if (parent) {
+          const siblings = Array.from(
+            parent.querySelectorAll<HTMLElement>(":scope > [data-reveal]")
+          );
+          const index = siblings.indexOf(el);
+          const delay = index >= 0 ? Math.min(index * 80, 240) : 0;
+          el.style.setProperty("--reveal-delay", `${delay}ms`);
+        } else {
+          el.style.setProperty("--reveal-delay", "0ms");
+        }
       }
 
       observer.observe(el);
@@ -122,24 +125,33 @@ export default function RevealObserver() {
      * invisible until refresh.
      */
     const safetySweep = () => {
-      const viewportLimit = window.innerHeight - 40;
+      const viewportLimit = window.innerHeight + 300;
       document
         .querySelectorAll<HTMLElement>("[data-reveal]")
         .forEach((el) => {
           if (revealed.has(el)) return;
           const rect = el.getBoundingClientRect();
-          if (rect.top < viewportLimit && rect.bottom > 0) {
+          if (rect.top < viewportLimit && rect.bottom > -200) {
             reveal(el);
             el.classList.add("is-revealed");
           }
         });
     };
-    const safetyTimer = window.setTimeout(safetySweep, 1800);
+    // Immediate safety sweep reveals all elements in/near view first
+    safetySweep();
 
     // Initial scan: bind everything already in the DOM
     document
       .querySelectorAll<HTMLElement>("[data-reveal]")
       .forEach((el) => register(el));
+
+    // Enable CSS transitions only after initial viewport elements are safe & visible
+    if (!prefersReducedMotion && hasIO) {
+      document.documentElement.classList.add("reveal-ready");
+    }
+
+    const safetyTimer1 = window.setTimeout(safetySweep, 250);
+    const safetyTimer2 = window.setTimeout(safetySweep, 800);
 
     // Watch the DOM so content injected AFTER mount (live Supabase data,
     // client filters, etc.) is bound and revealed instead of staying
@@ -163,7 +175,9 @@ export default function RevealObserver() {
     return () => {
       observer?.disconnect();
       mutation.disconnect();
-      clearTimeout(safetyTimer);
+      clearTimeout(safetyTimer1);
+      clearTimeout(safetyTimer2);
+      document.documentElement.classList.remove("reveal-ready");
     };
   }, [pathname]);
 

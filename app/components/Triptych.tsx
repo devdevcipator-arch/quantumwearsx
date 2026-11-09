@@ -25,9 +25,9 @@ export default function Triptych() {
         <motion.div
           className="triptych-grid"
           variants={grid}
-          initial={reduce ? undefined : "hidden"}
-          whileInView={reduce ? undefined : "show"}
-          viewport={{ once: true, amount: 0.2 }}
+          initial={false}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.02 }}
         >
           {/* Panel 1: Leather Stitching */}
           <motion.div className="triptych-panel" variants={panel}>
@@ -62,10 +62,10 @@ export default function Triptych() {
           {/* Floating Gothic Centered Typography */}
           <motion.div
             className="triptych-title-overlay"
-            initial={reduce ? undefined : { opacity: 0, y: 24 }}
-            whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            initial={false}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.02 }}
+            transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
             <h2 className="gothic-made-around">
               <span>Made Around Your</span>

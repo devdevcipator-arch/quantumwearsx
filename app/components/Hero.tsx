@@ -55,12 +55,12 @@ export default function Hero({ onOpenQuote }: HeroProps) {
         <div className="hero-overlay" />
       </motion.div>
 
-      <div className="hero-container">
+      <div className="hero-container px-4 sm:px-8">
         <motion.div
-          className="hero-content"
+          className="hero-content w-full"
           variants={container}
-          initial={reduce ? undefined : "hidden"}
-          animate={reduce ? undefined : "show"}
+          initial={false}
+          animate="show"
         >
           <motion.h1 className="hero-title" variants={item}>
             YOUR VISION.
@@ -72,16 +72,16 @@ export default function Hero({ onOpenQuote }: HeroProps) {
             Your trusted partner for custom apparel, leather goods, and bags.
           </motion.p>
 
-          <motion.div className="hero-buttons" variants={item}>
+          <motion.div className="hero-buttons flex flex-col w-full sm:flex-row sm:w-auto gap-3 sm:gap-4" variants={item}>
             <button
               type="button"
-              className="btn-primary-red"
+              className="btn-primary-red w-full sm:w-auto flex items-center justify-center min-h-[48px] py-3.5 px-6 sm:px-8 text-xs sm:text-sm font-bold tracking-wider"
               onClick={onOpenQuote}
               id="hero-request-quote-btn"
             >
               <span>REQUEST A QUOTE</span>
               <svg
-                className="cta-btn-arrow"
+                className="cta-btn-arrow ml-2 shrink-0"
                 viewBox="0 0 24 24"
                 width="14"
                 height="14"
@@ -98,12 +98,12 @@ export default function Hero({ onOpenQuote }: HeroProps) {
             </button>
             <Link
               href="/products"
-              className="btn-secondary-outline"
+              className="btn-secondary-outline w-full sm:w-auto flex items-center justify-center min-h-[48px] py-3.5 px-6 sm:px-8 text-xs sm:text-sm font-bold tracking-wider"
               id="hero-explore-products-btn"
             >
               <span>EXPLORE PRODUCTS</span>
               <svg
-                className="cta-btn-arrow"
+                className="cta-btn-arrow ml-2 shrink-0"
                 viewBox="0 0 24 24"
                 width="14"
                 height="14"

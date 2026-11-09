@@ -36,3 +36,6 @@ next-env.d.ts
 
 # Video downloads in root
 /*.mp4
+
+# Editor and agent plans
+.kilo/

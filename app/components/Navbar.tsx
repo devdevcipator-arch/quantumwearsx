@@ -157,7 +157,7 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
 
           <button
             type="button"
-            className="mobile-menu-btn"
+            className="mobile-menu-btn min-w-[44px] min-h-[44px] flex items-center justify-center text-xl text-white"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -170,28 +170,28 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
       <div className={`mobile-drawer ${mobileMenuOpen ? "open" : ""}`}>
         <Link
           href="/"
-          className={`nav-link ${isHome ? "active" : ""}`}
+          className={`nav-link ${isHome ? "active" : ""} py-3.5 px-3 min-h-[44px] flex items-center text-base`}
           onClick={() => setMobileMenuOpen(false)}
         >
           Home
         </Link>
         <Link
           href="/products"
-          className={`nav-link ${isProducts ? "active" : ""}`}
+          className={`nav-link ${isProducts ? "active" : ""} py-3.5 px-3 min-h-[44px] flex items-center text-base`}
           onClick={() => setMobileMenuOpen(false)}
         >
           Products
         </Link>
         <Link
           href="/about"
-          className={`nav-link ${isAbout ? "active" : ""}`}
+          className={`nav-link ${isAbout ? "active" : ""} py-3.5 px-3 min-h-[44px] flex items-center text-base`}
           onClick={() => setMobileMenuOpen(false)}
         >
           About us
         </Link>
         <Link
           href="/contact"
-          className={`nav-link ${isContact ? "active" : ""}`}
+          className={`nav-link ${isContact ? "active" : ""} py-3.5 px-3 min-h-[44px] flex items-center text-base`}
           onClick={() => setMobileMenuOpen(false)}
         >
           Contact us
@@ -200,7 +200,7 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
           <button
             type="button"
             className="nav-quote-btn"
-            style={{ width: "100%", marginTop: "10px" }}
+            style={{ width: "100%", marginTop: "12px", minHeight: "48px", display: "flex", alignItems: "center", justifyContent: "center" }}
             onClick={() => {
               setMobileMenuOpen(false);
               onOpenQuote();
@@ -212,7 +212,7 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
           <Link
             href="/contact"
             className="nav-quote-btn"
-            style={{ width: "100%", marginTop: "10px", textAlign: "center", display: "block" }}
+            style={{ width: "100%", marginTop: "12px", minHeight: "48px", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center" }}
             onClick={() => setMobileMenuOpen(false)}
           >
             REQUEST A QUOTE
