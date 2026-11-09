@@ -36,6 +36,28 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
 
   return (
     <header className={`site-nav ${scrolled ? "scrolled" : ""}`}>
+      {/* Top Horizontal Sliding Bar */}
+      <div className="top-sliding-bar" aria-label="Free shipping announcement">
+        <div className="top-sliding-track">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <span key={`a-${i}`} className="top-sliding-item">
+              FREE SHIPPING
+              <span className="top-sliding-dot" aria-hidden="true">
+                ✦
+              </span>
+            </span>
+          ))}
+          <span aria-hidden="true">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <span key={`b-${i}`} className="top-sliding-item">
+                FREE SHIPPING
+                <span className="top-sliding-dot">✦</span>
+              </span>
+            ))}
+          </span>
+        </div>
+      </div>
+
       <div className="nav-container">
         {/* Brand Logo */}
         <Link href="/" className="nav-brand" aria-label="QuantumWearX Home">
