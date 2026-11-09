@@ -2571,12 +2571,31 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 @media (max-width: 768px) {
-  .nav-links,
+  .nav-links {
+    display: none;
+  }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
   .nav-actions .nav-quote-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    min-height: 40px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .nav-actions .nav-quote-btn .cta-btn-arrow {
     display: none;
   }
   .mobile-menu-btn {
-    display: block;
+    display: flex;
   }
   .hero-section {
     padding-top: 90px;
@@ -2597,20 +2616,24 @@ input[type="search"]::-webkit-search-results-decoration {
     margin-bottom: 24px;
   }
   .hero-buttons {
-    flex-direction: column;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     width: 100%;
-    gap: 12px;
+    max-width: 440px;
+    gap: 10px;
   }
   .hero-buttons .btn-primary-red,
   .hero-buttons .btn-secondary-outline {
-    width: 100%;
-    min-height: 48px;
+    width: 100% !important;
+    min-height: 46px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 14px 20px;
-    font-size: 12.5px;
+    padding: 12px 8px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
   }
   .triptych-section {
     padding: 0 0 40px;
@@ -2653,12 +2676,17 @@ input[type="search"]::-webkit-search-results-decoration {
   .bento-pill-badge {
     bottom: 8px;
     left: 8px;
-    padding: 5px 10px;
-    font-size: 11px;
+    padding: 6px 11px;
+    font-size: 10.5px;
+    font-weight: 700;
     max-width: calc(100% - 16px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
   .cta-content-container {
     padding: 0 16px;
@@ -2673,19 +2701,23 @@ input[type="search"]::-webkit-search-results-decoration {
   }
   .cta-btn-wrapper {
     flex-direction: column;
+    align-items: center;
     width: 100%;
     gap: 12px;
   }
   .cta-red-pill-button,
   .cta-whatsapp-pill-button {
-    width: 100%;
+    width: 100% !important;
+    max-width: 320px;
     min-height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 14px 20px;
-    font-size: 12px;
+    padding: 13px 20px;
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    border-radius: 9999px !important;
   }
   .cta-micro-specs {
     font-size: 10px;
@@ -2892,6 +2924,21 @@ input[type="search"]::-webkit-search-results-decoration {
     padding: 20px 14px;
     margin: 8px;
     width: calc(100% - 16px);
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-buttons {
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+  }
+  .hero-buttons .btn-primary-red,
+  .hero-buttons .btn-secondary-outline {
+    white-space: normal;
+  }
+  .nav-actions .nav-quote-btn {
+    padding: 6px 10px;
+    font-size: 10px;
   }
 }
 

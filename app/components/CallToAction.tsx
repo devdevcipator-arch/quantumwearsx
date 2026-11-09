@@ -42,11 +42,11 @@ export default function CallToAction({ onOpenQuote }: CallToActionProps) {
           From first samples to final shipment, we are your manufacturing backbone.
         </p>
 
-        {/* CTA Buttons - Vertical stack on mobile, horizontal on sm+ */}
+        {/* CTA Buttons - Balanced Relative Structure on Mobile */}
         <div className="cta-btn-wrapper flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full max-w-md sm:max-w-none mx-auto px-2 mb-6 sm:mb-8" data-reveal="reveal-up">
           <button
             type="button"
-            className="cta-red-pill-button w-full sm:w-auto flex items-center justify-center min-h-[48px] py-3.5 px-6 sm:px-8 text-xs sm:text-sm font-bold tracking-wider"
+            className="cta-red-pill-button w-full max-w-xs sm:max-w-none sm:w-auto flex items-center justify-center min-h-[48px] py-3.5 px-6 sm:px-8 text-xs sm:text-sm font-bold tracking-wider rounded-full"
             onClick={onOpenQuote}
             id="cta-request-custom-quote-btn"
           >
@@ -72,7 +72,7 @@ export default function CallToAction({ onOpenQuote }: CallToActionProps) {
             href="https://wa.me/923314092799?text=Hi%20QuantumWear%20X%2C%20I%20would%20like%20to%20discuss%20custom%20manufacturing%20and%20production."
             target="_blank"
             rel="noopener noreferrer"
-            className="cta-whatsapp-pill-button w-full sm:w-auto flex items-center justify-center min-h-[48px] py-3.5 px-6 sm:px-8 text-xs sm:text-sm font-bold tracking-wider rounded-full"
+            className="cta-whatsapp-pill-button w-full max-w-xs sm:max-w-none sm:w-auto flex items-center justify-center min-h-[48px] py-3.5 px-6 sm:px-8 text-xs sm:text-sm font-bold tracking-wider rounded-full"
             id="cta-discuss-whatsapp-btn"
           >
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" className="mr-2.5 text-[#25D366] shrink-0">

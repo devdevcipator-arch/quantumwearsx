@@ -72,19 +72,22 @@ export default function Hero({ onOpenQuote }: HeroProps) {
             Your trusted partner for custom apparel, leather goods, and bags.
           </motion.p>
 
-          <motion.div className="hero-buttons flex flex-col w-full sm:flex-row sm:w-auto gap-3 sm:gap-4" variants={item}>
+          <motion.div
+            className="hero-buttons grid grid-cols-2 gap-2.5 sm:gap-4 w-full sm:flex sm:w-auto max-w-lg sm:max-w-none"
+            variants={item}
+          >
             <button
               type="button"
-              className="btn-primary-red w-full sm:w-auto flex items-center justify-center min-h-[48px] py-3.5 px-6 sm:px-8 text-xs sm:text-sm font-bold tracking-wider"
+              className="btn-primary-red w-full sm:w-auto flex items-center justify-center min-h-[46px] sm:min-h-[48px] py-3 px-3 sm:px-8 text-[11px] sm:text-sm font-bold tracking-wider"
               onClick={onOpenQuote}
               id="hero-request-quote-btn"
             >
               <span>REQUEST A QUOTE</span>
               <svg
-                className="cta-btn-arrow ml-2 shrink-0"
+                className="cta-btn-arrow ml-1.5 sm:ml-2 shrink-0"
                 viewBox="0 0 24 24"
-                width="14"
-                height="14"
+                width="13"
+                height="13"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2.6"
@@ -98,15 +101,15 @@ export default function Hero({ onOpenQuote }: HeroProps) {
             </button>
             <Link
               href="/products"
-              className="btn-secondary-outline w-full sm:w-auto flex items-center justify-center min-h-[48px] py-3.5 px-6 sm:px-8 text-xs sm:text-sm font-bold tracking-wider"
+              className="btn-secondary-outline w-full sm:w-auto flex items-center justify-center min-h-[46px] sm:min-h-[48px] py-3 px-3 sm:px-8 text-[11px] sm:text-sm font-bold tracking-wider"
               id="hero-explore-products-btn"
             >
               <span>EXPLORE PRODUCTS</span>
               <svg
-                className="cta-btn-arrow ml-2 shrink-0"
+                className="cta-btn-arrow ml-1.5 sm:ml-2 shrink-0"
                 viewBox="0 0 24 24"
-                width="14"
-                height="14"
+                width="13"
+                height="13"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2.6"
