@@ -303,34 +303,89 @@ button {
 }
 
 /* ==========================================================
-   FLOATING WHATSAPP BUTTON (BOTTOM-RIGHT)
+   FLOATING ACTION BUTTONS GROUP (BOTTOM-RIGHT)
+   Catalog Download + WhatsApp Quick Contact
    ========================================================== */
-.floating-wa-toggle {
+.floating-actions-container {
   position: fixed;
   right: 22px;
   bottom: 22px;
   z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.floating-action-btn {
+  position: relative;
   width: 58px;
   height: 58px;
   border-radius: 50%;
   cursor: pointer;
-  background: linear-gradient(145deg, #25d366, #128c7e);
-  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45), 0 2px 8px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  color: #ffffff;
+  text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: auto;
 }
 
+/* 1. Catalog Download Button (Crimson Brand Theme) */
+.floating-catalog-btn {
+  background: linear-gradient(145deg, #e31b2c, #a80010);
+  box-shadow: 0 8px 24px rgba(227, 27, 44, 0.45), 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.floating-catalog-btn::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(227, 27, 44, 0.55);
+  animation: floating-catalog-pulse 2.4s ease-out infinite;
+  animation-delay: 1.2s;
+  pointer-events: none;
+}
+
+@keyframes floating-catalog-pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+.floating-catalog-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 30px rgba(227, 27, 44, 0.6), 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.floating-catalog-icon {
+  width: 27px;
+  height: 27px;
+}
+
+/* 2. WhatsApp Button (Emerald WhatsApp Gradient) */
+.floating-wa-btn,
+.floating-wa-toggle {
+  background: linear-gradient(145deg, #25d366, #128c7e);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45), 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.floating-wa-btn::after,
 .floating-wa-toggle::after {
   content: "";
   position: absolute;
   inset: -4px;
   border-radius: 50%;
   border: 2px solid rgba(37, 211, 102, 0.55);
-  animation: floating-wa-pulse 2.2s ease-out infinite;
+  animation: floating-wa-pulse 2.4s ease-out infinite;
   pointer-events: none;
 }
 
@@ -345,6 +400,7 @@ button {
   }
 }
 
+.floating-wa-btn:hover,
 .floating-wa-toggle:hover {
   transform: scale(1.08);
   box-shadow: 0 10px 30px rgba(37, 211, 102, 0.55), 0 2px 10px rgba(0, 0, 0, 0.45);
@@ -355,24 +411,81 @@ button {
   height: 30px;
 }
 
+/* Floating Tooltip (Slides out on hover to the left) */
+.floating-action-tooltip {
+  position: absolute;
+  right: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  background: #0f0f16;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+}
+
+.floating-action-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent #0f0f16;
+}
+
+.floating-action-btn:hover .floating-action-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.floating-catalog-btn .floating-action-tooltip {
+  border-color: rgba(227, 27, 44, 0.4);
+}
+
+.floating-wa-btn .floating-action-tooltip {
+  border-color: rgba(37, 211, 102, 0.4);
+}
+
+/* Mobile Responsiveness */
 @media (max-width: 700px) {
-  .floating-wa-toggle {
+  .floating-actions-container {
     right: 16px;
     bottom: 16px;
+    gap: 10px;
+  }
+  .floating-action-btn {
     width: 52px;
     height: 52px;
+  }
+  .floating-catalog-icon {
+    width: 24px;
+    height: 24px;
   }
   .floating-wa-icon-whatsapp {
     width: 27px;
     height: 27px;
   }
+  .floating-action-tooltip {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .floating-wa-toggle::after {
+  .floating-catalog-btn::after,
+  .floating-wa-btn::after {
     animation: none;
   }
-  .floating-wa-toggle {
+  .floating-action-btn {
     transition: none;
   }
 }
