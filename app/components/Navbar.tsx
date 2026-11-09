@@ -14,11 +14,13 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  // Dynamic route matching using usePathname()
-  const isHome = pathname === "/" || active === "home";
-  const isProducts = pathname.startsWith("/products") || active === "products";
-  const isAbout = pathname.startsWith("/about") || active === "about";
-  const isContact = pathname.startsWith("/contact") || active === "contact";
+  // Dynamic route matching using usePathname(), with explicit `active` fallback.
+  // Normalize so "/" is selected by default on first load/hydration edge cases.
+  const path = pathname ?? "";
+  const isHome = active === "home" || path === "/" || path === "";
+  const isProducts = active === "products" || path.startsWith("/products");
+  const isAbout = active === "about" || path.startsWith("/about");
+  const isContact = active === "contact" || path.startsWith("/contact");
 
   useEffect(() => {
     const handleScroll = () => {

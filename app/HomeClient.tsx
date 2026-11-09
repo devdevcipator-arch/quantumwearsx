@@ -43,7 +43,7 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
       <RevealObserver />
 
       {/* Top Fixed Navigation */}
-      <Navbar onOpenQuote={() => handleOpenQuote("General Inquiry")} />
+      <Navbar active="home" onOpenQuote={() => handleOpenQuote("General Inquiry")} />
 
       {/* Hero Section */}
       <Hero onOpenQuote={() => handleOpenQuote("Full Collection")} />
