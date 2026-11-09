@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import FloatingWhatsApp from "./components/FloatingWhatsApp";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://quantumwearx.com";
 
@@ -195,7 +196,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <FloatingWhatsApp />
+      </body>
     </html>
   );
 }

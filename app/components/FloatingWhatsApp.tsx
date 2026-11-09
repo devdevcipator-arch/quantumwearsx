@@ -1,11 +1,20 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+
 const WHATSAPP_NUMBER = "923143351255";
 const WHATSAPP_MESSAGE = encodeURIComponent(
   "Hi QuantumWear X, I would like to discuss a custom manufacturing inquiry."
 );
 
 export default function FloatingWhatsApp() {
+  const pathname = usePathname();
+
+  // Hide on admin portal
+  if (pathname && pathname.startsWith("/admin")) {
+    return null;
+  }
+
   return (
     <a
       href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`}
@@ -13,7 +22,7 @@ export default function FloatingWhatsApp() {
       rel="noopener noreferrer"
       className="floating-wa-toggle"
       aria-label="Chat on WhatsApp"
-      title="Chat on WhatsApp"
+      title="Chat on WhatsApp (+92 314 3351255)"
     >
       <svg
         className="floating-wa-icon-whatsapp"
