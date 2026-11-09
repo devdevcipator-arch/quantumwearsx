@@ -583,15 +583,17 @@ export default function ProductCatalogView({
                         </span>
                       )}
                     </div>
-                    <div className="product-card-body">
-                      <h3 className="product-card-title">{product.name}</h3>
-                      <Link
-                        href={getProductUrl({ name: product.name, title: product.name })}
-                        className="product-quote-btn"
-                        style={{ display: "block", textAlign: "center", textDecoration: "none" }}
-                      >
-                        DETAIL
-                      </Link>
+                    <div className="product-card-body flex flex-col flex-1 justify-between p-2 sm:p-3.5 min-w-0">
+                      <h3 className="product-card-title text-[11.5px] sm:text-sm font-bold text-white line-clamp-2 leading-snug">{product.name}</h3>
+                      <div className="mt-auto pt-2 w-full">
+                        <Link
+                          href={getProductUrl({ name: product.name, title: product.name })}
+                          className="product-quote-btn w-full h-9 sm:h-10 py-2 sm:py-2.5 px-3 rounded-md bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all duration-150 text-[11px] sm:text-xs font-bold uppercase tracking-widest flex items-center justify-center relative before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-[''] shadow-sm"
+                          style={{ textDecoration: "none" }}
+                        >
+                          DETAIL
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 ))}

@@ -109,7 +109,7 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
           {onOpenQuote ? (
             <button
               type="button"
-              className="nav-quote-btn"
+              className="nav-quote-btn hidden md:inline-flex"
               onClick={handleQuoteClick}
               id="nav-request-quote-btn"
             >
@@ -133,7 +133,7 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
           ) : (
             <Link
               href="/contact"
-              className="nav-quote-btn"
+              className="nav-quote-btn hidden md:inline-flex"
               id="nav-request-quote-btn"
             >
               <span>REQUEST A QUOTE</span>
@@ -157,7 +157,7 @@ export default function Navbar({ onOpenQuote, active }: NavbarProps) {
 
           <button
             type="button"
-            className="mobile-menu-btn min-w-[44px] min-h-[44px] flex items-center justify-center text-xl text-white"
+            className="mobile-menu-btn min-w-[44px] min-h-[44px] flex md:hidden items-center justify-center text-xl text-white"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >

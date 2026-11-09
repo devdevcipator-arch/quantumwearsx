@@ -2208,9 +2208,10 @@ input[type="search"]::-webkit-search-results-decoration {
 .product-quote-btn {
   width: 100%;
   margin-top: auto;
-  padding: 13px 16px;
+  min-height: 40px;
+  padding: 8px 16px;
   background: #ffffff;
-  color: #0b0b0f;
+  color: #0b0b0f !important;
   font-family: inherit;
   font-size: 11px;
   font-weight: 800;
@@ -2220,6 +2221,12 @@ input[type="search"]::-webkit-search-results-decoration {
   outline: none;
   border-radius: 6px;
   cursor: pointer;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center;
+  text-decoration: none !important;
+  box-sizing: border-box;
   transition: transform 0.22s ease, box-shadow 0.22s ease,
     background 0.22s ease, color 0.22s ease;
 }
@@ -2614,7 +2621,19 @@ input[type="search"]::-webkit-search-results-decoration {
     padding: 14px 20px !important;
     font-size: 12px !important;
     letter-spacing: 0.08em !important;
-    border-radius: 8px !important;
+    border-radius: 9999px !important;
+  }
+  .hero-buttons .btn-primary-red {
+    background: #8b0000 !important;
+    box-shadow: 0 8px 24px rgba(139, 0, 0, 0.4) !important;
+  }
+  .hero-buttons .btn-primary-red:hover {
+    background: #a30000 !important;
+  }
+  .hero-buttons .btn-secondary-outline {
+    background: rgba(23, 23, 23, 0.85) !important;
+    border: 1px solid rgba(38, 38, 38, 0.9) !important;
+    backdrop-filter: blur(8px) !important;
   }
   .triptych-section {
     padding: 0 0 40px;

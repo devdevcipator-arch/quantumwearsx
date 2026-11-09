@@ -518,13 +518,15 @@ export default function ProductsPage({
                           {prod.description && (
                             <p className="search-product-desc">{prod.description}</p>
                           )}
-                          <Link
-                            href={getProductUrl(prod)}
-                            className="product-quote-btn"
-                            style={{ display: "block", textAlign: "center", textDecoration: "none" }}
-                          >
-                            DETAIL
-                          </Link>
+                          <div className="mt-auto pt-2 w-full">
+                            <Link
+                              href={getProductUrl(prod)}
+                              className="product-quote-btn w-full h-9 sm:h-10 py-2 sm:py-2.5 px-3 rounded-md bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all duration-150 text-[11px] sm:text-xs font-bold uppercase tracking-widest flex items-center justify-center relative before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-[''] shadow-sm"
+                              style={{ textDecoration: "none" }}
+                            >
+                              DETAIL
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -589,23 +591,23 @@ export default function ProductsPage({
                   {filteredCollections.length === 0 && (
                     <li className="catalog-empty">No categories found</li>
                   )}
-                  {filteredCollections.map((category) => (
-                    <li key={category}>
-                      <button
-                        type="button"
-                        className="catalog-link-item"
-                        onClick={() => {
-                          const slug =
-                            catalogListSlugs[category] ||
-                            category.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-                          if (slug) router.push(`/products/${slug}`);
-                        }}
-                      >
-                        <span>{category}</span>
-                        <span className="catalog-item-arrow">↗</span>
-                      </button>
-                    </li>
-                  ))}
+                  {filteredCollections.map((category) => {
+                    const slug =
+                      catalogListSlugs[category] ||
+                      category.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+                    return (
+                      <li key={category}>
+                        <Link
+                          href={`/products/${slug}`}
+                          className="catalog-link-item"
+                          prefetch={true}
+                        >
+                          <span>{category}</span>
+                          <span className="catalog-item-arrow">↗</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
                 </ul>
               </motion.div>
 
@@ -628,18 +630,14 @@ export default function ProductsPage({
                   )}
                   {filteredEssentials.map((item) => (
                     <li key={item}>
-                      <button
-                        type="button"
+                      <Link
+                        href={`/products/activewear?item=${encodeURIComponent(item)}`}
                         className="catalog-link-item"
-                        onClick={() =>
-                          router.push(
-                            `/products/activewear?item=${encodeURIComponent(item)}`
-                          )
-                        }
+                        prefetch={true}
                       >
                         <span>{item}</span>
                         <span className="catalog-item-arrow">↗</span>
-                      </button>
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -726,13 +724,15 @@ export default function ProductsPage({
                       {card.description}
                     </p>
                   )}
-                  <Link
-                    href={getProductUrl(card)}
-                    className="product-quote-btn"
-                    style={{ display: "block", textAlign: "center", textDecoration: "none" }}
-                  >
-                    DETAIL
-                  </Link>
+                  <div className="mt-auto pt-2 w-full">
+                    <Link
+                      href={getProductUrl(card)}
+                      className="product-quote-btn w-full h-9 sm:h-10 py-2 sm:py-2.5 px-3 rounded-md bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all duration-150 text-[11px] sm:text-xs font-bold uppercase tracking-widest flex items-center justify-center relative before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-[''] shadow-sm"
+                      style={{ textDecoration: "none" }}
+                    >
+                      DETAIL
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}
