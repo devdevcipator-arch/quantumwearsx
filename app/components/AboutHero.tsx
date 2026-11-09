@@ -21,16 +21,7 @@ export default function AboutHero() {
           transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
         >
           <span className="about-hero-script">Precision in Every Stitch</span>
-          <p
-            style={{
-              color: "var(--accent-red)",
-              fontSize: "13px",
-              fontWeight: 800,
-              letterSpacing: "2.5px",
-              textTransform: "uppercase",
-              marginBottom: "16px",
-            }}
-          >
+          <p className="about-hero-eyebrow">
             Established in 2020 · Sialkot, Pakistan
           </p>
           <h1 className="about-hero-title">
