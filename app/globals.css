@@ -774,6 +774,11 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
   flex-wrap: wrap;
   gap: 16px;
   align-items: center;
+  /* Gap between subtitle and CTA buttons (owned here, not by Tailwind
+     margins, because the unlayered * { margin: 0 } reset overrides
+     layered utilities) */
+  margin-top: 36px;
+  margin-bottom: 0;
 }
 
 .hero-buttons .btn-primary-red,
@@ -2672,7 +2677,7 @@ input[type="search"]::-webkit-search-results-decoration {
     width: 100% !important;
     max-width: 100% !important;
     gap: 8px !important;
-    margin-top: 72px !important;
+    margin-top: 44px !important;
     margin-bottom: 24px !important;
     padding-top: 0 !important;
     align-items: center !important;
@@ -3022,7 +3027,7 @@ input[type="search"]::-webkit-search-results-decoration {
     width: 100% !important;
     max-width: 100% !important;
     gap: 8px !important;
-    margin-top: 64px !important;
+    margin-top: 40px !important;
     margin-bottom: 24px !important;
     padding-top: 0 !important;
     align-items: center !important;
@@ -3810,6 +3815,14 @@ input[type="search"]::-webkit-search-results-decoration {
   .about-cert-thumb-wrap {
     aspect-ratio: 1600 / 1131;
     border-radius: 8px;
+  }
+}
+
+/* Single-column cert grid through the tight 481–560px range */
+@media (max-width: 560px) {
+  .about-cert-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
 }
 

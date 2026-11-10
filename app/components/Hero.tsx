@@ -73,7 +73,7 @@ export default function Hero({ onOpenQuote }: HeroProps) {
             </motion.h1>
 
             <motion.p
-              className="hero-script text-sm sm:text-lg text-zinc-300 font-normal leading-relaxed mt-4 sm:mt-6 max-w-lg"
+              className="hero-script text-sm sm:text-lg text-zinc-300 font-normal leading-relaxed max-w-lg"
               variants={item}
             >
               Your trusted partner for custom apparel, leather goods, and bags.
@@ -81,7 +81,7 @@ export default function Hero({ onOpenQuote }: HeroProps) {
           </div>
 
           <motion.div
-            className="hero-buttons grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-4 w-full sm:w-auto mt-16 sm:mt-24 mb-6 sm:mb-0 items-center"
+            className="hero-buttons grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-4 w-full sm:w-auto items-center"
             variants={item}
           >
             <button
