@@ -2785,7 +2785,7 @@ input[type="search"]::-webkit-search-results-decoration {
   /* Strict 2-column mobile grid for product cards */
   .products-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px;
+    gap: 24px;
     width: 100%;
   }
   .product-card {
@@ -2822,15 +2822,15 @@ input[type="search"]::-webkit-search-results-decoration {
   }
   .product-quote-btn {
     width: auto;
-    min-width: 84px;
+    min-width: 104px;
     max-width: 100%;
     align-self: center;
     margin-left: auto;
     margin-right: auto;
-    height: 30px;
-    min-height: 30px;
-    padding: 0 14px;
-    font-size: 10px;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 18px;
+    font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.1em;
     border-radius: 999px;
@@ -2918,12 +2918,12 @@ input[type="search"]::-webkit-search-results-decoration {
   /* Strict 2-column mobile grid down to 320px */
   .products-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px;
+    gap: 24px;
     width: 100%;
   }
   .catalog-view-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px;
+    gap: 24px;
     width: 100%;
   }
   .product-card-media {
@@ -2945,15 +2945,15 @@ input[type="search"]::-webkit-search-results-decoration {
   }
   .product-quote-btn {
     width: auto;
-    min-width: 78px;
+    min-width: 96px;
     max-width: 100%;
     align-self: center;
     margin-left: auto;
     margin-right: auto;
-    height: 30px;
-    min-height: 30px;
-    padding: 0 12px;
-    font-size: 10px;
+    height: 34px;
+    min-height: 34px;
+    padding: 0 16px;
+    font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.1em;
     border-radius: 999px;

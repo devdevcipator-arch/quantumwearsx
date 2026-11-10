@@ -145,7 +145,7 @@ export default function FeaturedProducts({
                 <div className="mt-auto pt-1.5 sm:pt-2 w-full">
                   <Link
                     href={getProductUrl(item)}
-                    className="product-quote-btn w-auto sm:w-full mx-auto sm:mx-0 h-[30px] sm:h-10 py-0 sm:py-2.5 px-4 sm:px-3 rounded-full sm:rounded-md bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all duration-150 text-[10px] sm:text-xs font-bold uppercase tracking-[0.1em] sm:tracking-widest flex items-center justify-center relative before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-[''] shadow-sm"
+                    className="product-quote-btn w-auto sm:w-full mx-auto sm:mx-0 h-9 sm:h-10 py-0 sm:py-2.5 px-5 sm:px-3 rounded-full sm:rounded-md bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all duration-150 text-[11px] sm:text-xs font-bold uppercase tracking-[0.1em] sm:tracking-widest flex items-center justify-center relative before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-[''] shadow-sm"
                     style={{ textDecoration: "none" }}
                   >
                     DETAIL
