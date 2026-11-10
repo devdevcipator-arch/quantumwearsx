@@ -119,7 +119,7 @@ export default function FeaturedProducts({
               data-reveal="reveal-up"
               style={{ "--reveal-delay": `${(index % 3) * 110}ms` } as CSSProperties}
             >
-              <div className="product-card-media aspect-square sm:aspect-[5/4] w-full relative overflow-hidden">
+              <div className="product-card-media aspect-[4/3] w-full relative overflow-hidden">
                 <img
                   src={item.image}
                   alt={`${item.title} - QuantumWear X custom manufactured product`}
