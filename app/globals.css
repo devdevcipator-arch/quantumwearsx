@@ -2826,6 +2826,7 @@ input[type="search"]::-webkit-search-results-decoration {
   /* Strict 2-column mobile grid for product cards */
   .products-grid {
     grid-template-columns: repeat(2, 1fr) !important;
+    grid-auto-rows: 1fr !important;
     gap: 24px;
     width: 100%;
   }
@@ -2849,6 +2850,7 @@ input[type="search"]::-webkit-search-results-decoration {
     max-height: none !important;
     object-fit: cover !important;
     object-position: center;
+    display: block;
   }
   .product-tag {
     top: 6px;
@@ -2924,7 +2926,8 @@ input[type="search"]::-webkit-search-results-decoration {
   /* Strict 2-column mobile grid for catalog listing view */
   .catalog-view-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px;
+    grid-auto-rows: 1fr !important;
+    gap: 24px;
     width: 100%;
   }
 }
@@ -2996,11 +2999,13 @@ input[type="search"]::-webkit-search-results-decoration {
   /* Strict 2-column mobile grid down to 320px */
   .products-grid {
     grid-template-columns: repeat(2, 1fr) !important;
+    grid-auto-rows: 1fr !important;
     gap: 24px;
     width: 100%;
   }
   .catalog-view-grid {
     grid-template-columns: repeat(2, 1fr) !important;
+    grid-auto-rows: 1fr !important;
     gap: 24px;
     width: 100%;
   }
