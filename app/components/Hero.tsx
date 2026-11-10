@@ -55,39 +55,45 @@ export default function Hero({ onOpenQuote }: HeroProps) {
         <div className="hero-overlay" />
       </motion.div>
 
-      <div className="hero-container px-4 sm:px-8">
+      <div className="hero-container px-6 sm:px-12">
         <motion.div
-          className="hero-content w-full"
+          className="hero-content w-full max-w-2xl"
           variants={container}
           initial={false}
           animate="show"
         >
-          <motion.h1 className="hero-title" variants={item}>
+          <motion.h1
+            className="hero-title text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[1.15]"
+            variants={item}
+          >
             YOUR VISION.
             <span className="text-red">OUR MANUFACTURING</span>
             EXPERTISE.
           </motion.h1>
 
-          <motion.p className="hero-script" variants={item}>
+          <motion.p
+            className="hero-script text-sm sm:text-lg text-zinc-300 font-normal leading-relaxed mt-4 sm:mt-6 max-w-lg"
+            variants={item}
+          >
             Your trusted partner for custom apparel, leather goods, and bags.
           </motion.p>
 
           <motion.div
-            className="hero-buttons grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3 w-full max-w-sm sm:max-w-none items-center"
+            className="hero-buttons flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 w-full sm:w-auto mt-7 sm:mt-9"
             variants={item}
           >
             <button
               type="button"
-              className="btn-primary-red w-full sm:w-auto h-10 sm:h-12 py-2 sm:py-3.5 px-2.5 sm:px-6 rounded-full sm:rounded-lg bg-[#8B0000] hover:bg-[#A30000] text-white shadow-md shadow-red-950/40 text-[10.5px] sm:text-xs md:text-sm font-bold uppercase tracking-wider inline-flex items-center justify-center gap-1.5 sm:gap-2 transition-all active:scale-[0.98] whitespace-nowrap min-w-0"
+              className="btn-primary-red w-full sm:w-auto py-3.5 px-6 rounded-full bg-[#D10014] hover:bg-[#E80017] text-white shadow-lg shadow-red-950/40 font-semibold text-sm tracking-wide inline-flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
               onClick={onOpenQuote}
               id="hero-request-quote-btn"
             >
-              <span className="truncate">REQUEST A QUOTE</span>
+              <span>REQUEST A QUOTE</span>
               <svg
                 className="cta-btn-arrow shrink-0"
                 viewBox="0 0 24 24"
-                width="12"
-                height="12"
+                width="14"
+                height="14"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2.6"
@@ -101,15 +107,15 @@ export default function Hero({ onOpenQuote }: HeroProps) {
             </button>
             <Link
               href="/products"
-              className="btn-secondary-outline w-full sm:w-auto h-10 sm:h-12 py-2 sm:py-3.5 px-2.5 sm:px-6 rounded-full sm:rounded-lg bg-neutral-900/80 hover:bg-neutral-800 text-white border border-neutral-800 hover:border-neutral-700 backdrop-blur-sm text-[10.5px] sm:text-xs md:text-sm font-bold uppercase tracking-wider inline-flex items-center justify-center gap-1.5 sm:gap-2 transition-all active:scale-[0.98] whitespace-nowrap min-w-0"
+              className="btn-secondary-outline w-full sm:w-auto py-3.5 px-6 rounded-full bg-black/50 hover:bg-black/70 text-white border border-white/20 hover:border-white/40 backdrop-blur-sm font-semibold text-sm tracking-wide inline-flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
               id="hero-explore-products-btn"
             >
-              <span className="truncate">EXPLORE PRODUCTS</span>
+              <span>EXPLORE PRODUCTS</span>
               <svg
                 className="cta-btn-arrow shrink-0"
                 viewBox="0 0 24 24"
-                width="12"
-                height="12"
+                width="14"
+                height="14"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2.6"

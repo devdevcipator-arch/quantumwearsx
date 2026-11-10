@@ -666,11 +666,14 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
 .hero-section {
   position: relative;
   min-height: 100vh;
+  min-height: 100svh;
   min-height: 100dvh;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
   padding-top: 100px;
-  padding-bottom: 60px;
+  padding-bottom: 112px;
   background: #000;
   overflow: hidden;
 }
@@ -710,21 +713,35 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
   max-width: 1360px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 48px;
 }
 
 .hero-content {
-  max-width: 680px;
+  max-width: 672px;
+  width: 100%;
 }
 
 .hero-title {
-  font-size: clamp(38px, 5.5vw, 68px);
+  font-size: 30px;
   font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
   text-transform: uppercase;
   color: var(--text-white);
-  margin-bottom: 20px;
+  margin-bottom: 0;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 640px) {
+  .hero-title {
+    font-size: 48px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-title {
+    font-size: 60px;
+  }
 }
 
 .hero-title .text-red {
@@ -734,13 +751,22 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
 }
 
 .hero-script {
-  font-family: var(--font-gothic);
-  font-size: clamp(20px, 2.5vw, 30px);
-  color: #bf1520;
-  line-height: 1.35;
-  margin-bottom: 34px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-  letter-spacing: 0.5px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  color: #d4d4d8;
+  line-height: 1.625;
+  letter-spacing: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  max-width: 512px;
+  margin: 16px 0 0;
+}
+
+@media (min-width: 640px) {
+  .hero-script {
+    font-size: 18px;
+    margin-top: 24px;
+  }
 }
 
 .hero-buttons {
@@ -2587,7 +2613,7 @@ input[type="search"]::-webkit-search-results-decoration {
   }
   .hero-section {
     padding-top: calc(84px + env(safe-area-inset-top, 0px));
-    padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
     min-height: 100vh;
     min-height: 100svh;
     min-height: 100dvh;
@@ -2596,53 +2622,62 @@ input[type="search"]::-webkit-search-results-decoration {
     justify-content: center;
   }
   .hero-container {
-    padding: 0 16px;
+    padding: 0 24px;
     width: 100%;
   }
   .hero-title {
-    font-size: clamp(26px, 7vw, 42px);
-    line-height: 1.08;
-    margin-bottom: 14px;
+    font-size: 30px;
+    line-height: 1.15;
+    margin-bottom: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
   .hero-script {
-    font-size: clamp(15px, 4.2vw, 20px);
-    margin-bottom: 22px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: #d4d4d8;
+    margin: 16px 0 0;
+    line-height: 1.625;
   }
   .hero-buttons {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
-    max-width: 380px !important;
-    gap: 8px !important;
+    max-width: none !important;
+    gap: 14px !important;
+    align-items: stretch !important;
   }
   .hero-buttons .btn-primary-red,
   .hero-buttons .btn-secondary-outline {
     width: 100% !important;
-    height: 42px !important;
-    min-height: 42px !important;
+    height: auto !important;
+    min-height: 48px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     text-align: center !important;
-    padding: 0 8px !important;
-    font-size: clamp(10.5px, 2.6vw, 11.5px) !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.04em !important;
+    padding: 14px 24px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.025em !important;
     border-radius: 9999px !important;
     white-space: nowrap !important;
     box-sizing: border-box !important;
   }
   .hero-buttons .btn-primary-red {
-    background: #8b0000 !important;
-    box-shadow: 0 4px 16px rgba(139, 0, 0, 0.35) !important;
+    background: #d10014 !important;
+    box-shadow: 0 4px 16px rgba(209, 0, 20, 0.35) !important;
   }
   .hero-buttons .btn-primary-red:hover {
-    background: #a30000 !important;
+    background: #e80017 !important;
   }
   .hero-buttons .btn-secondary-outline {
-    background: rgba(23, 23, 23, 0.85) !important;
-    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     backdrop-filter: blur(8px) !important;
+  }
+  .hero-buttons .btn-secondary-outline:hover {
+    border-color: rgba(255, 255, 255, 0.4) !important;
   }
   .triptych-section {
     padding: 0 0 40px;
@@ -2897,38 +2932,39 @@ input[type="search"]::-webkit-search-results-decoration {
 @media (max-width: 480px) {
   .hero-section {
     padding-top: calc(76px + env(safe-area-inset-top, 0px));
-    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
     min-height: 100vh;
     min-height: 100svh;
     min-height: 100dvh;
   }
   .hero-container {
-    padding: 0 14px;
+    padding: 0 24px;
     width: 100%;
   }
   .hero-title {
-    font-size: clamp(25px, 7.2vw, 36px);
-    line-height: 1.08;
-    margin-bottom: 12px;
+    font-size: 30px;
+    line-height: 1.15;
+    margin-bottom: 0;
     overflow-wrap: break-word;
     word-break: break-word;
   }
   .hero-script {
-    font-size: clamp(14px, 4.2vw, 19px);
-    margin-bottom: 20px;
-    line-height: 1.35;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: #d4d4d8;
+    margin: 16px 0 0;
+    line-height: 1.625;
   }
   .hero-buttons {
-    gap: 8px !important;
+    gap: 14px !important;
     max-width: 100% !important;
   }
   .hero-buttons .btn-primary-red,
   .hero-buttons .btn-secondary-outline {
-    height: 40px !important;
-    min-height: 40px !important;
-    padding: 0 6px !important;
-    font-size: 11px !important;
-    letter-spacing: 0.03em !important;
+    min-height: 48px !important;
+    padding: 14px 20px !important;
+    font-size: 14px !important;
+    letter-spacing: 0.025em !important;
   }
   .triptych-grid {
     height: 220px;
