@@ -73,21 +73,21 @@ export default function Hero({ onOpenQuote }: HeroProps) {
           </motion.p>
 
           <motion.div
-            className="hero-buttons flex flex-col w-full sm:flex-row sm:w-auto gap-3 items-stretch sm:items-center max-w-sm sm:max-w-none"
+            className="hero-buttons grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3 w-full max-w-sm sm:max-w-none items-center"
             variants={item}
           >
             <button
               type="button"
-              className="btn-primary-red w-full sm:w-auto h-12 py-3.5 px-6 rounded-full sm:rounded-lg bg-[#8B0000] hover:bg-[#A30000] text-white shadow-lg shadow-red-950/40 text-xs sm:text-sm font-bold uppercase tracking-wider inline-flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+              className="btn-primary-red w-full sm:w-auto h-10 sm:h-12 py-2 sm:py-3.5 px-2.5 sm:px-6 rounded-full sm:rounded-lg bg-[#8B0000] hover:bg-[#A30000] text-white shadow-md shadow-red-950/40 text-[10.5px] sm:text-xs md:text-sm font-bold uppercase tracking-wider inline-flex items-center justify-center gap-1.5 sm:gap-2 transition-all active:scale-[0.98] whitespace-nowrap min-w-0"
               onClick={onOpenQuote}
               id="hero-request-quote-btn"
             >
-              <span>REQUEST A QUOTE</span>
+              <span className="truncate">REQUEST A QUOTE</span>
               <svg
                 className="cta-btn-arrow shrink-0"
                 viewBox="0 0 24 24"
-                width="14"
-                height="14"
+                width="12"
+                height="12"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2.6"
@@ -101,15 +101,15 @@ export default function Hero({ onOpenQuote }: HeroProps) {
             </button>
             <Link
               href="/products"
-              className="btn-secondary-outline w-full sm:w-auto h-12 py-3.5 px-6 rounded-full sm:rounded-lg bg-neutral-900/80 hover:bg-neutral-800 text-white border border-neutral-800 hover:border-neutral-700 backdrop-blur-sm text-xs sm:text-sm font-bold uppercase tracking-wider inline-flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+              className="btn-secondary-outline w-full sm:w-auto h-10 sm:h-12 py-2 sm:py-3.5 px-2.5 sm:px-6 rounded-full sm:rounded-lg bg-neutral-900/80 hover:bg-neutral-800 text-white border border-neutral-800 hover:border-neutral-700 backdrop-blur-sm text-[10.5px] sm:text-xs md:text-sm font-bold uppercase tracking-wider inline-flex items-center justify-center gap-1.5 sm:gap-2 transition-all active:scale-[0.98] whitespace-nowrap min-w-0"
               id="hero-explore-products-btn"
             >
-              <span>EXPLORE PRODUCTS</span>
+              <span className="truncate">EXPLORE PRODUCTS</span>
               <svg
                 className="cta-btn-arrow shrink-0"
                 viewBox="0 0 24 24"
-                width="14"
-                height="14"
+                width="12"
+                height="12"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2.6"
