@@ -131,17 +131,15 @@ export default function FeaturedProducts({
               </div>
               <div className="product-card-body p-2 sm:p-3.5 lg:p-5 flex flex-col flex-1 justify-between gap-1.5 sm:gap-2.5 min-w-0">
                 <h3 className="product-card-title text-[11.5px] sm:text-sm lg:text-base font-bold text-white line-clamp-2 leading-snug">{item.title}</h3>
-                {item.description && (
-                  <p
-                    className="product-card-desc text-[10px] sm:text-xs text-[#a6a6b5] line-clamp-2 my-0.5 sm:my-1 leading-snug"
-                    style={{
-                      overflowWrap: "break-word",
-                      wordBreak: "break-word",
-                    }}
-                  >
-                    {item.description}
-                  </p>
-                )}
+                <p
+                  className="product-card-desc text-[10px] sm:text-xs text-[#a6a6b5] line-clamp-2 my-0.5 sm:my-1 leading-snug"
+                  style={{
+                    overflowWrap: "break-word",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {item.description || ""}
+                </p>
                 <div className="mt-auto pt-1.5 sm:pt-2 w-full">
                   <Link
                     href={getProductUrl(item)}
