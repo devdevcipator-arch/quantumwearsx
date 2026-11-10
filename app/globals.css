@@ -2641,14 +2641,16 @@ input[type="search"]::-webkit-search-results-decoration {
     display: flex;
     flex-direction: column;
     flex: 1;
-    justify-content: space-between;
+    justify-content: center;
+    margin-top: auto;
+    margin-bottom: auto;
     width: 100%;
   }
   .hero-text-block {
     display: flex;
     flex-direction: column;
-    margin-top: auto;
-    margin-bottom: auto;
+    margin-top: 0;
+    margin-bottom: 0;
   }
   .hero-title {
     font-size: clamp(28px, 7.2vw, 42px);
@@ -2661,7 +2663,7 @@ input[type="search"]::-webkit-search-results-decoration {
     font-family: var(--font-sans);
     font-size: clamp(14px, 3.8vw, 16px);
     color: #d4d4d8;
-    margin: 20px 0 0;
+    margin: 18px 0 0;
     line-height: 1.55;
   }
   .hero-buttons {
@@ -2670,9 +2672,9 @@ input[type="search"]::-webkit-search-results-decoration {
     width: 100% !important;
     max-width: 100% !important;
     gap: 8px !important;
-    margin-top: auto !important;
+    margin-top: 72px !important;
     margin-bottom: 24px !important;
-    padding-top: 24px !important;
+    padding-top: 0 !important;
     align-items: center !important;
   }
   .hero-buttons .btn-primary-red,
@@ -2989,14 +2991,16 @@ input[type="search"]::-webkit-search-results-decoration {
     display: flex;
     flex-direction: column;
     flex: 1;
-    justify-content: space-between;
+    justify-content: center;
+    margin-top: auto;
+    margin-bottom: auto;
     width: 100%;
   }
   .hero-text-block {
     display: flex;
     flex-direction: column;
-    margin-top: auto;
-    margin-bottom: auto;
+    margin-top: 0;
+    margin-bottom: 0;
   }
   .hero-title {
     font-size: clamp(26px, 7.2vw, 34px);
@@ -3009,7 +3013,7 @@ input[type="search"]::-webkit-search-results-decoration {
     font-family: var(--font-sans);
     font-size: clamp(13px, 3.7vw, 15px);
     color: #d4d4d8;
-    margin: 18px 0 0;
+    margin: 16px 0 0;
     line-height: 1.5;
   }
   .hero-buttons {
@@ -3018,9 +3022,9 @@ input[type="search"]::-webkit-search-results-decoration {
     width: 100% !important;
     max-width: 100% !important;
     gap: 8px !important;
-    margin-top: auto !important;
+    margin-top: 64px !important;
     margin-bottom: 24px !important;
-    padding-top: 20px !important;
+    padding-top: 0 !important;
     align-items: center !important;
   }
   .hero-buttons .btn-primary-red,
@@ -3816,6 +3820,7 @@ input[type="search"]::-webkit-search-results-decoration {
   }
   .about-cert-lightbox-container {
     max-height: 90vh;
+    max-height: 90dvh;
     border-radius: 16px;
   }
   .about-cert-lightbox-header {
@@ -3860,6 +3865,7 @@ input[type="search"]::-webkit-search-results-decoration {
   }
   .about-cert-lightbox-container {
     max-height: 95vh;
+    max-height: 95dvh;
     border-radius: 12px;
   }
   .about-cert-lightbox-header {
@@ -4578,6 +4584,7 @@ input[type="search"]::-webkit-search-results-decoration {
   flex-direction: column;
   overflow-y: auto;
   max-height: calc(94vh - 70px);
+  max-height: calc(94dvh - 70px);
 }
 
 .about-cert-lightbox-img-area {

@@ -55,14 +55,14 @@ export default function Hero({ onOpenQuote }: HeroProps) {
         <div className="hero-overlay" />
       </motion.div>
 
-      <div className="hero-container px-4 sm:px-12 flex flex-col justify-between sm:justify-center flex-1 sm:flex-none">
+      <div className="hero-container px-4 sm:px-12 flex flex-col justify-center flex-1">
         <motion.div
-          className="hero-content w-full max-w-2xl flex flex-col flex-1 sm:flex-none justify-between sm:justify-center"
+          className="hero-content w-full max-w-2xl flex flex-col justify-center my-auto"
           variants={container}
           initial={false}
           animate="show"
         >
-          <div className="hero-text-block my-auto sm:my-0 py-2 sm:py-0">
+          <div className="hero-text-block">
             <motion.h1
               className="hero-title text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[1.15]"
               variants={item}
@@ -81,7 +81,7 @@ export default function Hero({ onOpenQuote }: HeroProps) {
           </div>
 
           <motion.div
-            className="hero-buttons grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-4 w-full sm:w-auto mt-auto sm:mt-8 mb-6 sm:mb-0 pt-4 sm:pt-0 items-center"
+            className="hero-buttons grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-4 w-full sm:w-auto mt-16 sm:mt-24 mb-6 sm:mb-0 items-center"
             variants={item}
           >
             <button
