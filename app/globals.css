@@ -2954,17 +2954,24 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 /* Always-visible selected option (rendered inside <summary>, so it remains
-   on screen even while the drawer is collapsed) */
+   on screen even while the drawer is collapsed). Design mirrors
+   .catalog-accordion-toggle: flat full-width row, red left-border accent,
+   muted gray text — NOT modified on the shared toggle class itself. */
 .catalog-sidebar-active-row {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  width: fit-content;
-  max-width: 100%;
-  padding: 6px 12px;
-  background: #191922;
-  border: 1px solid var(--border-card);
-  border-radius: 999px;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  border-left: 3px solid var(--accent-red);
+  color: #d7d7de;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+  transition: color 0.2s ease, background 0.25s ease;
 }
 
 .catalog-sidebar-active-dot {
@@ -2976,17 +2983,23 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 .catalog-sidebar-active-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
+  min-width: 0;
+  font-family: inherit;
+  color: inherit;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Accent the selected-option badge while the drawer is open */
+/* While the drawer is open, echo the open accordion row treatment */
 .catalog-sidebar-collapse[open] .catalog-sidebar-active-row {
-  border-color: rgba(209, 0, 20, 0.6);
+  background: linear-gradient(
+    90deg,
+    rgba(209, 0, 20, 0.4) 0%,
+    rgba(140, 0, 13, 0.18) 100%
+  );
+  color: #fff;
+  font-weight: 700;
 }
 
 .catalog-sidebar-summary::-webkit-details-marker {
