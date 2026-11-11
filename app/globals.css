@@ -717,9 +717,26 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
   max-width: 1360px;
   width: 100%;
   margin: 0 auto;
-  /* pb-12 (48px) bottom clearance on sm+ so hero CTAs never sit
-     flush against bottom-right floating action buttons */
-  padding: 0 48px 48px;
+  /* Desktop optical vertical centering — mirrors sm:pt-24 (96px) /
+     sm:pb-16 (64px). Top padding exceeds bottom so the headline, subtext
+     and CTA row sit slightly below geometric center: the true optical
+     middle, clear of the sticky header. Owned here (not by Tailwind
+     padding utilities) because the unlayered * { margin: 0; padding: 0 }
+     reset overrides layered utilities. 64px bottom still clears the
+     desktop floating action buttons. */
+  padding: 96px 48px 64px;
+  /* Mirrors sm:justify-center — centers content vertically on desktop;
+     mobile media queries below override to space-between */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (min-width: 1024px) {
+  .hero-container {
+    /* lg:pt-28 (112px) on large screens */
+    padding-top: 112px;
+  }
 }
 
 .hero-content {
