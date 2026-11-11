@@ -64,7 +64,7 @@ export default function Hero({ onOpenQuote }: HeroProps) {
         >
           <div className="hero-text-block mb-6 sm:mb-8">
             <motion.h1
-              className="hero-title text-[30px] xs:text-[32px] sm:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[1.15]"
+              className="hero-title text-2xl xs:text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[1.15]"
               variants={item}
             >
               <span className="block text-white">YOUR VISION.</span>
