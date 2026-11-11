@@ -362,6 +362,81 @@ export default function ProductCatalogView({
     });
   }, [itemFilter, isAllFilter, category.products, liveDbProducts, searchQuery]);
 
+  // Shared categories accordion — rendered twice: inside the mobile
+  // <details> drawer and inside the permanent desktop sidebar.
+  const sidebarAccordion = (
+    <ul className="catalog-accordion">
+      {sidebarCategories.map((cat) => {
+        const isCurrent = cat.slug === currentCategorySlug;
+        const isOpen = expanded === cat.slug;
+        const subs = getCategorySubItems(cat.name, cat.subItems);
+        return (
+          <li
+            key={cat.slug}
+            className={`catalog-accordion-item ${isOpen ? "open" : ""} ${
+              isCurrent ? "active-route" : ""
+            }`}
+          >
+            {isCurrent ? (
+              <button
+                type="button"
+                className="catalog-accordion-toggle"
+                aria-expanded={isOpen}
+                onClick={() => setExpanded(isOpen ? "" : cat.slug)}
+              >
+                <span className="font-bold text-white">{cat.name}</span>
+                <span className="catalog-accordion-chevron" aria-hidden="true">
+                  {isOpen ? "⌄" : "›"}
+                </span>
+              </button>
+            ) : (
+              <Link
+                href={`/products/${cat.slug}`}
+                className="catalog-accordion-toggle"
+                aria-expanded={isOpen}
+                onClick={() => setExpanded(cat.slug)}
+              >
+                <span>{cat.name}</span>
+                <span className="catalog-accordion-chevron" aria-hidden="true">
+                  {isOpen ? "⌄" : "›"}
+                </span>
+              </Link>
+            )}
+
+            {isOpen && (
+              <ul className="catalog-sublist">
+                {subs.map((sub) => (
+                  <li key={sub}>
+                    {isCurrent ? (
+                      // Current category: filter stays on this page
+                      <button
+                        type="button"
+                        className={`catalog-subbtn ${
+                          itemFilter === sub ? "active" : ""
+                        }`}
+                        onClick={() => setItemFilter(sub)}
+                      >
+                        {sub}
+                      </button>
+                    ) : (
+                      // Other categories: link to their catalog page
+                      <Link
+                        href={`/products/${cat.slug}?item=${encodeURIComponent(sub)}`}
+                        className="catalog-subbtn"
+                      >
+                        {sub}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+
   return (
     <main className="landing-page-root" id="top">
       <SmoothScroll />
@@ -444,77 +519,39 @@ export default function ProductCatalogView({
           <div className="catalog-view-layout">
             {/* ---------- Sidebar: Categories accordion ---------- */}
             <aside className="catalog-sidebar" aria-label="Categories">
-              <h2 className="catalog-sidebar-heading">Categories</h2>
-              <ul className="catalog-accordion">
-                {sidebarCategories.map((cat) => {
-                  const isCurrent = cat.slug === currentCategorySlug;
-                  const isOpen = expanded === cat.slug;
-                  const subs = getCategorySubItems(cat.name, cat.subItems);
-                  return (
-                    <li
-                      key={cat.slug}
-                      className={`catalog-accordion-item ${isOpen ? "open" : ""} ${
-                        isCurrent ? "active-route" : ""
-                      }`}
+              {/* Mobile: collapsible Categories drawer — native <details>, zero-JS.
+                  Tapping the row (or the "Menu" badge) expands the category list on
+                  demand so the sidebar never monopolizes the viewport height. */}
+              <details className="catalog-sidebar-collapse sm:hidden">
+                <summary className="catalog-sidebar-summary">
+                  <span className="catalog-sidebar-heading catalog-sidebar-heading--mobile">
+                    Categories
+                  </span>
+                  <span className="catalog-sidebar-menu-badge" aria-hidden="true">
+                    Menu
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="12"
+                      height="12"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.6"
+                      strokeLinecap="round"
                     >
-                      {isCurrent ? (
-                        <button
-                          type="button"
-                          className="catalog-accordion-toggle"
-                          aria-expanded={isOpen}
-                          onClick={() => setExpanded(isOpen ? "" : cat.slug)}
-                        >
-                          <span className="font-bold text-white">{cat.name}</span>
-                          <span className="catalog-accordion-chevron" aria-hidden="true">
-                            {isOpen ? "⌄" : "›"}
-                          </span>
-                        </button>
-                      ) : (
-                        <Link
-                          href={`/products/${cat.slug}`}
-                          className="catalog-accordion-toggle"
-                          aria-expanded={isOpen}
-                          onClick={() => setExpanded(cat.slug)}
-                        >
-                          <span>{cat.name}</span>
-                          <span className="catalog-accordion-chevron" aria-hidden="true">
-                            {isOpen ? "⌄" : "›"}
-                          </span>
-                        </Link>
-                      )}
+                      <line x1="3" y1="6" x2="21" y2="6" />
+                      <line x1="3" y1="12" x2="21" y2="12" />
+                      <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                  </span>
+                </summary>
+                {sidebarAccordion}
+              </details>
 
-                      {isOpen && (
-                        <ul className="catalog-sublist">
-                          {subs.map((sub) => (
-                            <li key={sub}>
-                              {isCurrent ? (
-                                // Current category: filter stays on this page
-                                <button
-                                  type="button"
-                                  className={`catalog-subbtn ${
-                                    itemFilter === sub ? "active" : ""
-                                  }`}
-                                  onClick={() => setItemFilter(sub)}
-                                >
-                                  {sub}
-                                </button>
-                              ) : (
-                                // Other categories: link to their catalog page
-                                <Link
-                                  href={`/products/${cat.slug}?item=${encodeURIComponent(sub)}`}
-                                  className="catalog-subbtn"
-                                >
-                                  {sub}
-                                </Link>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
+              {/* Desktop: permanent categories directory — layout unchanged */}
+              <div className="catalog-sidebar-desktop hidden sm:block">
+                <h2 className="catalog-sidebar-heading">Categories</h2>
+                {sidebarAccordion}
+              </div>
             </aside>
 
             {/* ---------- Main content ---------- */}
@@ -525,7 +562,28 @@ export default function ProductCatalogView({
                   {category.engineeringTitle}
                 </h2>
                 <h3 className="catalog-engineering-sub">{category.introTitle}</h3>
-                <p className="catalog-engineering-text">{category.intro}</p>
+                {/* Mobile: description clamped to 2 lines with a native
+                    zero-JS Read More / Show Less toggle (<details>) */}
+                <details className="catalog-desc-collapse sm:hidden">
+                  <summary className="catalog-desc-summary">
+                    <span className="catalog-engineering-text catalog-desc-preview">
+                      {category.intro}
+                    </span>
+                    <span className="catalog-desc-toggle">
+                      <span className="catalog-desc-label catalog-desc-label--more">
+                        Read More
+                      </span>
+                      <span className="catalog-desc-label catalog-desc-label--less">
+                        Show Less
+                      </span>
+                      <span className="catalog-desc-chevron" aria-hidden="true">⌄</span>
+                    </span>
+                  </summary>
+                </details>
+                {/* Desktop: full unabridged description, no toggle */}
+                <p className="catalog-engineering-text hidden sm:block">
+                  {category.intro}
+                </p>
               </div>
 
               {/* Active filters */}
@@ -547,7 +605,10 @@ export default function ProductCatalogView({
               </div>
 
               {/* Product grid (keyed so filtering re-runs cleanly) */}
-              <div className="catalog-view-grid" key={itemFilter}>
+              <div
+                className="catalog-view-grid grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 lg:gap-5"
+                key={itemFilter}
+              >
                 {filteredProducts.length === 0 && (
                   <p className="catalog-grid-empty">
                     {searchQuery.trim()
@@ -560,7 +621,7 @@ export default function ProductCatalogView({
                     key={product.name}
                     className="product-card catalog-view-card"
                   >
-                    <div className="product-card-media">
+                    <div className="product-card-media aspect-[4/3]">
                       <img
                         src={product.image}
                         alt={product.alt}
