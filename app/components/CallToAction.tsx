@@ -46,7 +46,7 @@ export default function CallToAction({ onOpenQuote }: CallToActionProps) {
         <div className="cta-btn-wrapper flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full max-w-sm sm:max-w-none mx-auto px-2 pt-4 mb-6 sm:mb-8" data-reveal="reveal-up">
           <button
             type="button"
-            className="h-12 sm:h-auto sm:py-3.5 w-full sm:w-auto px-6 rounded-full bg-[#DC2626] hover:bg-[#B91C1C] text-white text-xs sm:text-sm font-bold uppercase tracking-wider inline-flex items-center justify-center gap-2 shadow-lg shadow-red-600/20 active:scale-[0.98] transition-all"
+            className="h-12 sm:h-[50px] w-full sm:w-auto px-6 rounded-full bg-[#DC2626] hover:bg-[#B91C1C] text-white text-xs sm:text-sm font-bold uppercase tracking-wider whitespace-nowrap inline-flex items-center justify-center gap-2 shadow-lg shadow-red-600/20 active:scale-[0.98] transition-all"
             onClick={onOpenQuote}
             id="cta-request-custom-quote-btn"
           >
@@ -72,7 +72,7 @@ export default function CallToAction({ onOpenQuote }: CallToActionProps) {
             href="https://wa.me/923314092799?text=Hi%20QuantumWear%20X%2C%20I%20would%20like%20to%20discuss%20custom%20manufacturing%20and%20production."
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2.5 h-12 sm:h-auto sm:py-3.5 w-full sm:w-auto px-5 rounded-full bg-neutral-950/60 hover:bg-neutral-900 border border-neutral-800/80 hover:border-[#25D366]/40 text-neutral-300 hover:text-white text-xs sm:text-xs font-bold uppercase tracking-wider active:scale-[0.98] transition-all group"
+            className="inline-flex items-center justify-center gap-2.5 h-12 sm:h-[50px] w-full sm:w-auto px-6 rounded-full bg-black/60 hover:bg-neutral-900 border border-white/20 hover:border-[#25D366]/50 text-white backdrop-blur-sm text-xs sm:text-sm font-bold uppercase tracking-wider whitespace-nowrap active:scale-[0.98] transition-all group"
             id="cta-discuss-whatsapp-btn"
           >
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" className="w-4 h-4 text-[#25D366] group-hover:scale-110 transition-transform shrink-0" aria-hidden="true">
