@@ -338,47 +338,58 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
           </div>
 
           {/* ================= 2-COLUMN SECTION IMAGES: COLOR CHART & SIZE CHART ================= */}
-          <div className="product-view-sections-row flex flex-col sm:flex-row gap-4 sm:gap-6" aria-label="Color Chart and Size Chart">
+          <div
+            className="product-view-sections-row flex flex-col sm:flex-row lg:grid lg:grid-cols-2 gap-5 sm:gap-6 lg:gap-[28px] mt-8 sm:mt-10 lg:mt-[48px] w-full"
+            aria-label="Color Chart and Size Chart"
+          >
             {/* Left Column: Color Chart */}
-            <div className="product-view-section-col">
-              <div className="product-view-section-header-bar">
-                <span className="product-view-section-title">COLOR CHART</span>
-                <span className="product-view-section-subtitle">Pantone & Custom Shades</span>
+            <div className="product-view-section-col w-full min-w-0">
+              <div className="product-view-section-header-bar flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 sm:gap-2 mb-2.5 sm:mb-3.5 px-0.5 sm:px-1">
+                <span className="product-view-section-title font-cinzel text-base sm:text-[19px] font-extrabold tracking-wider uppercase text-white leading-tight">
+                  COLOR CHART
+                </span>
+                <span className="product-view-section-subtitle text-[11.5px] sm:text-xs text-[#8a8a9e] font-medium tracking-normal">
+                  Pantone &amp; Custom Shades
+                </span>
               </div>
-              <div className="product-view-section-card">
-                <div className="product-view-section-badge">
+              <div className="product-view-section-card w-full aspect-[4/3] sm:aspect-square lg:aspect-auto lg:h-[420px] lg:min-h-[420px] rounded-xl sm:rounded-2xl lg:rounded-[22px] overflow-hidden relative">
+                <div className="product-view-section-badge top-3 left-3 sm:top-5 sm:left-5 text-[10px] sm:text-[11px] px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded sm:rounded-md">
                   <span>COLOR CHART</span>
                 </div>
-                <div className="product-view-section-media">
+                <div className="product-view-section-media absolute inset-0 w-full h-full overflow-hidden">
                   <img
                     src={product.featureImage1 || "/images/hero_factory_sewing.jpg"}
                     alt={`${product.title} color chart`}
-                    className="product-view-section-img"
+                    className="product-view-section-img w-full h-full object-cover block"
                     loading="lazy"
                   />
-                  <div className="product-view-section-gradient" />
+                  <div className="product-view-section-gradient absolute inset-0 pointer-events-none" />
                 </div>
               </div>
             </div>
 
             {/* Right Column: Size Chart */}
-            <div className="product-view-section-col">
-              <div className="product-view-section-header-bar">
-                <span className="product-view-section-title">SIZE CHART</span>
-                <span className="product-view-section-subtitle">Measurement & Fit Guide</span>
+            <div className="product-view-section-col w-full min-w-0">
+              <div className="product-view-section-header-bar flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 sm:gap-2 mb-2.5 sm:mb-3.5 px-0.5 sm:px-1">
+                <span className="product-view-section-title font-cinzel text-base sm:text-[19px] font-extrabold tracking-wider uppercase text-white leading-tight">
+                  SIZE CHART
+                </span>
+                <span className="product-view-section-subtitle text-[11.5px] sm:text-xs text-[#8a8a9e] font-medium tracking-normal">
+                  Measurement &amp; Fit Guide
+                </span>
               </div>
-              <div className="product-view-section-card">
-                <div className="product-view-section-badge">
+              <div className="product-view-section-card w-full aspect-[4/3] sm:aspect-square lg:aspect-auto lg:h-[420px] lg:min-h-[420px] rounded-xl sm:rounded-2xl lg:rounded-[22px] overflow-hidden relative">
+                <div className="product-view-section-badge top-3 left-3 sm:top-5 sm:left-5 text-[10px] sm:text-[11px] px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded sm:rounded-md">
                   <span>SIZE CHART</span>
                 </div>
-                <div className="product-view-section-media">
+                <div className="product-view-section-media absolute inset-0 w-full h-full overflow-hidden">
                   <img
                     src={product.featureImage2 || "/images/triptych_embroidery.jpg"}
                     alt={`${product.title} size chart`}
-                    className="product-view-section-img"
+                    className="product-view-section-img w-full h-full object-cover block"
                     loading="lazy"
                   />
-                  <div className="product-view-section-gradient" />
+                  <div className="product-view-section-gradient absolute inset-0 pointer-events-none" />
                 </div>
               </div>
             </div>
