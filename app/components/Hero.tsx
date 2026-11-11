@@ -67,9 +67,9 @@ export default function Hero({ onOpenQuote }: HeroProps) {
               className="hero-title text-2xl xs:text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[1.15]"
               variants={item}
             >
-              <span className="block text-white sm:inline">YOUR VISION.</span>
-              <span className="text-red block sm:inline">OUR MANUFACTURING</span>
-              <span className="block text-white sm:inline">EXPERTISE.</span>
+              <span className="block text-white">YOUR VISION.</span>
+              <span className="text-red block">OUR MANUFACTURING</span>
+              <span className="block text-white">EXPERTISE.</span>
             </motion.h1>
 
             <motion.p
@@ -81,7 +81,7 @@ export default function Hero({ onOpenQuote }: HeroProps) {
           </div>
 
           <motion.div
-            className="hero-buttons mt-auto flex flex-col w-full max-w-md sm:max-w-none sm:w-auto gap-3.5 sm:gap-4 items-stretch sm:items-center"
+            className="hero-buttons mt-auto sm:mt-8 flex flex-col sm:flex-row w-full max-w-md sm:max-w-none sm:w-auto gap-3.5 sm:gap-4 items-stretch sm:items-center"
             variants={item}
           >
             <button
