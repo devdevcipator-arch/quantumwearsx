@@ -3,6 +3,10 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
+@theme {
+  --breakpoint-xs: 400px;
+}
+
 :root {
   --bg-black: #000000;
   --bg-deep: #050507;
@@ -713,7 +717,9 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
   max-width: 1360px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 48px;
+  /* pb-8 (32px) bottom clearance on sm+ so hero CTAs never sit
+     flush against bottom-right floating action buttons */
+  padding: 0 48px 32px;
 }
 
 .hero-content {
@@ -746,8 +752,21 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
 
 .hero-title .text-red {
   color: var(--accent-red);
+  /* Distinct visual block on mobile (block sm:inline) */
   display: block;
   text-shadow: 0 0 24px rgba(209, 0, 20, 0.35);
+}
+
+@media (min-width: 640px) {
+  .hero-title .text-red {
+    display: inline;
+  }
+}
+
+.hero-text-block {
+  /* mb-8 (32px) separates copy from CTA buttons on sm+;
+     mobile media queries below override to mb-6 (24px) */
+  margin-bottom: 32px;
 }
 
 .hero-script {
@@ -2635,7 +2654,7 @@ input[type="search"]::-webkit-search-results-decoration {
     justify-content: space-between;
   }
   .hero-container {
-    padding: 0 16px;
+    padding: 0 16px 80px;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -2655,7 +2674,7 @@ input[type="search"]::-webkit-search-results-decoration {
     display: flex;
     flex-direction: column;
     margin-top: 0;
-    margin-bottom: 0;
+    margin-bottom: 24px;
   }
   .hero-title {
     font-size: clamp(28px, 7.2vw, 42px);
@@ -2672,26 +2691,27 @@ input[type="search"]::-webkit-search-results-decoration {
     line-height: 1.55;
   }
   .hero-buttons {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
+    /* Vertical full-width stack on mobile (thumb reach, no truncation) */
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
     max-width: 100% !important;
-    gap: 8px !important;
+    gap: 12px !important;
     margin-top: 44px !important;
     margin-bottom: 24px !important;
     padding-top: 0 !important;
-    align-items: center !important;
+    align-items: stretch !important;
   }
   .hero-buttons .btn-primary-red,
   .hero-buttons .btn-secondary-outline {
     width: 100% !important;
-    height: 42px !important;
-    min-height: 42px !important;
+    height: 48px !important;
+    min-height: 48px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     text-align: center !important;
-    padding: 0 8px !important;
+    padding: 0 16px !important;
     font-size: clamp(10.5px, 2.6vw, 12px) !important;
     font-weight: 700 !important;
     letter-spacing: 0.04em !important;
@@ -2985,7 +3005,7 @@ input[type="search"]::-webkit-search-results-decoration {
     justify-content: space-between;
   }
   .hero-container {
-    padding: 0 16px;
+    padding: 0 16px 80px;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -3005,14 +3025,21 @@ input[type="search"]::-webkit-search-results-decoration {
     display: flex;
     flex-direction: column;
     margin-top: 0;
-    margin-bottom: 0;
+    margin-bottom: 24px;
   }
   .hero-title {
-    font-size: clamp(26px, 7.2vw, 34px);
+    /* text-2xl (24px) at 320px to avoid clumsy line-breaks */
+    font-size: 24px;
     line-height: 1.12;
     margin-bottom: 0;
     overflow-wrap: break-word;
     word-break: break-word;
+  }
+  @media (min-width: 400px) {
+    .hero-title {
+      /* xs:text-3xl on 400px+ screens */
+      font-size: 30px;
+    }
   }
   .hero-script {
     font-family: var(--font-sans);
@@ -3022,27 +3049,27 @@ input[type="search"]::-webkit-search-results-decoration {
     line-height: 1.5;
   }
   .hero-buttons {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
+    /* Vertical full-width stack on mobile (thumb reach, no truncation) */
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
     max-width: 100% !important;
-    gap: 8px !important;
+    gap: 12px !important;
     margin-top: 40px !important;
     margin-bottom: 24px !important;
     padding-top: 0 !important;
-    align-items: center !important;
+    align-items: stretch !important;
   }
   .hero-buttons .btn-primary-red,
   .hero-buttons .btn-secondary-outline {
     width: 100% !important;
-    height: 40px !important;
-    min-height: 40px !important;
-    max-height: 40px !important;
+    height: 48px !important;
+    min-height: 48px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     text-align: center !important;
-    padding: 0 6px !important;
+    padding: 0 16px !important;
     font-size: 11px !important;
     font-weight: 700 !important;
     letter-spacing: 0.03em !important;

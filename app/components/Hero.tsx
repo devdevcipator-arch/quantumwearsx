@@ -55,20 +55,20 @@ export default function Hero({ onOpenQuote }: HeroProps) {
         <div className="hero-overlay" />
       </motion.div>
 
-      <div className="hero-container px-4 sm:px-12 flex flex-col justify-center flex-1">
+      <div className="hero-container px-4 sm:px-12 pb-20 sm:pb-8 flex flex-col justify-center flex-1">
         <motion.div
           className="hero-content w-full max-w-2xl flex flex-col justify-center my-auto"
           variants={container}
           initial={false}
           animate="show"
         >
-          <div className="hero-text-block">
+          <div className="hero-text-block mb-6 sm:mb-8">
             <motion.h1
-              className="hero-title text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[1.15]"
+              className="hero-title text-2xl xs:text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[1.15]"
               variants={item}
             >
               YOUR VISION.
-              <span className="text-red">OUR MANUFACTURING</span>
+              <span className="text-red block sm:inline">OUR MANUFACTURING</span>
               EXPERTISE.
             </motion.h1>
 
@@ -81,16 +81,16 @@ export default function Hero({ onOpenQuote }: HeroProps) {
           </div>
 
           <motion.div
-            className="hero-buttons grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-4 w-full sm:w-auto items-center"
+            className="hero-buttons flex flex-col w-full sm:flex-row sm:w-auto gap-3 sm:gap-4 items-stretch sm:items-center"
             variants={item}
           >
             <button
               type="button"
-              className="btn-primary-red w-full sm:w-auto h-11 sm:h-12 px-3 sm:px-6 rounded-full bg-[#D10014] hover:bg-[#E80017] text-white shadow-lg shadow-red-950/40 font-bold text-[11px] sm:text-xs md:text-sm tracking-wider inline-flex items-center justify-center gap-1.5 sm:gap-2 transition-all active:scale-[0.98] whitespace-nowrap min-w-0"
+              className="btn-primary-red w-full sm:w-auto h-12 sm:h-12 min-h-[48px] px-4 sm:px-6 rounded-full bg-[#D10014] hover:bg-[#E80017] text-white shadow-lg shadow-red-950/40 font-bold text-xs md:text-sm tracking-wider inline-flex items-center justify-center gap-1.5 sm:gap-2 transition-all active:scale-[0.98] whitespace-nowrap"
               onClick={onOpenQuote}
               id="hero-request-quote-btn"
             >
-              <span className="truncate">REQUEST A QUOTE</span>
+              <span>REQUEST A QUOTE</span>
               <svg
                 className="cta-btn-arrow shrink-0"
                 viewBox="0 0 24 24"
@@ -109,10 +109,10 @@ export default function Hero({ onOpenQuote }: HeroProps) {
             </button>
             <Link
               href="/products"
-              className="btn-secondary-outline w-full sm:w-auto h-11 sm:h-12 px-3 sm:px-6 rounded-full bg-black/60 hover:bg-black/80 text-white border border-white/20 hover:border-white/40 backdrop-blur-sm font-bold text-[11px] sm:text-xs md:text-sm tracking-wider inline-flex items-center justify-center gap-1.5 sm:gap-2 transition-all active:scale-[0.98] whitespace-nowrap min-w-0"
+              className="btn-secondary-outline w-full sm:w-auto h-12 sm:h-12 min-h-[48px] px-4 sm:px-6 rounded-full bg-black/60 hover:bg-black/80 text-white border border-white/20 hover:border-white/40 backdrop-blur-sm font-bold text-xs md:text-sm tracking-wider inline-flex items-center justify-center gap-1.5 sm:gap-2 transition-all active:scale-[0.98] whitespace-nowrap"
               id="hero-explore-products-btn"
             >
-              <span className="truncate">EXPLORE PRODUCTS</span>
+              <span>EXPLORE PRODUCTS</span>
               <svg
                 className="cta-btn-arrow shrink-0"
                 viewBox="0 0 24 24"
