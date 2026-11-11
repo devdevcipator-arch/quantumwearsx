@@ -120,8 +120,8 @@ export default function BubbleLights() {
       };
     };
 
-    // Uncrowded, sparse count (24 particles instead of 85)
-    const particleCount = 24;
+    // Uncrowded, sparse count (16 on mobile, 24 on desktop)
+    const particleCount = typeof window !== "undefined" && window.innerWidth < 640 ? 16 : 24;
     const particles: Particle[] = [];
     for (let i = 0; i < particleCount; i++) {
       particles.push(createParticle(true));
