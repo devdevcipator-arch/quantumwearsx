@@ -52,7 +52,7 @@ export default function Faq() {
         <div className="faq-list divide-y divide-white/10">
           {faqs.map((faq) => (
             <details
-              className="group py-6 sm:py-8"
+              className="group py-9 sm:py-8"
               key={faq.question}
               open={isDesktop}
               data-reveal="reveal-up"
@@ -62,7 +62,7 @@ export default function Faq() {
                   // Lock the summary shut on desktop — answers stay expanded there.
                   if (isDesktop) e.preventDefault();
                 }}
-                className="flex min-h-[56px] w-full cursor-pointer select-none list-none items-center justify-between gap-3 lg:cursor-default [&::-webkit-details-marker]:hidden"
+                className="flex min-h-[64px] sm:min-h-[56px] py-1.5 sm:py-0 w-full cursor-pointer select-none list-none items-center justify-between gap-4 lg:cursor-default [&::-webkit-details-marker]:hidden"
               >
                 <h3 className="text-base sm:text-lg lg:text-xl font-bold text-white leading-snug">
                   {faq.question}
