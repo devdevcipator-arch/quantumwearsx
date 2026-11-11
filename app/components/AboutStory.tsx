@@ -11,7 +11,7 @@ export default function AboutStory() {
         <div className="about-story-grid">
           {/* Left Column: Studio Craftsmanship Image with Badge */}
           <motion.div
-            className="about-story-image-wrap"
+            className="about-story-image-wrap w-full max-w-full"
             initial={reduce ? undefined : { opacity: 0, x: -40 }}
             whileInView={reduce ? undefined : { opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.2 }}
@@ -34,7 +34,7 @@ export default function AboutStory() {
 
           {/* Right Column: Authentic Narrative */}
           <motion.div
-            className="about-story-content"
+            className="about-story-content w-full min-w-0"
             initial={reduce ? undefined : { opacity: 0, x: 40 }}
             whileInView={reduce ? undefined : { opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.2 }}
