@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import CatalogUploader from "./CatalogUploader";
 import {
   ProductItem,
   SubcategoryItem,
@@ -1079,6 +1080,9 @@ export default function AdminProductsPage() {
             ) : null}
           </div>
         </div>
+
+        {/* B2B Catalog & Lookbook Manager */}
+        <CatalogUploader categories={categories} />
 
         {/* Stats Row */}
         <div className="admin-stats-grid">

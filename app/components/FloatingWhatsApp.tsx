@@ -6,7 +6,7 @@ const WHATSAPP_NUMBER = "923314092799";
 const WHATSAPP_MESSAGE = encodeURIComponent(
   "Hi QuantumWear X, I would like to discuss a custom manufacturing inquiry."
 );
-const CATALOG_DOWNLOAD_URL = "/catalog/QuantumWearX-Catalog.pdf";
+const CATALOG_DOWNLOAD_URL = "/api/catalog/download";
 const CATALOG_FILENAME = "QuantumWearX-B2B-Catalog.pdf";
 
 export default function FloatingWhatsApp() {
