@@ -111,7 +111,7 @@ export default function FeaturedProducts({
         </div>
 
         {/* Dynamic Products Grid - Strict 2-Column Mobile Grid */}
-        <div className="products-grid grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-5 w-full">
+        <div className="products-grid grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 lg:gap-5 w-full">
           {products.map((item, index) => (
             <div
               key={item.id || item.title}
@@ -129,10 +129,10 @@ export default function FeaturedProducts({
                 />
                 <span className="product-tag text-[8px] sm:text-[9.5px] py-0.5 px-1.5 sm:py-1 sm:px-2 rounded top-1.5 left-1.5 sm:top-3 sm:left-3">{item.category.toUpperCase()}</span>
               </div>
-              <div className="product-card-body p-2 sm:p-3.5 lg:p-5 flex flex-col flex-1 justify-between gap-1.5 sm:gap-2.5 min-w-0">
-                <h3 className="product-card-title text-[11.5px] sm:text-sm lg:text-base font-bold text-white line-clamp-2 leading-snug">{item.title}</h3>
+              <div className="product-card-body p-2.5 sm:p-4 lg:p-5 flex flex-col flex-1 justify-between gap-1 sm:gap-2.5 min-w-0">
+                <h3 className="product-card-title text-xs sm:text-sm lg:text-base font-bold text-white line-clamp-1 sm:line-clamp-2 leading-snug">{item.title}</h3>
                 <p
-                  className="product-card-desc text-[10px] sm:text-xs text-[#a6a6b5] line-clamp-2 my-0.5 sm:my-1 leading-snug"
+                  className="product-card-desc text-[10px] sm:text-xs text-[#a6a6b5] line-clamp-1 sm:line-clamp-2 my-0.5 sm:my-1 leading-tight"
                   style={{
                     overflowWrap: "break-word",
                     wordBreak: "break-word",
@@ -143,7 +143,7 @@ export default function FeaturedProducts({
                 <div className="mt-auto pt-1.5 sm:pt-2 w-full">
                   <Link
                     href={getProductUrl(item)}
-                    className="product-quote-btn w-auto sm:w-full mx-auto sm:mx-0 h-9 sm:h-10 py-0 sm:py-2.5 px-5 sm:px-3 rounded-full sm:rounded-md bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all duration-150 text-[11px] sm:text-xs font-bold uppercase tracking-[0.1em] sm:tracking-widest flex items-center justify-center relative before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-[''] shadow-sm"
+                    className="product-quote-btn w-full h-8 sm:h-10 rounded-md bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all duration-150 text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center justify-center relative before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-[''] shadow-sm"
                     style={{ textDecoration: "none" }}
                   >
                     DETAIL
