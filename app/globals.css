@@ -2927,22 +2927,66 @@ input[type="search"]::-webkit-search-results-decoration {
    Desktop uses the permanent sidebar / full description instead.
    ========================================================== */
 
-/* --- Mobile Categories drawer: hamburger button LEFT of the heading ---
-   Left-aligned with a fixed 24px gap (no space-between / edge separation).
-   Keep in sync with the inline `flex items-center justify-start gap-6`
-   utilities on the <summary> — utilities alone cannot override this
+/* --- Mobile Categories drawer: header rows stacked inside <summary> ---
+   Row 1: hamburger button LEFT of the heading (24px gap, no space-between).
+   Row 2: always-visible selected option badge. Keep in sync with the inline
+   flex utilities on the row span — utilities alone cannot override this
    unlayered rule under Tailwind v4's cascade layers. */
 .catalog-sidebar-summary {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 24px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
   width: 100%;
   cursor: pointer;
   list-style: none;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 6px;
+}
+
+/* Top row: hamburger button + "Categories" heading, left-aligned */
+.catalog-sidebar-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 24px;
+}
+
+/* Always-visible selected option (rendered inside <summary>, so it remains
+   on screen even while the drawer is collapsed) */
+.catalog-sidebar-active-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 6px 12px;
+  background: #191922;
+  border: 1px solid var(--border-card);
+  border-radius: 999px;
+}
+
+.catalog-sidebar-active-dot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-red);
+}
+
+.catalog-sidebar-active-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Accent the selected-option badge while the drawer is open */
+.catalog-sidebar-collapse[open] .catalog-sidebar-active-row {
+  border-color: rgba(209, 0, 20, 0.6);
 }
 
 .catalog-sidebar-summary::-webkit-details-marker {

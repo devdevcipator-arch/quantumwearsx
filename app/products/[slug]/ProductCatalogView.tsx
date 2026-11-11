@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Navbar from "../../components/Navbar";
@@ -362,6 +368,26 @@ export default function ProductCatalogView({
     });
   }, [itemFilter, isAllFilter, category.products, liveDbProducts, searchQuery]);
 
+  // Mobile-only: the currently selected option (subcategory filter, or the
+  // category itself when "All ..." is active). Rendered permanently inside
+  // the <summary> header so it stays visible while the drawer is collapsed.
+  const activeOptionLabel =
+    !isAllFilter && itemFilter ? itemFilter : category.name;
+
+  const mobileSidebarRef = useRef<HTMLDetailsElement>(null);
+
+  // Mobile-only: close the categories drawer the instant a category link or
+  // subcategory button is tapped. Delegated on the mobile wrapper so the
+  // shared sidebarAccordion markup (also rendered in the desktop sidebar)
+  // remains 100% untouched.
+  const handleMobileSidebarItemClick = (e: ReactMouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    // Leaf actions only — accordion expand/collapse toggles must NOT close it.
+    if (target.closest("a, .catalog-subbtn")) {
+      mobileSidebarRef.current?.removeAttribute("open");
+    }
+  };
+
   // Shared categories accordion — rendered twice: inside the mobile
   // <details> drawer and inside the permanent desktop sidebar.
   const sidebarAccordion = (
@@ -520,35 +546,54 @@ export default function ProductCatalogView({
             {/* ---------- Sidebar: Categories accordion ---------- */}
             <aside className="catalog-sidebar" aria-label="Categories">
               {/* Mobile: collapsible Categories drawer — native <details>, zero-JS.
-                  Tapping the row (or the hamburger button, which sits to the LEFT of
-                  the heading) expands the category list on demand so the sidebar
-                  never monopolizes the viewport height. Inline flex utilities keep
-                  the row left-aligned with a fixed 24px gap. */}
-              <details className="catalog-sidebar-collapse sm:hidden">
-                <summary className="catalog-sidebar-summary flex items-center justify-start gap-6">
-                  <span
-                    className="catalog-sidebar-menu-badge flex h-9 w-9 items-center justify-center"
-                    aria-hidden="true"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="18"
-                      height="18"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.6"
-                      strokeLinecap="round"
+                  Top summary row: hamburger button LEFT of the heading, with a
+                  permanently visible "selected option" badge beneath it (<summary>
+                  renders even while collapsed, so the active category/sub-filter
+                  is always readable). Tapping any category link or subcategory
+                  button instantly closes the drawer via delegated handler. */}
+              <details
+                ref={mobileSidebarRef}
+                className="catalog-sidebar-collapse sm:hidden"
+              >
+                <summary className="catalog-sidebar-summary">
+                  <span className="catalog-sidebar-summary-row flex items-center justify-start gap-6">
+                    <span
+                      className="catalog-sidebar-menu-badge flex h-9 w-9 items-center justify-center"
+                      aria-hidden="true"
                     >
-                      <line x1="3" y1="6" x2="21" y2="6" />
-                      <line x1="3" y1="12" x2="21" y2="12" />
-                      <line x1="3" y1="18" x2="21" y2="18" />
-                    </svg>
+                      <svg
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.6"
+                        strokeLinecap="round"
+                      >
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                      </svg>
+                    </span>
+                    <span className="catalog-sidebar-heading catalog-sidebar-heading--mobile">
+                      Categories
+                    </span>
                   </span>
-                  <span className="catalog-sidebar-heading catalog-sidebar-heading--mobile">
-                    Categories
+                  <span className="catalog-sidebar-active-row">
+                    <span className="catalog-sidebar-active-dot" aria-hidden="true" />
+                    <span className="catalog-sidebar-active-value">
+                      {activeOptionLabel}
+                    </span>
                   </span>
                 </summary>
-                {sidebarAccordion}
+                {/* Mobile-only wrapper: closes the drawer on item selection.
+                    Desktop renders sidebarAccordion directly, unchanged. */}
+                <div
+                  className="catalog-sidebar-mobile-list"
+                  onClick={handleMobileSidebarItemClick}
+                >
+                  {sidebarAccordion}
+                </div>
               </details>
 
               {/* Desktop: permanent categories directory — layout unchanged */}
