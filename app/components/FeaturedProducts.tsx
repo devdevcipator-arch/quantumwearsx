@@ -21,9 +21,10 @@ export default function FeaturedProducts({
   initialProducts,
 }: FeaturedProductsProps) {
   const hasServerData = !!(initialProducts && initialProducts.length > 0);
-  const [products, setProducts] = useState<ProductItem[]>(
-    hasServerData ? initialProducts : DEFAULT_PRODUCTS
-  );
+  const [products, setProducts] = useState<ProductItem[]>(() => {
+    const source = hasServerData ? initialProducts : DEFAULT_PRODUCTS;
+    return (source || []).slice(0, 6);
+  });
 
   useEffect(() => {
     // Server already provided fresh featured data (ISR). Skip client DB/local
@@ -110,48 +111,53 @@ export default function FeaturedProducts({
           </p>
         </div>
 
-        {/* Dynamic Products Grid - Strict 2-Column Mobile Grid */}
+        {/* Dynamic Products Grid - Strictly Two Rows on All Viewports */}
         <div className="products-grid grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 lg:gap-5 w-full">
-          {products.map((item, index) => (
-            <div
-              key={item.id || item.title}
-              className="product-card rounded-lg sm:rounded-xl overflow-hidden flex flex-col w-full bg-[var(--bg-card)] border border-[var(--border-subtle)]"
-              data-reveal="reveal-up"
-              style={{ "--reveal-delay": `${(index % 3) * 110}ms` } as CSSProperties}
-            >
-              <div className="product-card-media aspect-[4/3] w-full relative overflow-hidden">
-                <img
-                  src={item.image}
-                  alt={`${item.title} - QuantumWear X custom manufactured product`}
-                  className="product-card-image w-full h-full object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <span className="product-tag text-[8px] sm:text-[9.5px] py-0.5 px-1.5 sm:py-1 sm:px-2 rounded top-1.5 left-1.5 sm:top-3 sm:left-3">{item.category.toUpperCase()}</span>
-              </div>
-              <div className="product-card-body p-2.5 sm:p-4 lg:p-5 flex flex-col flex-1 justify-between gap-1 sm:gap-2.5 min-w-0">
-                <h3 className="product-card-title text-xs sm:text-sm lg:text-base font-bold text-white line-clamp-1 sm:line-clamp-2 leading-snug">{item.title}</h3>
-                <p
-                  className="product-card-desc text-[10px] sm:text-xs text-[#a6a6b5] line-clamp-1 sm:line-clamp-2 my-0.5 sm:my-1 leading-tight"
-                  style={{
-                    overflowWrap: "break-word",
-                    wordBreak: "break-word",
-                  }}
-                >
-                  {item.description || ""}
-                </p>
-                <div className="mt-auto pt-1.5 sm:pt-2 w-full">
-                  <Link
-                    href={getProductUrl(item)}
-                    className="product-quote-btn w-full h-8 sm:h-10 rounded-md bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all duration-150 text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center justify-center relative before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-[''] shadow-sm"
-                    style={{ textDecoration: "none" }}
+          {products.slice(0, 6).map((item, index) => {
+            const isHiddenOnMobile = index >= 4;
+            return (
+              <div
+                key={item.id || item.title}
+                className={`product-card rounded-lg sm:rounded-xl overflow-hidden flex-col w-full bg-[var(--bg-card)] border border-[var(--border-subtle)] ${
+                  isHiddenOnMobile ? "hidden lg:flex" : "flex"
+                }`}
+                data-reveal="reveal-up"
+                style={{ "--reveal-delay": `${(index % 3) * 110}ms` } as CSSProperties}
+              >
+                <div className="product-card-media aspect-[4/3] w-full relative overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt={`${item.title} - QuantumWear X custom manufactured product`}
+                    className="product-card-image w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span className="product-tag text-[8px] sm:text-[9.5px] py-0.5 px-1.5 sm:py-1 sm:px-2 rounded top-1.5 left-1.5 sm:top-3 sm:left-3">{item.category.toUpperCase()}</span>
+                </div>
+                <div className="product-card-body p-2.5 sm:p-4 lg:p-5 flex flex-col flex-1 justify-between gap-1 sm:gap-2.5 min-w-0">
+                  <h3 className="product-card-title text-xs sm:text-sm lg:text-base font-bold text-white line-clamp-1 sm:line-clamp-2 leading-snug">{item.title}</h3>
+                  <p
+                    className="product-card-desc text-[10px] sm:text-xs text-[#a6a6b5] line-clamp-1 sm:line-clamp-2 my-0.5 sm:my-1 leading-tight"
+                    style={{
+                      overflowWrap: "break-word",
+                      wordBreak: "break-word",
+                    }}
                   >
-                    DETAIL
-                  </Link>
+                    {item.description || ""}
+                  </p>
+                  <div className="mt-auto pt-1.5 sm:pt-2 w-full">
+                    <Link
+                      href={getProductUrl(item)}
+                      className="product-quote-btn w-full h-8 sm:h-10 rounded-md bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all duration-150 text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center justify-center relative before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-[''] shadow-sm"
+                      style={{ textDecoration: "none" }}
+                    >
+                      DETAIL
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* View Full Catalog Link Button */}

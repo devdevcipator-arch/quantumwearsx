@@ -8,7 +8,7 @@ export default async function Home() {
   let initialProducts: ProductItem[] | undefined;
   try {
     const live = await fetchProductsFromDb();
-    if (live && live.length > 0) initialProducts = live;
+    if (live && live.length > 0) initialProducts = live.slice(0, 6);
   } catch {
     // Client components fall back to cached/default data on their own
   }
