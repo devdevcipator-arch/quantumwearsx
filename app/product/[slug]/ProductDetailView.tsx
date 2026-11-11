@@ -214,7 +214,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
             animate={reduce ? undefined : { opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Link href="/products" className="product-view-back-link">
+            <Link href="/products" className="product-view-back-link min-h-[44px]">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="19" y1="12" x2="5" y2="12" />
                 <polyline points="12 19 5 12 12 5" />
@@ -224,19 +224,19 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
             <span className="product-view-crumb-sep">/</span>
             <Link
               href={`/products/${product.categorySlug}`}
-              className="product-view-crumb-cat"
+              className="product-view-crumb-cat inline-flex items-center min-h-[44px]"
             >
               {product.category}
             </Link>
             <span className="product-view-crumb-sep">/</span>
-            <span className="product-view-crumb-current">{product.title}</span>
+            <span className="product-view-crumb-current truncate max-w-[200px] sm:max-w-none">{product.title}</span>
           </motion.div>
 
           {/* ================= TOP TWO SECTIONS: 2-COLUMN GRID ================= */}
           <div className="product-view-grid">
             {/* 1. LEFT COLUMN: PRODUCT INFO & SPECIFICATIONS CARD */}
             <motion.div
-              className="product-view-info-card"
+              className="product-view-info-card order-2 lg:order-1"
               initial={reduce ? undefined : { opacity: 0, y: 15 }}
               animate={reduce ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
@@ -285,13 +285,13 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
 
             {/* 2. RIGHT COLUMN: VISUAL DISPLAY & 3 THUMBNAILS */}
             <motion.div
-              className="product-view-visual-col"
+              className="product-view-visual-col order-1 lg:order-2"
               initial={reduce ? undefined : { opacity: 0, y: 15 }}
               animate={reduce ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.08, ease: "easeOut" }}
             >
               {/* Top Showcase Card (Clean display without floating quote button) */}
-              <div className="product-view-showcase-card">
+              <div className="product-view-showcase-card w-full aspect-[4/3] sm:aspect-square lg:aspect-[4/3] rounded-xl overflow-hidden">
                 {/* Top-Left Red Badge */}
                 <div className="product-view-badge">
                   {product.badge}
@@ -315,12 +315,12 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
               </div>
 
               {/* Bottom Row of 3 Thumbnail Cards */}
-              <div className="product-view-thumbs-row">
+              <div className="product-view-thumbs-row flex items-center gap-2.5 overflow-x-auto no-scrollbar py-2">
                 {product.thumbnails.slice(0, 3).map((thumb, idx) => (
                   <button
                     key={idx}
                     type="button"
-                    className={`product-view-thumb-card ${activeThumbIdx === idx ? "active" : ""}`}
+                    className={`product-view-thumb-card min-w-[70px] min-h-[70px] ${activeThumbIdx === idx ? "active" : ""}`}
                     onClick={() => handleSelectThumbnail(thumb, idx)}
                     aria-label={`Select product image view ${idx + 1}`}
                   >
@@ -338,7 +338,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
           </div>
 
           {/* ================= 2-COLUMN SECTION IMAGES: COLOR CHART & SIZE CHART ================= */}
-          <div className="product-view-sections-row" aria-label="Color Chart and Size Chart">
+          <div className="product-view-sections-row flex flex-col sm:flex-row gap-4 sm:gap-6" aria-label="Color Chart and Size Chart">
             {/* Left Column: Color Chart */}
             <div className="product-view-section-col">
               <div className="product-view-section-header-bar">
@@ -416,10 +416,10 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                   evaluating your custom specifications and will send a detailed pricing and lead time breakdown
                   to <strong>{email}</strong> within 24 hours.
                 </p>
-                <div className="product-quote-success-actions">
+                <div className="product-quote-success-actions flex flex-col sm:flex-row gap-3 w-full justify-center">
                   <button
                     type="button"
-                    className="product-quote-reset-btn"
+                    className="product-quote-reset-btn min-h-[44px] flex items-center justify-center"
                     onClick={handleResetQuote}
                   >
                     Submit Another Inquiry
@@ -428,7 +428,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                     href={`https://wa.me/923314092799?text=${whatsappMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="product-quote-whatsapp-btn"
+                    className="product-quote-whatsapp-btn min-h-[44px] flex items-center justify-center"
                   >
                     Discuss on WhatsApp ↗
                   </a>
@@ -436,7 +436,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
               </div>
             ) : (
               <form onSubmit={handleSubmitQuote} className="product-quote-form">
-                <div className="product-quote-grid">
+                <div className="product-quote-grid grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full">
                   {/* Contact Name */}
                   <div className="product-quote-field">
                     <label className="product-quote-label" htmlFor="pq-name">
@@ -445,7 +445,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                     <input
                       id="pq-name"
                       type="text"
-                      className="product-quote-input"
+                      className="product-quote-input min-h-[44px]"
                       placeholder="e.g. John Doe"
                       value={contactName}
                       onChange={(e) => setContactName(e.target.value)}
@@ -460,7 +460,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                     <input
                       id="pq-brand"
                       type="text"
-                      className="product-quote-input"
+                      className="product-quote-input min-h-[44px]"
                       placeholder="e.g. Apex Apparel Co."
                       value={brandName}
                       onChange={(e) => setBrandName(e.target.value)}
@@ -476,7 +476,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                       id="pq-email"
                       type="email"
                       required
-                      className="product-quote-input"
+                      className="product-quote-input min-h-[44px]"
                       placeholder="e.g. procurement@brand.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -491,7 +491,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                     <input
                       id="pq-phone"
                       type="tel"
-                      className="product-quote-input"
+                      className="product-quote-input min-h-[44px]"
                       placeholder="e.g. +1 (555) 019-4821"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
@@ -505,7 +505,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                     </label>
                     <select
                       id="pq-qty"
-                      className="product-quote-select"
+                      className="product-quote-select min-h-[44px]"
                       value={quantity}
                       onChange={(e) => setQuantity(e.target.value)}
                     >
@@ -526,7 +526,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                       id="pq-category"
                       type="text"
                       readOnly
-                      className="product-quote-input"
+                      className="product-quote-input min-h-[44px]"
                       style={{ opacity: 0.8, cursor: "not-allowed" }}
                       value={`${product.category} · ${product.title}`}
                     />
@@ -538,14 +538,14 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                   <label className="product-quote-label">
                     Required Custom Branding &amp; Finishing Options:
                   </label>
-                  <div className="product-quote-pills-row">
+                  <div className="product-quote-pills-row flex flex-wrap gap-2">
                     {customizationOptions.map((opt) => {
                       const active = selectedCustoms.includes(opt);
                       return (
                         <button
                           key={opt}
                           type="button"
-                          className={`product-quote-pill-btn ${active ? "active" : ""}`}
+                          className={`product-quote-pill-btn min-h-[40px] flex items-center justify-center ${active ? "active" : ""}`}
                           onClick={() => toggleCustomization(opt)}
                         >
                           {active ? "✓ " : "+ "}
@@ -572,8 +572,8 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                 </div>
 
                 {/* Submit Row with WhatsApp Alternative */}
-                <div className="product-quote-btn-row">
-                  <button type="submit" className="product-quote-submit-btn">
+                <div className="product-quote-btn-row flex flex-col sm:flex-row gap-3 w-full">
+                  <button type="submit" className="product-quote-submit-btn min-h-[44px] justify-center">
                     <svg style={{ color: "#FFF", marginRight: "8px" }} viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
                       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                     </svg>
@@ -588,7 +588,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                     href={`https://wa.me/923314092799?text=${whatsappMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="product-quote-whatsapp-pill"
+                    className="product-quote-whatsapp-pill min-h-[44px] justify-center"
                   >
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                       <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>

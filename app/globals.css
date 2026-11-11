@@ -138,6 +138,15 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
   background: var(--accent-red);
 }
 
+/* No-scrollbar utility for horizontal strips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* ==========================================================
    UNIVERSAL BUTTON SYSTEM (Clean, Borderless, Smooth Hover & Click)
    ========================================================== */
@@ -7703,6 +7712,7 @@ input[type="search"]::-webkit-search-results-decoration {
 
 /* Left Column: Product Info Card */
 .product-view-info-card {
+  order: 1;
   background: #09090e;
   border: 1px solid rgba(209, 0, 20, 0.45);
   border-radius: 24px;
@@ -7891,6 +7901,7 @@ input[type="search"]::-webkit-search-results-decoration {
 
 /* Right Column: Visual Showcase & Thumbnails */
 .product-view-visual-col {
+  order: 2;
   display: flex;
   flex-direction: column;
 }
@@ -8424,18 +8435,44 @@ input[type="search"]::-webkit-search-results-decoration {
     grid-template-columns: 1fr;
     gap: 32px;
   }
+  .product-view-visual-col {
+    order: 1;
+  }
+  .product-view-info-card {
+    order: 2;
+  }
   .product-view-showcase-card {
-    min-height: 440px;
-    height: 440px;
+    min-height: 0;
+    height: auto;
+  }
+  .product-view-thumbs-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-top: 14px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .product-view-thumbs-row::-webkit-scrollbar {
+    display: none;
+  }
+  .product-view-thumb-card {
+    min-width: 70px;
+    min-height: 70px;
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
   }
   .product-view-sections-row {
-    grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 20px;
     margin-top: 36px;
   }
   .product-view-section-card {
-    min-height: 360px;
-    height: 360px;
+    min-height: 320px;
+    height: 320px;
   }
   .product-quote-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -8443,26 +8480,41 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 @media (max-width: 640px) {
+  .product-view-container {
+    padding: 0 16px;
+    max-width: 100vw;
+  }
+  .product-view-section {
+    padding: 96px 0 60px;
+  }
+  .product-view-breadcrumb {
+    margin-bottom: 18px;
+    font-size: 12px;
+    gap: 8px;
+  }
   .product-view-info-card {
-    padding: 32px 20px;
+    padding: 24px 18px;
     border-radius: 18px;
   }
   .product-view-title {
-    font-size: 32px;
-  }
-  .product-view-showcase-card {
-    min-height: 350px;
-    height: 350px;
+    font-size: clamp(24px, 6.5vw, 32px);
+    margin-bottom: 16px;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
   .product-view-badge {
-    top: 16px;
-    left: 16px;
+    top: 14px;
+    left: 14px;
     font-size: 10.5px;
-    padding: 6px 14px;
+    padding: 6px 12px;
+  }
+  .product-view-sections-row {
+    margin-top: 30px;
+    gap: 16px;
   }
   .product-view-section-card {
-    min-height: 280px;
-    height: 280px;
+    min-height: 240px;
+    height: 240px;
     border-radius: 16px;
   }
   .add-product-charts-grid {
@@ -8477,25 +8529,59 @@ input[type="search"]::-webkit-search-results-decoration {
     justify-content: center;
   }
   .product-view-thumb-card {
-    height: 96px;
+    min-width: 70px;
+    min-height: 70px;
+    width: 70px;
+    height: 70px;
     border-radius: 10px;
   }
   .product-view-quote-section {
-    padding: 32px 18px;
-    margin-top: 40px;
+    padding: 26px 16px;
+    margin-top: 32px;
     border-radius: 18px;
+  }
+  .product-quote-section-title {
+    font-size: clamp(20px, 5vw, 26px);
+  }
+  .product-quote-section-subtitle {
+    font-size: 13.5px;
+    line-height: 1.6;
   }
   .product-quote-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .product-quote-pills-row {
+    gap: 8px;
+  }
+  .product-quote-pill-btn {
+    min-height: 40px;
+    padding: 8px 14px;
+    font-size: 12px;
+    touch-action: manipulation;
+  }
+  .product-quote-input,
+  .product-quote-select {
+    min-height: 44px;
+    font-size: 14px;
   }
   .product-quote-btn-row {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
+    width: 100%;
   }
   .product-quote-submit-btn,
   .product-quote-whatsapp-pill {
     width: 100%;
+    min-height: 44px;
     justify-content: center;
+  }
+  .product-quote-assurances {
+    gap: 12px 16px;
+    margin-top: 20px;
+    padding-top: 18px;
+    font-size: 12px;
   }
 }
 
