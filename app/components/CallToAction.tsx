@@ -69,7 +69,7 @@ export default function CallToAction({ onOpenQuote }: CallToActionProps) {
           </button>
 
           <a
-            href="https://wa.me/923143351255?text=Hi%20QuantumWear%20X%2C%20I%20would%20like%20to%20discuss%20custom%20manufacturing%20and%20production."
+            href="https://wa.me/923314092799?text=Hi%20QuantumWear%20X%2C%20I%20would%20like%20to%20discuss%20custom%20manufacturing%20and%20production."
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2.5 py-2.5 px-5 w-full sm:w-auto min-h-[44px] rounded-full bg-neutral-950/60 hover:bg-neutral-900 border border-neutral-800/80 hover:border-[#25D366]/40 text-neutral-300 hover:text-white text-xs font-semibold tracking-wide transition-all group"
