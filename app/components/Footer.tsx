@@ -57,27 +57,27 @@ export default function Footer() {
             <h3 className="footer-heading">COMPANY</h3>
             <ul className="footer-links-list">
               <li>
-                <Link href="/" className="footer-link inline-flex items-center min-h-[44px] sm:min-h-[36px] py-1 text-xs sm:text-sm">
+                <Link href="/" className="footer-link inline-flex items-center min-h-[36px] py-1 text-xs sm:text-sm">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="footer-link inline-flex items-center min-h-[44px] sm:min-h-[36px] py-1 text-xs sm:text-sm">
+                <Link href="/products" className="footer-link inline-flex items-center min-h-[36px] py-1 text-xs sm:text-sm">
                   Products
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="footer-link inline-flex items-center min-h-[44px] sm:min-h-[36px] py-1 text-xs sm:text-sm">
+                <Link href="/about" className="footer-link inline-flex items-center min-h-[36px] py-1 text-xs sm:text-sm">
                   About us
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="footer-link inline-flex items-center min-h-[44px] sm:min-h-[36px] py-1 text-xs sm:text-sm">
+                <Link href="/contact" className="footer-link inline-flex items-center min-h-[36px] py-1 text-xs sm:text-sm">
                   Contact us
                 </Link>
               </li>
               <li>
-                <Link href="/#craftsmanship" className="footer-link inline-flex items-center min-h-[44px] sm:min-h-[36px] py-1 text-xs sm:text-sm">
+                <Link href="/#craftsmanship" className="footer-link inline-flex items-center min-h-[36px] py-1 text-xs sm:text-sm">
                   Craftsmanship
                 </Link>
               </li>
@@ -94,20 +94,13 @@ export default function Footer() {
                 Global Supply Chain & Logistics Hub
               </p>
               <p>
-                <strong>Phone:</strong>{" "}
-                <a
-                  href="tel:+923314092799"
-                  className="hover:text-white transition-colors"
-                >
-                  +92 331 4092799
-                </a>
+                <strong>Phone:</strong> +92 331 4092799
               </p>
               <p>
                 <strong>Email:</strong>{" "}
                 <a
                   href="mailto:quantumwearsx@gmail.com"
                   style={{ color: "var(--accent-red)", textDecoration: "underline" }}
-                  className="break-all"
                 >
                   quantumwearsx@gmail.com
                 </a>
@@ -126,11 +119,11 @@ export default function Footer() {
             powered by <span className="text-neutral-200 font-medium">devcipator</span>
           </p>
           <div className="footer-legal-links flex flex-wrap items-center justify-center md:justify-end gap-2 sm:gap-3 text-xs">
-            <a href="#privacy" className="inline-flex items-center min-h-[36px] py-1 hover:text-white transition-colors">Privacy Policy</a>
-            <span aria-hidden="true">·</span>
-            <a href="#terms" className="inline-flex items-center min-h-[36px] py-1 hover:text-white transition-colors">Terms of Manufacturing</a>
-            <span aria-hidden="true">·</span>
-            <a href="#compliance" className="inline-flex items-center min-h-[36px] py-1 hover:text-white transition-colors">Global Compliance</a>
+            <a href="#privacy">Privacy Policy</a>
+            <span>·</span>
+            <a href="#terms">Terms of Manufacturing</a>
+            <span>·</span>
+            <a href="#compliance">Global Compliance</a>
           </div>
         </div>
       </div>
