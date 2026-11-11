@@ -3063,8 +3063,8 @@ input[type="search"]::-webkit-search-results-decoration {
     margin-bottom: 24px;
   }
   .hero-title {
-    /* text-2xl (24px) at 320px to avoid clumsy line-breaks */
-    font-size: 24px;
+    /* text-[30px] at 320px to avoid clumsy line-breaks */
+    font-size: 30px;
     line-height: 1.12;
     margin-bottom: 0;
     overflow-wrap: break-word;
@@ -3072,8 +3072,8 @@ input[type="search"]::-webkit-search-results-decoration {
   }
   @media (min-width: 400px) {
     .hero-title {
-      /* xs:text-3xl on 400px+ screens */
-      font-size: 30px;
+      /* xs:text-[32px] on 400px+ screens */
+      font-size: 32px;
     }
   }
   .hero-script {
