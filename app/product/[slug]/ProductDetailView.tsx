@@ -425,7 +425,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                     Submit Another Inquiry
                   </button>
                   <a
-                    href={`https://wa.me/923314092799?text=${whatsappMessage}`}
+                    href={`https://wa.me/923143351255?text=${whatsappMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="product-quote-whatsapp-btn"
@@ -585,7 +585,7 @@ export default function ProductDetailView({ product: initialProduct }: ProductDe
                   </button>
 
                   <a
-                    href={`https://wa.me/923314092799?text=${whatsappMessage}`}
+                    href={`https://wa.me/923143351255?text=${whatsappMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="product-quote-whatsapp-pill"

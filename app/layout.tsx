@@ -108,7 +108,7 @@ const rootStructuredData = {
       description:
         "Global B2B custom apparel, sportswear, streetwear, leather goods, and bags manufacturer based in Sialkot, Pakistan.",
       email: "quantumwearsx@gmail.com",
-      telephone: "+92-331-4092799",
+      telephone: "+92-314-3351255",
       address: {
         "@type": "PostalAddress",
         streetAddress: "14 Industrial Avenue",
