@@ -55,7 +55,7 @@ export default function Hero({ onOpenQuote }: HeroProps) {
         <div className="hero-overlay" />
       </motion.div>
 
-      <div className="hero-container flex flex-1 flex-col justify-between px-6 pb-32 pt-16 sm:px-12 sm:pb-12">
+      <div className="hero-container flex flex-1 flex-col justify-between px-6 pb-32 pt-16 sm:justify-center sm:px-12 sm:pt-0 sm:pb-0">
         <motion.div
           className="hero-content w-full max-w-2xl flex flex-col justify-center my-auto"
           variants={container}
