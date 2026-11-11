@@ -55,7 +55,7 @@ export default function Footer() {
           {/* Column 2: Company Links */}
           <div className="footer-links-col" data-reveal="reveal-up">
             <h3 className="footer-heading">COMPANY</h3>
-            <ul className="footer-links-list">
+            <ul className="footer-links-list grid grid-cols-2 gap-x-4 gap-y-0.5 sm:block">
               <li>
                 <Link href="/" className="footer-link inline-flex items-center min-h-[36px] py-1 text-xs sm:text-sm">
                   Home
