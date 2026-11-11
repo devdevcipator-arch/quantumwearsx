@@ -160,17 +160,18 @@ export default function FeaturedProducts({
           })}
         </div>
 
-        {/* View Full Catalog Link Button */}
+        {/* More Products Button — same design as the products page */}
         <div
-          className="mt-8 sm:mt-12 lg:mt-14 flex justify-center w-full px-3 sm:px-4"
+          className="products-more-wrap mt-8 sm:mt-12 lg:mt-14 w-full px-3 sm:px-4"
           data-reveal="reveal-up"
         >
           <Link
             href="/products"
-            className="featured-catalog-link w-full max-w-xs sm:w-auto text-center justify-center py-3.5 px-6 min-h-[48px] flex items-center gap-2 text-xs sm:text-sm font-bold tracking-wider"
+            className="products-more-btn w-full max-w-xs sm:w-auto justify-center text-center"
+            style={{ textDecoration: "none" }}
           >
-            <span>Explore Complete Catalog</span>
-            <span style={{ fontSize: "15px" }}>→</span>
+            More Products
+            <span aria-hidden="true">↓</span>
           </Link>
         </div>
       </div>
