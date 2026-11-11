@@ -76,11 +76,6 @@ export default function Footer() {
                   Contact us
                 </Link>
               </li>
-              <li>
-                <Link href="/#craftsmanship" className="footer-link inline-flex items-center min-h-[36px] py-1 text-xs sm:text-sm">
-                  Craftsmanship
-                </Link>
-              </li>
             </ul>
           </div>
 
