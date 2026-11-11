@@ -520,19 +520,20 @@ export default function ProductCatalogView({
             {/* ---------- Sidebar: Categories accordion ---------- */}
             <aside className="catalog-sidebar" aria-label="Categories">
               {/* Mobile: collapsible Categories drawer — native <details>, zero-JS.
-                  Tapping the row (or the "Menu" badge) expands the category list on
-                  demand so the sidebar never monopolizes the viewport height. */}
+                  Tapping the row (or the hamburger button, which sits to the LEFT of
+                  the heading) expands the category list on demand so the sidebar
+                  never monopolizes the viewport height. Inline flex utilities keep
+                  the row left-aligned with a fixed 24px gap. */}
               <details className="catalog-sidebar-collapse sm:hidden">
-                <summary className="catalog-sidebar-summary">
-                  <span className="catalog-sidebar-heading catalog-sidebar-heading--mobile">
-                    Categories
-                  </span>
-                  <span className="catalog-sidebar-menu-badge" aria-hidden="true">
-                    Menu
+                <summary className="catalog-sidebar-summary flex items-center justify-start gap-6">
+                  <span
+                    className="catalog-sidebar-menu-badge flex h-9 w-9 items-center justify-center"
+                    aria-hidden="true"
+                  >
                     <svg
                       viewBox="0 0 24 24"
-                      width="12"
-                      height="12"
+                      width="18"
+                      height="18"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2.6"
@@ -542,6 +543,9 @@ export default function ProductCatalogView({
                       <line x1="3" y1="12" x2="21" y2="12" />
                       <line x1="3" y1="18" x2="21" y2="18" />
                     </svg>
+                  </span>
+                  <span className="catalog-sidebar-heading catalog-sidebar-heading--mobile">
+                    Categories
                   </span>
                 </summary>
                 {sidebarAccordion}

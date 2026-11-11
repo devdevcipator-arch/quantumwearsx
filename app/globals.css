@@ -2927,12 +2927,16 @@ input[type="search"]::-webkit-search-results-decoration {
    Desktop uses the permanent sidebar / full description instead.
    ========================================================== */
 
-/* --- Mobile Categories drawer: "Menu ☰" badge beside the heading --- */
+/* --- Mobile Categories drawer: hamburger button LEFT of the heading ---
+   Left-aligned with a fixed 24px gap (no space-between / edge separation).
+   Keep in sync with the inline `flex items-center justify-start gap-6`
+   utilities on the <summary> — utilities alone cannot override this
+   unlayered rule under Tailwind v4's cascade layers. */
 .catalog-sidebar-summary {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: flex-start;
+  gap: 24px;
   width: 100%;
   cursor: pointer;
   list-style: none;
@@ -2949,20 +2953,20 @@ input[type="search"]::-webkit-search-results-decoration {
   font-size: 17px;
 }
 
+/* Icon-only hamburger button (36px square thumb target). The "MENU" label
+   was removed; the class name is retained for the open-state accent rule. */
 .catalog-sidebar-menu-badge {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  justify-content: center;
   flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   background: #191922;
   border: 1px solid var(--border-card);
   color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 
