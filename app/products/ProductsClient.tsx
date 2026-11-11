@@ -143,6 +143,7 @@ export default function ProductsPage({
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("General Inquiry");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showAllProducts, setShowAllProducts] = useState(false);
   const [showCategories, setShowCategories] = useState(true);
   const reduce = useReducedMotion();
 
@@ -367,6 +368,16 @@ export default function ProductsPage({
         (p.description && p.description.toLowerCase().includes(query))
     );
   }, [dbProducts, query]);
+
+  // Show only the first two rows of cards until "More Products" is clicked
+  const INITIAL_VISIBLE_PRODUCTS = 6; // 2 rows x 3 columns on desktop
+  const visibleProducts = useMemo(
+    () =>
+      showAllProducts
+        ? filteredProducts
+        : filteredProducts.slice(0, INITIAL_VISIBLE_PRODUCTS),
+    [filteredProducts, showAllProducts]
+  );
 
   const revealAnim = reduce
     ? {}
@@ -689,8 +700,10 @@ export default function ProductsPage({
           </div>
 
           {/* Product grid */}
-          <div className="products-grid">
-            {filteredProducts.map((card, index) => (
+          <div
+            className={`products-grid${showAllProducts ? "" : " products-grid--limited"}`}
+          >
+            {visibleProducts.map((card, index) => (
               <div
                 key={card.id || card.title}
                 className="product-card"
@@ -737,6 +750,20 @@ export default function ProductsPage({
               </div>
             ))}
           </div>
+
+          {/* More products option (shown only while extra cards are hidden) */}
+          {filteredProducts.length > visibleProducts.length && (
+            <div className="products-more-wrap" data-reveal="reveal-up">
+              <button
+                type="button"
+                className="products-more-btn"
+                onClick={() => setShowAllProducts(true)}
+              >
+                More Products
+                <span aria-hidden="true">↓</span>
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
