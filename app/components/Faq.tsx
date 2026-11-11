@@ -27,20 +27,20 @@ export default function Faq() {
   return (
     <section id="faq" className="faq-section w-full py-16 sm:py-20 lg:py-24" aria-label="Frequently Asked Questions">
       <div className="faq-container px-4 sm:px-6 lg:px-8 max-w-[1360px] mx-auto w-full">
-        <div className="faq-heading-block mb-8 sm:mb-12" data-reveal="reveal-up">
+        <div className="faq-heading-block mb-8 sm:mb-0" data-reveal="reveal-up">
           <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#D10014] mb-2 inline-block">{`Common Inquiries`}</span>
           <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-white mb-2 sm:mb-3">FAQ Section</h2>
-          <div className="w-12 h-0.5 bg-[#D10014] mt-3" />
+          <div className="faq-title-bar" />
         </div>
 
-        <div className="faq-list border-t border-white/10">
+        <div className="faq-list border-t border-white/10 space-y-2.5 sm:space-y-0 sm:border-t-0">
           {faqs.map((faq) => (
             <details
               className="group border-b border-white/10"
               key={faq.question}
               data-reveal="reveal-up"
             >
-              <summary className="flex min-h-[56px] w-full cursor-pointer select-none list-none items-center justify-between gap-3 py-5.5 sm:py-6 [&::-webkit-details-marker]:hidden">
+              <summary className="flex py-5.5 sm:py-6 min-h-[56px] sm:min-h-[48px] w-full cursor-pointer select-none list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
                 <h3 className="text-[15px] sm:text-base lg:text-lg font-bold text-white leading-snug">
                   {faq.question}
                 </h3>

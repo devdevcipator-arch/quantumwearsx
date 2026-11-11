@@ -1156,6 +1156,14 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
   top: 120px;
 }
 
+.faq-title-bar {
+  width: 60px;
+  height: 4px;
+  background: var(--accent-red);
+  margin-top: 22px;
+  border-radius: 2px;
+}
+
 .faq-list {
   display: flex;
   flex-direction: column;
