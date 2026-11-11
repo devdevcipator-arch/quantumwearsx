@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 const faqs = [
   {
     question: "What is your Minimum Order Quantity (MOQ)?",
@@ -23,7 +25,21 @@ const faqs = [
   },
 ];
 
+const lgQuery = "(min-width: 1024px)";
+
 export default function Faq() {
+  // Mobile: closed by default (no hardcoded open attribute).
+  // Desktop (lg+): all answers forced open via the matchMedia listener below.
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(lgQuery);
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   return (
     <section id="faq" className="faq-section w-full py-16 sm:py-20 lg:py-24" aria-label="Frequently Asked Questions">
       <div className="faq-container px-4 sm:px-6 lg:px-8 max-w-[1360px] mx-auto w-full">
@@ -33,20 +49,27 @@ export default function Faq() {
           <div className="faq-title-bar" />
         </div>
 
-        <div className="faq-list border-t border-white/10 space-y-2.5 sm:space-y-0 sm:border-t-0">
+        <div className="faq-list divide-y divide-white/10">
           {faqs.map((faq) => (
             <details
-              className="group border-b border-white/10"
+              className="group py-6 sm:py-8"
               key={faq.question}
+              open={isDesktop}
               data-reveal="reveal-up"
             >
-              <summary className="flex py-5.5 sm:py-6 min-h-[56px] sm:min-h-[48px] w-full cursor-pointer select-none list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
-                <h3 className="text-[15px] sm:text-base lg:text-lg font-bold text-white leading-snug">
+              <summary
+                onClick={(e) => {
+                  // Lock the summary shut on desktop — answers stay expanded there.
+                  if (isDesktop) e.preventDefault();
+                }}
+                className="flex min-h-[56px] w-full cursor-pointer select-none list-none items-center justify-between gap-3 lg:cursor-default [&::-webkit-details-marker]:hidden"
+              >
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold text-white leading-snug">
                   {faq.question}
                 </h3>
                 <span
                   aria-hidden="true"
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 text-[#D10014] transition-transform duration-300 ease-out group-open:rotate-45"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 text-[#D10014] transition-transform duration-300 ease-out group-open:rotate-45 lg:hidden"
                 >
                   <svg
                     className="h-3.5 w-3.5"
@@ -60,7 +83,7 @@ export default function Faq() {
                   </svg>
                 </span>
               </summary>
-              <p className="text-xs sm:text-sm text-[#a6a6b5] leading-relaxed pt-2.5 sm:pt-3 pb-4 sm:pb-6 max-w-[680px]">
+              <p className="text-sm sm:text-base text-[#a6a6b5] leading-relaxed max-w-2xl mt-4 sm:mt-5">
                 {faq.answer}
               </p>
             </details>
