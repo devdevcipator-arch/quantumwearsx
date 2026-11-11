@@ -28,17 +28,42 @@ export default function Faq() {
     <section id="faq" className="faq-section w-full py-12 sm:py-16 lg:py-24" aria-label="Frequently Asked Questions">
       <div className="faq-container px-4 sm:px-6 lg:px-8 max-w-[1360px] mx-auto w-full">
         <div className="faq-heading-block" data-reveal="reveal-up">
-          <span className="faq-eyebrow">{`Common Inquiries`}</span>
-          <h2 className="faq-title text-2xl sm:text-4xl md:text-5xl font-black tracking-tight">FAQ Section</h2>
+          <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#D10014] mb-2 inline-block">{`Common Inquiries`}</span>
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-white mb-2 sm:mb-3">FAQ Section</h2>
           <div className="faq-title-bar" />
         </div>
 
         <div className="faq-list">
           {faqs.map((faq) => (
-            <div className="faq-item py-4 sm:py-6" key={faq.question} data-reveal="reveal-up">
-              <h3 className="faq-question text-base sm:text-lg font-bold text-white mb-2">{faq.question}</h3>
-              <p className="faq-answer text-xs sm:text-sm text-[#a6a6b5] leading-relaxed">{faq.answer}</p>
-            </div>
+            <details
+              className="group border-b border-white/10"
+              key={faq.question}
+              data-reveal="reveal-up"
+            >
+              <summary className="flex min-h-[48px] w-full cursor-pointer select-none list-none items-center justify-between gap-3 py-4 sm:py-6 [&::-webkit-details-marker]:hidden">
+                <h3 className="text-sm sm:text-base lg:text-lg font-bold text-white leading-snug">
+                  {faq.question}
+                </h3>
+                <span
+                  aria-hidden="true"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 text-[#D10014] transition-transform duration-300 ease-out group-open:rotate-45"
+                >
+                  <svg
+                    className="h-3.5 w-3.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  >
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                </span>
+              </summary>
+              <p className="text-xs sm:text-sm text-[#a6a6b5] leading-relaxed pt-2.5 sm:pt-3 pb-4 sm:pb-6 max-w-[680px]">
+                {faq.answer}
+              </p>
+            </details>
           ))}
         </div>
       </div>
