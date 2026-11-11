@@ -396,7 +396,7 @@ export default function ProductsPage({
         className={`catalog-section ${!showCategories && !query ? "categories-collapsed" : ""}`}
         aria-label="Collections and Categories Browser"
       >
-        <div className="catalog-container">
+        <div className="catalog-container px-4 sm:px-6 lg:px-8">
           {/* Page heading */}
           <motion.div
             {...(reduce
@@ -409,14 +409,14 @@ export default function ProductsPage({
             className="catalog-page-heading"
           >
             <span className="catalog-eyebrow">Our Catalog</span>
-            <h1 className="catalog-page-title">
+            <h1 className="catalog-page-title text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white">
               EXPLORE OUR <span className="text-red">PRODUCTS</span>
             </h1>
-            <div className="catalog-title-bar" />
+            <div className="catalog-title-bar w-12 h-1 bg-[#D10014] mt-2.5 sm:mt-3" />
           </motion.div>
 
           {/* Search bar & Small categories toggle button */}
-          <div className="catalog-search-row">
+          <div className="catalog-search-row flex flex-col sm:flex-row gap-3 w-full mb-6 sm:mb-8">
             <motion.div
               {...(reduce
                 ? {}
@@ -425,7 +425,7 @@ export default function ProductsPage({
                     animate: "show" as const,
                     variants: fadeUp,
                   })}
-              className="catalog-search-bar"
+              className="catalog-search-bar w-full flex-1 min-h-[48px]"
             >
               <svg
                 className="catalog-search-icon"
@@ -466,7 +466,7 @@ export default function ProductsPage({
             {!query && (
               <button
                 type="button"
-                className={`catalog-categories-toggle-btn ${!showCategories ? "is-hidden" : ""}`}
+                className={`catalog-categories-toggle-btn w-full sm:w-auto h-12 sm:h-[48px] px-5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-200 text-xs sm:text-sm font-bold uppercase tracking-wider ${!showCategories ? "is-hidden" : ""}`}
                 onClick={() => setShowCategories((prev) => !prev)}
                 aria-expanded={showCategories}
               >
@@ -572,7 +572,7 @@ export default function ProductsPage({
                   exit={reduce ? {} : { opacity: 0, height: 0 }}
                   transition={{ duration: 0.28, ease: "easeInOut" }}
                   style={{ overflow: "hidden" }}
-                  className="catalog-columns"
+                  className="catalog-columns flex flex-col md:flex-row md:items-start gap-8 md:gap-12 w-full"
                 >
               {/* Left column: Collections / Categories */}
               <motion.div
@@ -584,7 +584,7 @@ export default function ProductsPage({
                       viewport: viewportConfig,
                       variants: slideFromLeft,
                     })}
-                className="catalog-column"
+                className="catalog-column border-b border-white/10 pb-6 md:border-b-0 md:pb-0"
               >
                 <h2 className="catalog-column-heading">Collections / Categories</h2>
                 <ul className="catalog-column-list">
@@ -599,11 +599,11 @@ export default function ProductsPage({
                       <li key={category}>
                         <Link
                           href={`/products/${slug}`}
-                          className="catalog-link-item"
+                          className="catalog-link-item min-h-[44px] flex items-center justify-between py-2.5 px-3 rounded-md hover:bg-white/5 active:bg-white/10 transition-colors"
                           prefetch={true}
                         >
                           <span>{category}</span>
-                          <span className="catalog-item-arrow">↗</span>
+                          <span className="catalog-item-arrow shrink-0">↗</span>
                         </Link>
                       </li>
                     );
@@ -621,7 +621,7 @@ export default function ProductsPage({
                       viewport: viewportConfig,
                       variants: slideFromRight,
                     })}
-                className="catalog-column"
+                className="catalog-column border-b border-white/10 pb-6 md:border-b-0 md:pb-0"
               >
                 <h2 className="catalog-column-heading">Activewear Essentials</h2>
                 <ul className="catalog-column-list">

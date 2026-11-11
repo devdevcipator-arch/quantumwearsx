@@ -1296,6 +1296,12 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
   margin-bottom: 26px;
 }
 
+@media (min-width: 768px) {
+  .cta-btn-wrapper {
+    margin-bottom: 38px;
+  }
+}
+
 .cta-red-pill-button {
   font-size: 13px;
   letter-spacing: 0.12em;
@@ -1809,6 +1815,7 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
   position: relative;
   background: #000;
   padding: 150px 0 90px;
+  overflow-x: clip;
   transition: padding-bottom 0.28s ease;
 }
 
@@ -1823,7 +1830,20 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
 .catalog-container {
   max-width: 1360px;
   margin: 0 auto;
-  padding: 0 32px;
+  /* Fluid, mobile-first padding: no clipping on 320-480px viewports */
+  padding: 0 16px;
+}
+
+@media (min-width: 640px) {
+  .catalog-container {
+    padding: 0 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .catalog-container {
+    padding: 0 32px;
+  }
 }
 
 .catalog-page-heading {
@@ -1840,12 +1860,21 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
 }
 
 .catalog-page-title {
-  font-size: clamp(34px, 4.5vw, 54px);
   font-weight: 900;
-  letter-spacing: 0.01em;
   text-transform: uppercase;
   color: var(--text-white);
   line-height: 1.05;
+  overflow-wrap: break-word;
+}
+
+/* Mobile/tablet typography is driven by Tailwind utilities
+   (text-2xl xs:text-3xl sm:text-4xl md:text-5xl + tracking-tight).
+   Desktop keeps the original fluid clamp sizing. */
+@media (min-width: 1024px) {
+  .catalog-page-title {
+    font-size: clamp(34px, 4.5vw, 54px);
+    letter-spacing: 0.01em;
+  }
 }
 
 .catalog-page-title .text-red {
@@ -1854,25 +1883,41 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
 }
 
 .catalog-title-bar {
-  width: 44px;
-  height: 3px;
+  width: 48px;
+  height: 4px;
   background: var(--accent-red);
-  margin-top: 12px;
+  margin-top: 10px;
   border-radius: 2px;
+}
+
+@media (min-width: 640px) {
+  .catalog-title-bar {
+    margin-top: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .catalog-title-bar {
+    width: 44px;
+    height: 3px;
+  }
 }
 
 .catalog-search-bar {
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 48px;
-  max-width: 460px;
   padding: 0 16px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  margin-bottom: 48px;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Products-page search input: full-width, 48px touch-friendly height */
+.catalog-search-row .catalog-search-bar {
+  width: 100%;
+  min-height: 48px;
 }
 
 .catalog-search-bar:focus-within {
@@ -1882,42 +1927,65 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
 
 .catalog-search-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 48px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
   transition: margin-bottom 0.28s ease;
 }
 
-.catalog-search-row .catalog-search-bar {
-  margin-bottom: 0;
-  flex: 1 1 360px;
-  max-width: 480px;
+@media (min-width: 640px) {
+  .catalog-search-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .catalog-search-row .catalog-search-bar {
+    width: auto;
+    flex: 1 1 360px;
+    max-width: 480px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .catalog-search-row {
+    margin-bottom: 48px;
+  }
 }
 
 .catalog-categories-toggle-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 42px;
-  padding: 0 18px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  width: 100%;
+  height: 48px;
+  padding: 0 20px;
+  background: #171717;
+  border: 1px solid #262626;
   border-radius: 8px;
-  color: #a1a1aa;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  color: #e5e5e5;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
 }
 
+@media (min-width: 640px) {
+  .catalog-categories-toggle-btn {
+    width: auto;
+    height: 48px;
+    font-size: 14px;
+  }
+}
+
 .catalog-categories-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.09);
+  background: #262626;
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.25);
+  border-color: #404040;
 }
 
 .catalog-categories-toggle-btn.is-hidden {
@@ -1929,23 +1997,6 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
 .catalog-categories-toggle-btn.is-hidden:hover {
   background: #a30000;
   border-color: #ef4444;
-}
-
-@media (max-width: 640px) {
-  .catalog-search-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    margin-bottom: 32px;
-  }
-  .catalog-search-row .catalog-search-bar {
-    max-width: 100%;
-    width: 100%;
-  }
-  .catalog-categories-toggle-btn {
-    justify-content: center;
-    width: 100%;
-  }
 }
 
 .catalog-search-icon {
@@ -1968,6 +2019,13 @@ html.reveal-ready [data-reveal]:not(.is-revealed) {
   color: var(--text-muted);
 }
 
+/* 16px on mobile prevents iOS Safari auto-zoom on focus */
+@media (max-width: 767px) {
+  .catalog-search-input {
+    font-size: 16px;
+  }
+}
+
 /* Remove duplicate native browser search cancel button in WebKit browsers (Chrome, Edge, Safari) */
 input[type="search"]::-webkit-search-cancel-button,
 input[type="search"]::-webkit-search-decoration,
@@ -1979,9 +2037,23 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 .catalog-columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(40px, 6vw, 90px);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+@media (min-width: 768px) {
+  .catalog-columns {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 48px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .catalog-columns {
+    gap: clamp(40px, 6vw, 90px);
+  }
 }
 
 .catalog-column-heading {
@@ -2009,7 +2081,8 @@ input[type="search"]::-webkit-search-results-decoration {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 17px 8px;
+  min-height: 44px;
+  padding: 10px 12px;
   background: transparent;
   color: var(--text-gray);
   font-family: inherit;
@@ -2018,8 +2091,16 @@ input[type="search"]::-webkit-search-results-decoration {
   text-align: left;
   text-decoration: none;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
   transition: color 0.18s ease, background-color 0.18s ease;
+}
+
+@media (min-width: 768px) {
+  .catalog-link-item {
+    min-height: 0;
+    padding: 17px 8px;
+    border-radius: 4px;
+  }
 }
 
 .catalog-link-item:hover,
@@ -2028,16 +2109,37 @@ input[type="search"]::-webkit-search-results-decoration {
   background: rgba(229, 9, 20, 0.05);
 }
 
+/* Touch-friendly neutral hover/press on mobile (desktop keeps the red hover) */
+@media (max-width: 767px) {
+  .catalog-link-item:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .catalog-link-item:active {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
 .catalog-link-item.active {
   font-weight: 600;
 }
 
 .catalog-item-arrow {
+  color: #e50914;
+  font-size: 13px;
+  flex-shrink: 0;
   opacity: 0;
   transform: translateX(-6px);
   transition: opacity 0.25s ease, transform 0.25s ease;
-  color: #e50914;
-  font-size: 13px;
+}
+
+/* Arrows are always visible on touch devices (no reliable hover),
+   anchored to the right edge without colliding with long titles */
+@media (max-width: 767px) {
+  .catalog-item-arrow {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .catalog-link-item:hover .catalog-item-arrow,
@@ -2841,10 +2943,6 @@ input[type="search"]::-webkit-search-results-decoration {
 @media (max-width: 768px) {
   .catalog-section {
     padding: 100px 0 50px;
-  }
-  .catalog-columns {
-    grid-template-columns: 1fr;
-    gap: 36px;
   }
   .products-showcase-section {
     padding: 48px 0 56px;
@@ -6903,16 +7001,27 @@ input[type="search"]::-webkit-search-results-decoration {
    INSTANT SEARCH RESULTS ON /products
    ========================================================== */
 .catalog-search-clear {
+  position: relative;
   color: var(--text-muted);
   background: transparent;
   border: none;
   font-size: 16px;
   cursor: pointer;
-  padding: 4px;
+  padding: 0;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: color 0.15s ease;
+}
+
+/* Extended invisible hit area so the clear button meets 44x44px touch standards */
+.catalog-search-clear::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
 }
 
 .catalog-search-clear:hover {
