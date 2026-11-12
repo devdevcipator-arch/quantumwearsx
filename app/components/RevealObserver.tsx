@@ -44,22 +44,28 @@ export default function RevealObserver() {
         ? new IntersectionObserver(
             (entries, obs) => {
               entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                  const target = entry.target as HTMLElement;
-                  obs.unobserve(target);
-                  reveal(target);
-                  target.classList.add("is-revealed");
+                if (!entry.isIntersecting) return;
+                // Elements taller than the viewport can never reach an
+                // intersectionRatio of 0.15 — reveal them as soon as they
+                // enter the (40px-shrunk) root so they are never stuck.
+                const tallerThanViewport =
+                  entry.boundingClientRect.height > window.innerHeight;
+                if (entry.intersectionRatio < 0.15 && !tallerThanViewport) {
+                  return;
                 }
+                const target = entry.target as HTMLElement;
+                obs.unobserve(target);
+                reveal(target);
+                target.classList.add("is-revealed");
               });
             },
             {
-              // threshold 0: reveal as soon as any pixel enters the viewport.
-              // A higher threshold (e.g. 0.15) permanently hides tall sections
-              // whose 15% height never fits inside the viewport.
-              // Generous bottom margin: content is revealed ~250px before the
-              // user reaches it, so nothing ever appears frozen on screen.
-              threshold: 0,
-              rootMargin: "150px 0px 250px 0px",
+              // Reveal once 15% of the element is visible, measured 40px up
+              // from the bottom of the screen (negative bottom rootMargin
+              // shrinks the root). Threshold 0 keeps callbacks firing while
+              // the ratio grows toward the 0.15 crossing.
+              threshold: [0, 0.15],
+              rootMargin: "0px 0px -40px 0px",
             }
           )
         : null;
@@ -109,7 +115,7 @@ export default function RevealObserver() {
             parent.querySelectorAll<HTMLElement>(":scope > [data-reveal]")
           );
           const index = siblings.indexOf(el);
-          const delay = index >= 0 ? Math.min(index * 50, 120) : 0;
+          const delay = index >= 0 ? Math.min(index * 120, 600) : 0;
           el.style.setProperty("--reveal-delay", `${delay}ms`);
         } else {
           el.style.setProperty("--reveal-delay", "0ms");
@@ -127,13 +133,20 @@ export default function RevealObserver() {
      * invisible until refresh.
      */
     const safetySweep = () => {
-      const viewportLimit = window.innerHeight + 300;
+      const vh = window.innerHeight;
       document
         .querySelectorAll<HTMLElement>("[data-reveal]")
         .forEach((el) => {
           if (revealed.has(el)) return;
           const rect = el.getBoundingClientRect();
-          if (rect.top < viewportLimit && rect.bottom > -200) {
+          if (rect.height <= 0) return; // display:none — leave it for the observer
+          const visible = Math.min(rect.bottom, vh) - Math.max(rect.top, 0);
+          if (visible <= 0) return;
+          // Mirror the observer trigger: 15% of the element visible.
+          // Elements taller than the viewport can never reach a 0.15 ratio,
+          // so they reveal as soon as any part of them is on screen.
+          const ratio = rect.height <= vh ? visible / rect.height : 1;
+          if (ratio >= 0.15) {
             reveal(el);
             el.classList.add("is-revealed");
           }
