@@ -37,7 +37,7 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
 
   return (
     <main className="landing-page-root">
-      {/* Smooth scrolling (Lenis) + scroll progress indicator + scroll reveal */}
+      {/* Native scrolling + scroll progress indicator + scroll reveal */}
       <SmoothScroll />
       <ScrollProgress />
       <RevealObserver />

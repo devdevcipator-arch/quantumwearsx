@@ -17,7 +17,7 @@ export default function ContactPage() {
 
   return (
     <main className="landing-page-root contact-page-root">
-      {/* Smooth scrolling (Lenis) + scroll progress bar + scroll reveal animations */}
+      {/* Native scrolling + scroll progress bar + scroll reveal animations */}
       <SmoothScroll />
       <ScrollProgress />
       <RevealObserver />

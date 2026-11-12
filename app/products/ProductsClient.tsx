@@ -390,7 +390,7 @@ export default function ProductsPage({
 
   return (
     <main className="landing-page-root" id="top">
-      {/* Smooth scrolling (Lenis) + scroll progress indicator + scroll reveal */}
+      {/* Native scrolling + scroll progress indicator + scroll reveal */}
       <SmoothScroll />
       <ScrollProgress />
       <RevealObserver />

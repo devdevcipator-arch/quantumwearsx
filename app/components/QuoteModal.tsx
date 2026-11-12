@@ -25,7 +25,7 @@ export default function QuoteModal({
     if (isOpen) setCategory(initialCategory);
   }, [isOpen, initialCategory]);
 
-  // Lock background scroll while modal is open (prevents Lenis/body scroll bleed)
+  // Lock background scroll while the modal is open
   useEffect(() => {
     if (!isOpen) return;
     const prevHtml = document.documentElement.style.overflow;

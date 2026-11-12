@@ -56,8 +56,10 @@ export default function RevealObserver() {
               // threshold 0: reveal as soon as any pixel enters the viewport.
               // A higher threshold (e.g. 0.15) permanently hides tall sections
               // whose 15% height never fits inside the viewport.
+              // Generous bottom margin: content is revealed ~250px before the
+              // user reaches it, so nothing ever appears frozen on screen.
               threshold: 0,
-              rootMargin: "150px 0px 100px 0px",
+              rootMargin: "150px 0px 250px 0px",
             }
           )
         : null;
@@ -107,7 +109,7 @@ export default function RevealObserver() {
             parent.querySelectorAll<HTMLElement>(":scope > [data-reveal]")
           );
           const index = siblings.indexOf(el);
-          const delay = index >= 0 ? Math.min(index * 80, 240) : 0;
+          const delay = index >= 0 ? Math.min(index * 50, 120) : 0;
           el.style.setProperty("--reveal-delay", `${delay}ms`);
         } else {
           el.style.setProperty("--reveal-delay", "0ms");

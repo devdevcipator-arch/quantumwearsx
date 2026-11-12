@@ -32,6 +32,8 @@ export default function BubbleLights() {
     if (!ctx) return;
 
     let animationFrameId: number;
+    let running = false;
+    let lastRender = 0;
     let width = 0;
     let height = 0;
 
@@ -127,7 +129,18 @@ export default function BubbleLights() {
       particles.push(createParticle(true));
     }
 
-    const render = () => {
+    const render = (time: number) => {
+      // Cap at ~30fps: this is ambient decoration, and every frame redraws
+      // 24 radial gradients. Halving the rate leaves it just as smooth in
+      // practice and keeps scrolling around this section jank-free.
+      if (time - lastRender < 30) {
+        animationFrameId = requestAnimationFrame(render);
+        return;
+      }
+      // Advance physics by elapsed frames so motion speed stays identical
+      // to the old 60fps rendering now that we render at ~30fps.
+      const step = Math.min((time - lastRender) / 16.7, 3);
+      lastRender = time;
       ctx.clearRect(0, 0, width, height);
 
       // Additive screen blending for smooth luminous red glow
@@ -137,9 +150,9 @@ export default function BubbleLights() {
         const p = particles[i];
 
         // Move upward from bottom to top
-        p.y -= p.speedY;
-        p.swayAngle += p.swaySpeed;
-        p.pulseAngle += p.pulseSpeed;
+        p.y -= p.speedY * step;
+        p.swayAngle += p.swaySpeed * step;
+        p.pulseAngle += p.pulseSpeed * step;
         p.x += Math.sin(p.swayAngle) * p.swayAmount;
 
         // Calculate smooth entry at bottom and graceful exit at top
@@ -186,13 +199,43 @@ export default function BubbleLights() {
         }
       }
 
-      animationFrameId = requestAnimationFrame(render);
+      // Keep the loop alive only while the section is on screen, so this
+      // canvas never competes with page scrolling for main-frame time.
+      if (running) {
+        animationFrameId = requestAnimationFrame(render);
+      }
     };
 
-    render();
+    const start = () => {
+      if (!running) {
+        running = true;
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(animationFrameId);
+    };
+
+    // Pause the animation whenever the section scrolls out of view.
+    const visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            start();
+          } else {
+            stop();
+          }
+        });
+      },
+      { rootMargin: "100px 0px 100px 0px" }
+    );
+    visibilityObserver.observe(canvas);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      stop();
+      visibilityObserver.disconnect();
       window.removeEventListener("resize", handleResize);
     };
   }, []);
