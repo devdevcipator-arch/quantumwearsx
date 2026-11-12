@@ -120,7 +120,7 @@ export default function Collections({
   const animLeft = reduce
     ? {}
     : {
-        initial: false,
+        initial: "hidden",
         whileInView: "show",
         viewport: viewportConfig,
         variants: slideFromLeft,
@@ -129,7 +129,7 @@ export default function Collections({
   const animRight = reduce
     ? {}
     : {
-        initial: false,
+        initial: "hidden",
         whileInView: "show",
         viewport: viewportConfig,
         variants: slideFromRight,
@@ -138,7 +138,7 @@ export default function Collections({
   const animRightSubtle = reduce
     ? {}
     : {
-        initial: false,
+        initial: "hidden",
         whileInView: "show",
         viewport: viewportConfig,
         variants: slideFromRightSubtle,
@@ -147,7 +147,7 @@ export default function Collections({
   const animLeftBottom = reduce
     ? {}
     : {
-        initial: false,
+        initial: "hidden",
         whileInView: "show",
         viewport: viewportConfig,
         variants: slideFromLeftBottom,
@@ -156,7 +156,7 @@ export default function Collections({
   const animRightBottom = reduce
     ? {}
     : {
-        initial: false,
+        initial: "hidden",
         whileInView: "show",
         viewport: viewportConfig,
         variants: slideFromRightBottom,

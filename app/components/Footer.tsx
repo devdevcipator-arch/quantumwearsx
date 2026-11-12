@@ -116,9 +116,10 @@ export default function Footer() {
               href="https://www.devcipator.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-200 font-medium underline underline-offset-2 hover:text-orange-600 transition-colors"
+              className="font-medium"
+              style={{ textDecoration: "underline", textUnderlineOffset: "3px" }}
             >
-              Devcipator
+              Devciptor
             </a>
           </p>
           <div className="footer-legal-links flex flex-wrap items-center justify-center md:justify-end gap-2 sm:gap-3 text-xs">
