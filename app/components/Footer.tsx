@@ -111,14 +111,14 @@ export default function Footer() {
         <div className="footer-bottom-bar flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left text-xs text-neutral-400 pt-6">
           <p>© {currentYear} QuantumWearX Inc. All Rights Reserved. ISO 9001:2015 Certified</p>
           <p className="footer-powered-by text-neutral-400 text-xs text-center">
-            powered by{" "}
+            Powered by{" "}
             <a
               href="https://www.devcipator.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-200 font-medium hover:text-white transition-colors"
+              className="text-neutral-200 font-medium underline underline-offset-2 hover:text-orange-600 transition-colors"
             >
-              devcipator
+              Devcipator
             </a>
           </p>
           <div className="footer-legal-links flex flex-wrap items-center justify-center md:justify-end gap-2 sm:gap-3 text-xs">
