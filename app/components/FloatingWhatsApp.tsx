@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import ChatWidget from "./ChatWidget";
 
 const WHATSAPP_NUMBER = "923314092799";
 const WHATSAPP_MESSAGE = encodeURIComponent(
@@ -20,10 +19,7 @@ export default function FloatingWhatsApp() {
 
   return (
     <aside className="floating-actions-container" aria-label="Quick Actions">
-      {/* 1. Live Chat Button + Coming Soon Panel (Top of Stack) */}
-      <ChatWidget />
-
-      {/* 2. Catalog Download Floating Button (Above WhatsApp) */}
+      {/* 1. Catalog Download Floating Button (Above WhatsApp) */}
       <a
         href={CATALOG_DOWNLOAD_URL}
         download={CATALOG_FILENAME}
@@ -54,7 +50,7 @@ export default function FloatingWhatsApp() {
         <span className="floating-action-tooltip">Download Catalog (PDF)</span>
       </a>
 
-      {/* 3. WhatsApp Floating Button (Below Catalog) */}
+      {/* 2. WhatsApp Floating Button (Below Catalog) */}
       <a
         href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`}
         target="_blank"
